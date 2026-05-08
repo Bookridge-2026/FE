@@ -1,5 +1,7 @@
+import Router from "@/routes/router";
+
 function App() {
-  return <div>Bookridge FE</div>;
+  return <Router />;
 }
 
 export default App;
