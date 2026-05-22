@@ -61,21 +61,3 @@ body {
   font-family: "Pretendard", system-ui, sans-serif;
   background: var(--color-background);
 }
-
-button {
-  border: none;
-  background: none;
-  padding: 0;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-input,
-textarea {
-  font-family: inherit;
-  outline: none;
-}
-
-textarea {
-  resize: none;
-}
