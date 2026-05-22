@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+@theme {
+  --header-height: 104px;
+  --bottom-bar-height: 80px;
+
+  --color-main: #FFFBEF;
+  --color-black: #291A00;
+  --color-sub-black: #9D968C;
+
+  --color-field: #EAE9E6;
+  --color-red: #FF7373;
+  --color-background: #FFFFFF;
+}
+
 @font-face {
   font-family: 'Pretendard';
   src: url('/fonts/pretendard/Pretendard-Regular.woff2') format('woff2');
@@ -32,8 +45,37 @@
   font-display: swap;
 }
 
-@layer base {
-  html {
-    font-family: 'Pretendard', system-ui, sans-serif;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: "Pretendard", system-ui, sans-serif;
+  background: var(--color-background);
+}
+
+button {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input,
+textarea {
+  font-family: inherit;
+  outline: none;
+}
+
+textarea {
+  resize: none;
 }
