@@ -9,7 +9,8 @@ import OAuthCallbackPage from "@/pages/OAuthCallbackPage";
 import NicknamePage from "@/pages/NicknamePage";
 
 import HomePage from "@/pages/HomePage";
-import FriendsPage from "@/pages/FriendsPage";
+
+import NoticePage from "@/pages/NoticePage";
 
 import UserProfilePage from "@/pages/users/UserProfilePage";
 
@@ -31,6 +32,7 @@ import MyBooksPage from "@/pages/mypage/MyBooksPage";
 import BlockedUsersPage from "@/pages/mypage/BlockedUsersPage";
 
 import NotFoundPage from "@/pages/NotFoundPage";
+import FriendsPage from "@/pages/FriendsPage";
 
 export const router = createBrowserRouter([
   {
@@ -61,6 +63,10 @@ export const router = createBrowserRouter([
               {
                 path: "/friends",
                 element: <FriendsPage />,
+              },
+              {
+                path: "/notice",
+                element: <NoticePage />,
               },
               {
                 path: "/users/:userId",
