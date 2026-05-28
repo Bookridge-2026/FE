@@ -1,7 +1,84 @@
-import React from "react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
-const OcrCreatePage = () => {
-  return <div>OCR 생성 페이지</div>;
-};
+import CameraView from "@/components/ocr/CameraView";
+import PreviewView from "@/components/ocr/PreviewView";
+import LoadingView from "@/components/ocr/LoadingView";
 
-export default OcrCreatePage;
+import { ocrExtract } from "@/api/ocr";
+import type { CapturedImage, OcrStep } from "@/types/ocrCreate";
+
+export default function OcrCreatePage() {
+  const [step, setStep] = useState<OcrStep>("camera");
+  const [capturedImage, setCapturedImage] = useState<CapturedImage | null>(null);
+
+  const navigate = useNavigate();
+  const { roomId } = useParams();
+  const [searchParams] = useSearchParams();
+
+  const page = Number(searchParams.get("page") ?? 1);
+
+  useEffect(() => {
+    return () => {
+      if (capturedImage?.previewUrl) {
+        URL.revokeObjectURL(capturedImage.previewUrl);
+      }
+    };
+  }, [capturedImage]);
+
+  const handleCapture = (image: CapturedImage) => {
+    if (capturedImage?.previewUrl) {
+      URL.revokeObjectURL(capturedImage.previewUrl);
+    }
+
+    setCapturedImage(image);
+    setStep("preview");
+  };
+
+  const handleRetake = () => {
+    if (capturedImage?.previewUrl) {
+      URL.revokeObjectURL(capturedImage.previewUrl);
+    }
+
+    setCapturedImage(null);
+    setStep("camera");
+  };
+
+  const handleExtract = async () => {
+    if (!capturedImage) return;
+
+    try {
+      setStep("loading");
+
+      const { ocrText } = await ocrExtract(capturedImage.file);
+
+      navigate(`/rooms/${roomId}/ocr/result`, {
+        state: {
+          text: ocrText,
+          page,
+          imageUrl: capturedImage.previewUrl,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      alert("OCR 추출에 실패했습니다.");
+      setStep("preview");
+    }
+  };
+
+  if (step === "camera") {
+    return <CameraView onCapture={handleCapture} onCancel={() => navigate(-1)} />;
+  }
+
+  if (step === "preview" && capturedImage) {
+    return (
+      <PreviewView
+        imageSrc={capturedImage.previewUrl}
+        onRetake={handleRetake}
+        onExtract={handleExtract}
+      />
+    );
+  }
+
+  return <LoadingView />;
+}

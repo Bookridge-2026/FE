@@ -1,5 +1,3 @@
-import React from "react";
-
 const MyPage = () => {
   return <div>마이페이지홈</div>;
 };
