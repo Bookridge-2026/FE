@@ -37,7 +37,7 @@ export default function MemoLayer({ activeHighlights, anchorRect }: MemoLayerPro
   const appLeft = Math.max((viewportWidth - APP_WIDTH) / 2, 0);
   const appRight = appLeft + APP_WIDTH;
 
-  const layoutCount = allMemos.length <= 2 ? allMemos.length : allMemos.length + 1;
+  const layoutCount = allMemos.length;
   const rowCount = Math.ceil(layoutCount / COLUMN_COUNT);
 
   const groupWidth = COLUMN_COUNT * MEMO_WIDTH + (COLUMN_COUNT - 1) * GAP;
@@ -89,10 +89,9 @@ export default function MemoLayer({ activeHighlights, anchorRect }: MemoLayerPro
           className="relative"
           style={{ height: contentHeight }}
         >
-          {allMemos.map(({ memo, highlight }, index) => {
-            const layoutIndex = index < 2 ? index : index + 1;
-            const col = layoutIndex % COLUMN_COUNT;
-            const row = Math.floor(layoutIndex / COLUMN_COUNT);
+          {allMemos.map(({ memo }, index) => {
+            const col = index % COLUMN_COUNT;
+            const row = Math.floor(index / COLUMN_COUNT);
 
             return (
               <div

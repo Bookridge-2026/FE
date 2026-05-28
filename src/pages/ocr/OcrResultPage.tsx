@@ -11,7 +11,7 @@ interface LocationState {
   page: number;
 }
 
-const MAX_TEXTAREA_HEIGHT = 554;
+const MAX_TEXTAREA_HEIGHT = 480;
 
 export default function OcrDetailPage() {
   const location = useLocation();
@@ -73,16 +73,16 @@ export default function OcrDetailPage() {
   
 
   return (
-    <div className="flex min-h-full flex-col pb-[120px]">
+    <div className="flex h-[calc(100dvh-var(--header-height)-var(--bottom-bar-height)-32px)] flex-col">
       <textarea
         ref={textareaRef}
-        className="w-full resize-none rounded-lg border-[1.5px] border-field bg-transparent p-4 text-sm leading-5 text-black outline-none"
+        className="min-h-0 flex-1 resize-none rounded-lg border-[1.5px] border-field bg-transparent p-4 text-sm leading-5 text-black outline-none overflow-y-auto"
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder="추출된 텍스트가 없습니다."
       />
 
-      <div className="fixed bottom-[calc(var(--bottom-bar-height)+16px)] left-1/2 z-50 flex w-full max-w-[390px] -translate-x-1/2 justify-center px-4">
+      <div className="mt-6 flex justify-center">
         <BottomButton onClick={handleSave} disabled={!text.trim()}>
           저장
         </BottomButton>
