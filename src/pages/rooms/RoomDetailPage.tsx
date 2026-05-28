@@ -11,7 +11,7 @@ const RoomDetailPage = () => {
   return (
     <>
       <button
-        className="fixed left-1/2 bottom-[96px] z-50 translate-x-[129px] rounded-full bg-black flex items-center justify-center shadow-lg"
+        className="fixed left-1/2 bottom-[110px] z-50 translate-x-[129px] rounded-full bg-black flex items-center justify-center shadow-lg"
         aria-label="추가"
         onClick={() => setModalOpen(true)}
       >

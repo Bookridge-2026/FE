@@ -10,8 +10,8 @@ interface MemoLayerProps {
 
 const APP_WIDTH = 390;
 const SIDE_PADDING = 16;
-const HEADER_SAFE_TOP = 104;
-const BOTTOM_SAFE_BOTTOM = 96;
+const HEADER_SAFE_TOP = 80;
+const BOTTOM_SAFE_BOTTOM = 90;
 
 const MEMO_WIDTH = 110;
 const MEMO_HEIGHT = 102;
