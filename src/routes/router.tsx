@@ -23,7 +23,8 @@ import RoomDetailPage from "@/pages/rooms/RoomDetailPage";
 import RoomManagePage from "@/pages/rooms/RoomManagePage";
 
 import OcrCreatePage from "@/pages/ocr/OcrCreatePage";
-import OcrPageDetailPage from "@/pages/ocr/OcrPageDetailPage";
+import OcrResultPage from "@/pages/ocr/OcrResultPage";
+import OcrDetailPage from "@/pages/ocr/OcrDetailPage";
 
 import MyPage from "@/pages/mypage/MyPage";
 import MyFriendsPage from "@/pages/mypage/MyFriendsPage";
@@ -52,6 +53,10 @@ export const router = createBrowserRouter([
           {
             path: "/nickname",
             element: <NicknamePage />,
+          },
+          {
+            path: "/rooms/:roomId/ocr/create",
+            element: <OcrCreatePage />,
           },
           {
             element: <AppLayout />,
@@ -93,12 +98,12 @@ export const router = createBrowserRouter([
                 element: <RoomManagePage />,
               },
               {
-                path: "/rooms/:roomId/ocr/create",
-                element: <OcrCreatePage />,
+                path: "/rooms/:roomId/ocr/result",
+                element: <OcrResultPage />,
               },
               {
                 path: "/rooms/:roomId/ocr/:ocrPageId",
-                element: <OcrPageDetailPage />,
+                element: <OcrDetailPage />,
               },
               {
                 path: "/mypage",

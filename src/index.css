@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --header-height: 104px;
-  --bottom-bar-height: 80px;
+  --header-height: 80px;
+  --bottom-bar-height: 90px;
 
   --color-main: #FFFBEF;
   --color-black: #291A00;
