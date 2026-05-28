@@ -104,19 +104,19 @@ export default function OcrDetailPage() {
     fetchOcrPage();
   }, [ocrPage, roomId, ocrPageId]);
 
-  useEffect(() => {
-  const closeMemo = () => {
-    if (!createModalOpen && !addMemoModalOpen) {
-      setActiveHighlightIds([]);
-      setAnchorRect(null);
-    }
-  };
-
-  window.addEventListener("scroll", closeMemo, true);
-
-  return () => {
-    window.removeEventListener("scroll", closeMemo, true);
-  };
+    useEffect(() => {
+    const closeMemo = (e: Event) => {
+        // MemoLayer 내부 스크롤이면 무시
+        if (e.target instanceof Element && e.target.closest("[data-memo-layer]")) return;
+        if (!createModalOpen && !addMemoModalOpen) {
+        setActiveHighlightIds([]);
+        setAnchorRect(null);
+        }
+    };
+    window.addEventListener("scroll", closeMemo, true);
+    return () => {
+        window.removeEventListener("scroll", closeMemo, true);
+    };
     }, [createModalOpen, addMemoModalOpen]);
 
   const highlights = ocrPage?.highlights ?? [];
@@ -217,7 +217,7 @@ export default function OcrDetailPage() {
         }
       }}
     >
-      <div className="mb-4 flex justify-end">
+      <div className="mb-2 flex justify-end">
         {selectMode ? (
           <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
             <button
@@ -261,7 +261,7 @@ export default function OcrDetailPage() {
               window.getSelection()?.removeAllRanges();
             }}
           >
-            {canAddMemoToActiveHighlight ? "이 구절에 반응 추가" : "새 반응 추가"}
+            {canAddMemoToActiveHighlight ? "이어서 반응 추가" : "새 반응 추가"}
           </button>
         )}
       </div>
@@ -289,7 +289,7 @@ export default function OcrDetailPage() {
         />
         </div>
 
-      <MemoLayer memos={activeMemos} anchorRect={anchorRect} />
+      <MemoLayer activeHighlights={activeHighlights} anchorRect={anchorRect} />
 
       <AddMemoModal
         open={createModalOpen}

@@ -1,3 +1,5 @@
+// 하이라이트 - 겹침 처리 다시 봐야됨
+
 import type { OcrHighlight } from "@/types/ocr";
 
 interface HighlightedTextProps {
@@ -42,20 +44,23 @@ export default function HighlightedText({
           return <span key={`${start}-${end}`}>{content}</span>;
         }
 
-        const highlightIds = includedHighlights.map(
-          (highlight) => highlight.highlightId
-        );
+        const highlightIds = includedHighlights.map((h) => h.highlightId);
+        const isActive = highlightIds.some((id) => activeHighlightIds.includes(id));
+        const isOverlapping = includedHighlights.length >= 2;
 
-        const isActive = highlightIds.some((id) =>
-          activeHighlightIds.includes(id)
-        );
+        // 겹침 여부 + 활성 여부 조합으로 4가지 상태
+        const markClass = isOverlapping
+          ? isActive
+            ? "bg-orange-400/60" // 겹침 + 활성
+            : "bg-[#FFD7C1]" // 겹침 + 비활성
+          : isActive
+            ? "bg-[#FFE085]" // 단일 + 활성
+            : "bg-[#FFF2CB]"; // 단일 + 비활성
 
         return (
           <mark
             key={`${start}-${end}`}
-            className={`cursor-pointer rounded-sm px-[1px] ${
-              isActive ? "bg-yellow-400/70" : "bg-yellow-200/50"
-            }`}
+            className={`cursor-pointer rounded-sm px-[1px] ${markClass}`}
             onClick={(e) => {
               e.stopPropagation();
               onClickHighlightGroup(
