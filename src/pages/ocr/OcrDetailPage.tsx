@@ -13,7 +13,7 @@ import {
   getOcrPage,
 } from "@/api/ocr";
 
-import type { OcrHighlight, OcrMemo, OcrPage as OcrPageType } from "@/types/ocr";
+import type { OcrPage as OcrPageType } from "@/types/ocr";
 
 interface LocationState {
   ocrPage?: OcrPageType;
@@ -125,9 +125,9 @@ export default function OcrDetailPage() {
     activeHighlightIds.includes(highlight.highlightId)
     );
 
-  const activeMemos: OcrMemo[] = activeHighlights.flatMap(
-    (highlight) => highlight.memos ?? []
-    );
+  // const activeMemos: OcrMemo[] = activeHighlights.flatMap(
+  //   (highlight) => highlight.memos ?? []
+  // );
 
   const canAddMemoToActiveHighlight = activeHighlightIds.length === 1;
 
