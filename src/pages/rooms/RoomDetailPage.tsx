@@ -23,13 +23,13 @@ const RoomDetailPage = () => {
         currentPage={currentPage}
         totalPages={totalPages}
         onClose={() => setModalOpen(false)}
-        onSelectOCR={(page) => {
+        onSelectOCR={(_page) => {
             setModalOpen(false);
         }}
-        onSelectComment={(page) => {
+        onSelectComment={(_page) => {
             setModalOpen(false);
         }}
-        onSelectEmoji={(page) => {
+        onSelectEmoji={(_page) => {
             setModalOpen(false);
         }}
         />
