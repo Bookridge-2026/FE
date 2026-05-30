@@ -9,7 +9,7 @@ export const AppLayout = () => {
         <Header />
       </div>
       
-      <main className="px-4 pt-[calc(var(--header-height)+16px)] pb-[calc(var(--bottom-bar-height)+16px)]">
+      <main className="pt-[calc(var(--header-height))] pb-[calc(var(--bottom-bar-height))]">
         <Outlet />
         </main>
 

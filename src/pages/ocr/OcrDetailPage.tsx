@@ -209,7 +209,7 @@ export default function OcrDetailPage() {
 
   return (
     <div
-      className="relative min-h-full pb-[120px]"
+      className="relative p-4 min-h-full pb-[120px]"
       onClick={() => {
         if (!selectMode && !createModalOpen && !addMemoModalOpen) {
           setActiveHighlightIds([]);

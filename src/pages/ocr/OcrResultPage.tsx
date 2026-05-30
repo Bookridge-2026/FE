@@ -73,7 +73,7 @@ export default function OcrDetailPage() {
   
 
   return (
-    <div className="flex h-[calc(100dvh-var(--header-height)-var(--bottom-bar-height)-32px)] flex-col">
+    <div className="flex p-4 h-[calc(100dvh-var(--header-height)-var(--bottom-bar-height))] flex-col">
       <textarea
         ref={textareaRef}
         className="min-h-0 flex-1 resize-none rounded-lg border-[1.5px] border-field bg-transparent p-4 text-sm leading-5 text-black outline-none overflow-y-auto"
@@ -82,7 +82,7 @@ export default function OcrDetailPage() {
         placeholder="추출된 텍스트가 없습니다."
       />
 
-      <div className="mt-6 flex justify-center">
+      <div className="mt-2 flex justify-center">
         <BottomButton onClick={handleSave} disabled={!text.trim()}>
           저장
         </BottomButton>
