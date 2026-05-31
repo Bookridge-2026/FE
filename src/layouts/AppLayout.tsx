@@ -4,6 +4,7 @@ import { BottomBar } from "@/components/common/BottomBar";
 
 const HIDE_HEADER_PATHS = [
   /^\/rooms\/[^/]+/,  // /rooms/:roomId 이하 전부 헤더 가림
+  /^\/notice/, 
 ];
 
 export const AppLayout = () => {
@@ -13,10 +14,13 @@ export const AppLayout = () => {
   return (
     <div className="min-h-dvh">
       <div className="fixed top-0 left-1/2 -translate-x-1/2 z-50 w-full max-w-[390px] bg-white">
-        <Header />
+        {!hideHeader && <Header />}
       </div>
-      
-      <main className="pt-[calc(var(--header-height)+16px)] pb-[calc(var(--bottom-bar-height)+16px)]">
+            
+      <main className={hideHeader 
+        ? "pb-[calc(var(--bottom-bar-height)+16px)]" 
+        : "pt-[calc(var(--header-height)+16px)] pb-[calc(var(--bottom-bar-height)+16px)]"
+      }>
         <Outlet />
         </main>
 

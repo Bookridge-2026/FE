@@ -1,9 +1,3 @@
-/* ─────────────────────────────────────────
-   NoticePage.module.css
-   위치: src/styles/NoticePage.module.css
-   ───────────────────────────────────────── */
-
-/* Page shell */
 .noticePage {
   display: flex;
   flex-direction: column;
@@ -11,13 +5,12 @@
   background: #f9f8f6;
 }
 
-/* Header */
 .noticeHeader {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 20px 20px 12px;
-  background: #f9f8f6;
+  background: var(--color-main);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -41,14 +34,12 @@
   line-height: 1.4;
 }
 
-/* Feed */
 .noticeFeed {
   flex: 1;
   overflow-y: auto;
   padding-bottom: 24px;
 }
 
-/* Section label */
 .sectionLabel {
   font-size: 11px;
   font-weight: 500;
@@ -56,9 +47,9 @@
   padding: 14px 20px 6px;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  background-color: var(--color-main);
 }
 
-/* List */
 .notifList {
   list-style: none;
   margin: 0;
@@ -68,7 +59,6 @@
   gap: 1px;
 }
 
-/* Item */
 .notifItem {
   display: flex;
   align-items: flex-start;
@@ -80,29 +70,22 @@
   cursor: pointer;
 }
 
-.notifItem:hover {
-  background: #f4f3f0;
-}
+.notifItem:hover { background: #f4f3f0; }
 
 .notifItemUnread {
   border-left-color: #2563eb;
   background: #eff5ff;
 }
 
-.notifItemUnread:hover {
-  background: #e4edfd;
-}
+.notifItemUnread:hover { background: #e4edfd; }
 
 .notifItemFriend.notifItemUnread {
   border-left-color: #16a34a;
   background: #f0fdf4;
 }
 
-.notifItemFriend.notifItemUnread:hover {
-  background: #dcfce7;
-}
+.notifItemFriend.notifItemUnread:hover { background: #dcfce7; }
 
-/* ─── Avatar ─── */
 .avatarWrap {
   position: relative;
   flex-shrink: 0;
@@ -114,19 +97,9 @@
   width: 42px;
   height: 42px;
   border-radius: 50%;
+  border: solid 1px;
 }
 
-/* Room colors */
-.avatarCoral  { background: #f0997b; }
-.avatarBlue   { background: #85b7eb; }
-.avatarTeal   { background: #5dcaa5; }
-.avatarAmber  { background: #ef9f27; }
-.avatarPurple { background: #afa9ec; }
-.avatarPink   { background: #ed93b1; }
-.avatarGreen  { background: #97c459; }
-.avatarGray   { background: #b4b2a9; }
-
-/* ─── Badge ─── */
 .badge {
   position: absolute;
   bottom: -2px;
@@ -148,11 +121,7 @@
 .badgeOcr     { background: #7c3aed; }
 .badgeFriend  { background: #16a34a; }
 
-/* ─── Body ─── */
-.notifBody {
-  flex: 1;
-  min-width: 0;
-}
+.notifBody { flex: 1; min-width: 0; }
 
 .notifTop {
   display: flex;
@@ -162,32 +131,11 @@
   margin-bottom: 4px;
 }
 
-.notifUser {
-  font-size: 13px;
-  font-weight: 600;
-  color: #1a1917;
-  white-space: nowrap;
-}
+.notifUser  { font-size: 13px; font-weight: 600; color: #1a1917; white-space: nowrap; }
+.notifAction { font-size: 13px; color: #6b6963; }
+.notifTime  { font-size: 11px; color: #a8a49e; margin-left: auto; white-space: nowrap; }
 
-.notifAction {
-  font-size: 13px;
-  color: #6b6963;
-}
-
-.notifTime {
-  font-size: 11px;
-  color: #a8a49e;
-  margin-left: auto;
-  white-space: nowrap;
-}
-
-/* Book + page chip */
-.notifMeta {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-bottom: 5px;
-}
+.notifMeta  { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; }
 
 .notifBook {
   font-size: 11px;
@@ -203,12 +151,8 @@
   text-overflow: ellipsis;
 }
 
-.notifPage {
-  font-size: 11px;
-  color: #a8a49e;
-}
+.notifPage { font-size: 11px; color: #a8a49e; }
 
-/* Preview */
 .notifPreview {
   font-size: 12px;
   color: #6b6963;
@@ -219,12 +163,6 @@
   overflow: hidden;
 }
 
-.notifPreviewItalic {
-  font-style: italic;
-  color: #7a7671;
-}
-
-/* ─── Unread dot ─── */
 .unreadDot {
   width: 7px;
   height: 7px;
@@ -234,11 +172,8 @@
   margin-top: 5px;
 }
 
-.unreadDotGreen {
-  background: #16a34a;
-}
+.unreadDotGreen { background: #16a34a; }
 
-/* ─── Empty state ─── */
 .noticeEmpty {
   display: flex;
   flex-direction: column;
@@ -250,7 +185,4 @@
   font-size: 14px;
 }
 
-.noticeEmptyIcon {
-  font-size: 32px;
-  opacity: 0.5;
-}
+.noticeEmptyIcon { font-size: 32px; opacity: 0.5; }

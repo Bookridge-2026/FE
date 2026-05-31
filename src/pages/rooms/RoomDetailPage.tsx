@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "../../styles/RoomDetailPage.module.css";
-
+import AddReactionModal from "../../components/rooms/detail/AddReactionModal";
 
 interface User {
   id: number;
@@ -356,68 +356,6 @@ const ModalOverlay = ({ onClose, children }: { onClose: () => void; children: Re
   </div>
 );
 
-const MainModal = ({
-  onClose,
-  onSelectComment,
-  onSelectEmoji,
-  totalPages,
-}: {
-  onClose: () => void;
-  onSelectComment: (page: number) => void;
-  onSelectEmoji: (page: number) => void;
-  totalPages: number;
-}) => {
-  const [pageInput, setPageInput] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
-  useEffect(() => { inputRef.current?.focus(); }, []);
-
-  const pageNum = parseInt(pageInput, 10);
-  const isValid = !isNaN(pageNum) && pageNum >= 1 && pageNum <= totalPages;
-
-  return (
-    <ModalOverlay onClose={onClose}>
-      <div className={styles.mainInputRow}>
-        <div className={styles.mainInputBox}>
-          <input
-            ref={inputRef}
-            type="number"
-            min={1}
-            max={totalPages}
-            value={pageInput}
-            onChange={(e) => setPageInput(e.target.value)}
-            placeholder="쪽수"
-            className={styles.mainInput}
-          />
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, color: "#9E9890" }}>
-            <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
-        <span className={styles.mainLabel}>에 어떤 반응을 남길까요?</span>
-      </div>
-
-      <div className={styles.modalBtnRow}>
-        <button disabled={!isValid} className={`${styles.actionBtn} ${!isValid ? styles.actionBtnDisabled : ""}`}>
-          OCR
-        </button>
-        <button
-          disabled={!isValid}
-          onClick={() => isValid && onSelectComment(pageNum)}
-          className={`${styles.actionBtn} ${!isValid ? styles.actionBtnDisabled : ""}`}
-        >
-          코멘트
-        </button>
-        <button
-          disabled={!isValid}
-          onClick={() => isValid && onSelectEmoji(pageNum)}
-          className={`${styles.actionBtn} ${!isValid ? styles.actionBtnDisabled : ""}`}
-        >
-          이모지
-        </button>
-      </div>
-    </ModalOverlay>
-  );
-};
-
 const CommentModal = ({
   page,
   onClose,
@@ -612,19 +550,22 @@ const RoomDetailPage = () => {
 
       {/* 모달 */}
       {modalStep === "main" && (
-        <MainModal
-          onClose={handleCloseAll}
-          onSelectComment={handleSelectComment}
-          onSelectEmoji={handleSelectEmoji}
-          totalPages={room.totalPages}
-        />
-      )}
-      {modalStep === "comment" && modalPage !== null && (
-        <CommentModal page={modalPage} onClose={handleCloseAll} onConfirm={handleCommentConfirm} />
-      )}
-      {modalStep === "emoji" && modalPage !== null && (
-        <EmojiSelectModal page={modalPage} onClose={handleCloseAll} onConfirm={handleEmojiConfirm} />
-      )}
+  <AddReactionModal
+    open={true}
+    currentPage={selectedPage}
+    totalPages={room.totalPages}
+    onClose={handleCloseAll}
+    onSelectOCR={(page) => console.log("OCR:", page)}
+    onSelectComment={handleSelectComment}
+    onSelectEmoji={handleSelectEmoji}
+  />
+)}
+{modalStep === "comment" && modalPage !== null && (
+  <CommentModal page={modalPage} onClose={handleCloseAll} onConfirm={handleCommentConfirm} />
+)}
+{modalStep === "emoji" && modalPage !== null && (
+  <EmojiSelectModal page={modalPage} onClose={handleCloseAll} onConfirm={handleEmojiConfirm} />
+)}
     </div>
   );
 };
