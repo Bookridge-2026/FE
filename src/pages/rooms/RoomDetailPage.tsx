@@ -30,10 +30,15 @@ interface Comment {
   replies: Reply[];
 }
 
+interface OcrItem {
+  id: number;
+}
+
 interface PageData {
   page: number;
   reactions: PageReaction[];
   comments: Comment[];
+  ocrItems: OcrItem[]; 
 }
 
 interface RoomDetail {
@@ -65,60 +70,68 @@ const MOCK_ROOM: RoomDetail = {
     { user: { id: 4, name: "유저4", color: "#A8D95E" }, page: 200 },
   ],
   pages: [
-    {
-      page: 55,
-      reactions: [
-        { id: 1, user: { id: 1, name: "나", color: "#F9A8B8" }, emoji: "😮" },
-        { id: 2, user: { id: 2, name: "유저2", color: "#7EC8D8" }, emoji: "😨" },
-      ],
-      comments: [
-        {
-          id: 10,
-          page: 55,
-          quote: "두려움은 적이 아니라 교사다",
-          author: { id: 1, name: "나", color: "#F9A8B8" },
-          text: "이 말이 계속 머릿속에 맴돌아",
-          replies: [],
-        },
-      ],
-    },
-    {
-      page: 159,
-      reactions: [
-        { id: 3, user: { id: 4, name: "유저4", color: "#A8D95E" }, emoji: "😮" },
-        { id: 4, user: { id: 2, name: "유저2", color: "#7EC8D8" }, emoji: "😮" },
-        { id: 5, user: { id: 1, name: "나", color: "#F9A8B8" }, emoji: "😨" },
-        { id: 6, user: { id: 3, name: "유저3", color: "#C4A7E0" }, emoji: "❤️" },
-      ],
-      comments: [
-        {
-          id: 1,
-          page: 159,
-          quote: "오 캡틴 마이 캡틴",
-          author: { id: 4, name: "유저4", color: "#A8D95E" },
-          text: "이게 비극적 결말을 예고하는 복선이 될줄이야...",
-          replies: [
-            { id: 1, author: { id: 2, name: "유저2", color: "#7EC8D8" }, text: "아니 뭐임;; 스포 ㄴㄴ" },
-          ],
-        },
-      ],
-    },
-    {
-      page: 200,
-      reactions: [
-        { id: 7, user: { id: 2, name: "유저2", color: "#7EC8D8" }, emoji: "❤️" },
-      ],
-      comments: [
-        {
-          id: 2,
-          page: 200,
-          quote: "현재를 붙잡아라, 오늘을 살아라,\n너의 삶을 특별하게 만들어라.",
-          author: { id: 1, name: "나", color: "#F9A8B8" },
-          replies: [],
-        },
-      ],
-    },
-  ],
+  {
+    page: 55,
+    reactions: [
+      { id: 1, user: { id: 1, name: "나", color: "#F9A8B8" }, emoji: "😮" },
+      { id: 2, user: { id: 2, name: "유저2", color: "#7EC8D8" }, emoji: "😨" },
+    ],
+    comments: [
+      {
+        id: 10,
+        page: 55,
+        quote: "두려움은 적이 아니라 교사다",
+        author: { id: 1, name: "나", color: "#F9A8B8" },
+        text: "이 말이 계속 머릿속에 맴돌아",
+        replies: [],
+      },
+    ],
+    ocrItems: [
+      { id: 1  },
+      { id: 2 },
+    ],
+  },
+  {
+    page: 159,
+    reactions: [
+      { id: 3, user: { id: 4, name: "유저4", color: "#A8D95E" }, emoji: "😮" },
+      { id: 4, user: { id: 2, name: "유저2", color: "#7EC8D8" }, emoji: "😮" },
+      { id: 5, user: { id: 1, name: "나", color: "#F9A8B8" }, emoji: "😨" },
+      { id: 6, user: { id: 3, name: "유저3", color: "#C4A7E0" }, emoji: "❤️" },
+    ],
+    comments: [
+      {
+        id: 1,
+        page: 159,
+        quote: "오 캡틴 마이 캡틴",
+        author: { id: 4, name: "유저4", color: "#A8D95E" },
+        text: "이게 비극적 결말을 예고하는 복선이 될줄이야...",
+        replies: [
+          { id: 1, author: { id: 2, name: "유저2", color: "#7EC8D8" }, text: "아니 뭐임;; 스포 ㄴㄴ" },
+        ],
+      },
+    ],
+    ocrItems: [
+      { id: 3 },
+    ],
+  },
+  {
+    page: 200,
+    reactions: [
+      { id: 7, user: { id: 2, name: "유저2", color: "#7EC8D8" }, emoji: "❤️" },
+    ],
+    comments: [
+      {
+        id: 2,
+        page: 200,
+        quote: "현재를 붙잡아라, 오늘을 살아라,\n너의 삶을 특별하게 만들어라.",
+        author: { id: 1, name: "나", color: "#F9A8B8" },
+        replies: [],
+      },
+    ],
+    ocrItems: [],
+  },
+],
 };
 
 
@@ -439,12 +452,10 @@ const EmojiSelectModal = ({
   );
 };
 
-
 const RoomDetailPage = () => {
   const navigate = useNavigate();
   const { roomId } = useParams<{ roomId: string }>();
 
-  // TODO: useQuery로 API 연결
   const room = MOCK_ROOM;
 
   const sortedPages = useMemo(
@@ -467,13 +478,11 @@ const RoomDetailPage = () => {
   const handleSelectEmoji = (page: number) => { setModalPage(page); setModalStep("emoji"); };
 
   const handleCommentConfirm = (quote: string, comment: string) => {
-    // TODO: POST /rooms/:roomId/comments { page: modalPage, quote, comment }
     console.log("코멘트 저장:", { page: modalPage, quote, comment });
     setModalStep(null);
   };
 
   const handleEmojiConfirm = (emoji: string) => {
-    // TODO: POST /rooms/:roomId/reactions { page: modalPage, emoji }
     console.log("이모지 저장:", { page: modalPage, emoji });
     setModalStep(null);
   };
@@ -484,7 +493,6 @@ const RoomDetailPage = () => {
       onClick={() => { setOpenPopupId(null); setPagePickerOpen(false); }}
     >
       {/* 헤더 */}
-      
       <div className={styles.header} onClick={(e) => e.stopPropagation()}>
         <button className={styles.backBtn} onClick={() => navigate(-1)}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -508,66 +516,94 @@ const RoomDetailPage = () => {
       {/* 탭 */}
       <TabBar active={activeTab} onChange={setActiveTab} />
 
-      {/* 필터 행 */}
-      <div className={styles.filterRow} onClick={(e) => e.stopPropagation()}>
-        <PagePicker
-          selectedPage={selectedPage}
-          pages={sortedPages.map((p) => p.page)}
-          open={pagePickerOpen}
-          onToggle={() => setPagePickerOpen((v) => !v)}
-          onSelect={setSelectedPage}
-        />
-        {currentPageData && (
-          <PageEmojiRow
-            reactions={currentPageData.reactions}
-            openPopupId={openPopupId}
-            setOpenPopupId={setOpenPopupId}
+      {/* 필터 행 - 일반 탭일 때만 */}
+      {activeTab === "일반" && (
+        <div className={styles.filterRow} onClick={(e) => e.stopPropagation()}>
+          <PagePicker
+            selectedPage={selectedPage}
+            pages={sortedPages.map((p) => p.page)}
+            open={pagePickerOpen}
+            onToggle={() => setPagePickerOpen((v) => !v)}
+            onSelect={setSelectedPage}
           />
-        )}
-      </div>
+          {currentPageData && (
+            <PageEmojiRow
+              reactions={currentPageData.reactions}
+              openPopupId={openPopupId}
+              setOpenPopupId={setOpenPopupId}
+            />
+          )}
+        </div>
+      )}
 
-      {/* 코멘트 목록 */}
-      <div className={styles.commentList}>
-        {!currentPageData?.comments.length ? (
-          <p className={styles.emptyText}>이 페이지에 코멘트가 없어요</p>
-        ) : (
-          currentPageData.comments.map((comment) => (
-            <CommentCard key={comment.id} comment={comment} />
+      {/* 탭별 컨텐츠 */}
+      {activeTab === "OCR" ? (
+        <div className={styles.commentList}>
+          {!currentPageData?.ocrItems?.length ? (
+            <p className={styles.emptyText}>이 페이지에 OCR이 없어요</p>
+          ) : (
+            currentPageData.ocrItems.map((item, index) => (
+            <button
+              key={item.id}
+              className={styles.ocrLinkCard}
+              onClick={() => navigate(`/ocr/${item.id}`)}
+            >
+              <span className={styles.ocrLinkText}>
+                {selectedPage}p OCR - {index + 1}
+              </span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M9 18L15 12L9 6" stroke="#9e9890" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
           ))
-        )}
-      </div>
+          )}
+        </div>
+      ) : (
+        <div className={styles.commentList}>
+          {!currentPageData?.comments.length ? (
+            <p className={styles.emptyText}>이 페이지에 코멘트가 없어요</p>
+          ) : (
+            currentPageData.comments.map((comment) => (
+              <CommentCard key={comment.id} comment={comment} />
+            ))
+          )}
+        </div>
+      )}
 
-      {/* FAB */}
-      <div className={styles.fabWrapper} onClick={(e) => e.stopPropagation()}>
-        <button onClick={() => setModalStep("main")} className={styles.fabBtn}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path d="M12 5V19M5 12H19" stroke="white" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-        </button>
-      </div>
+      {/* FAB - 일반 탭일 때만 */}
+      {activeTab === "일반" && (
+        <div className={styles.fabWrapper} onClick={(e) => e.stopPropagation()}>
+          <button onClick={() => setModalStep("main")} className={styles.fabBtn}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M12 5V19M5 12H19" stroke="white" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
+      )}
 
       <div style={{ marginTop: "auto" }} />
 
       {/* 모달 */}
       {modalStep === "main" && (
-  <AddReactionModal
-    open={true}
-    currentPage={selectedPage}
-    totalPages={room.totalPages}
-    onClose={handleCloseAll}
-    onSelectOCR={(page) => console.log("OCR:", page)}
-    onSelectComment={handleSelectComment}
-    onSelectEmoji={handleSelectEmoji}
-  />
-)}
-{modalStep === "comment" && modalPage !== null && (
-  <CommentModal page={modalPage} onClose={handleCloseAll} onConfirm={handleCommentConfirm} />
-)}
-{modalStep === "emoji" && modalPage !== null && (
-  <EmojiSelectModal page={modalPage} onClose={handleCloseAll} onConfirm={handleEmojiConfirm} />
-)}
+        <AddReactionModal
+          open={true}
+          currentPage={selectedPage}
+          totalPages={room.totalPages}
+          onClose={handleCloseAll}
+          onSelectOCR={(page) => console.log("OCR:", page)}
+          onSelectComment={handleSelectComment}
+          onSelectEmoji={handleSelectEmoji}
+        />
+      )}
+      {modalStep === "comment" && modalPage !== null && (
+        <CommentModal page={modalPage} onClose={handleCloseAll} onConfirm={handleCommentConfirm} />
+      )}
+      {modalStep === "emoji" && modalPage !== null && (
+        <EmojiSelectModal page={modalPage} onClose={handleCloseAll} onConfirm={handleEmojiConfirm} />
+      )}
     </div>
   );
 };
+
 
 export default RoomDetailPage;
