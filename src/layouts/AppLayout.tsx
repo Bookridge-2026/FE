@@ -5,6 +5,7 @@ import { BottomBar } from "@/components/common/BottomBar";
 const HIDE_HEADER_PATHS = [
   /^\/rooms\/[^/]+/,  // /rooms/:roomId 이하 전부 헤더 가림
   /^\/notice/, 
+  /^\/mypage\/rooms/,
 ];
 
 export const AppLayout = () => {
