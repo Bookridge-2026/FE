@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import styles from "../../styles/RoomDetailPage.module.css";
+import styles from "../../styles/Roomdetailpage.module.css";
 import AddReactionModal from "../../components/rooms/detail/AddReactionModal";
 
 interface User {

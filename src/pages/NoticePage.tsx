@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "../../src/styles/NoticePage.module.css";
+import styles from "../../src/styles/Noticepage.module.css";
 
 const COLOR_PALETTE = [
   "#F28B82",
