@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "../../styles/RoomDetailPage.module.css";
 import AddReactionModal from "../../components/rooms/detail/AddReactionModal";
