@@ -18,14 +18,6 @@ export default function OcrCreatePage() {
 
   const page = Number(searchParams.get("page") ?? 1);
 
-  useEffect(() => {
-    return () => {
-      if (capturedImage?.previewUrl) {
-        URL.revokeObjectURL(capturedImage.previewUrl);
-      }
-    };
-  }, [capturedImage]);
-
   const handleCapture = (image: CapturedImage) => {
     if (capturedImage?.previewUrl) {
       URL.revokeObjectURL(capturedImage.previewUrl);
@@ -50,11 +42,11 @@ export default function OcrCreatePage() {
     try {
       setStep("loading");
 
-      const { ocrText } = await ocrExtract(capturedImage.file);
+      const { text } = await ocrExtract(capturedImage.file);
 
       navigate(`/rooms/${roomId}/ocr/result`, {
         state: {
-          text: ocrText,
+          text,
           page,
           imageUrl: capturedImage.previewUrl,
         },

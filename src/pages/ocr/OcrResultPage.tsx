@@ -13,7 +13,7 @@ interface LocationState {
 
 const MAX_TEXTAREA_HEIGHT = 480;
 
-export default function OcrDetailPage() {
+export default function OcrResultPage() {
   const location = useLocation();
   const state = location.state as LocationState | null;
 
@@ -55,7 +55,7 @@ export default function OcrDetailPage() {
 
       const ocrPage = await createOcrPage(Number(roomId), {
         page,
-        ocrText: text,
+        text,
       });
 
       navigate(`/rooms/${roomId}/ocr/${ocrPage.ocrPageId}`, {

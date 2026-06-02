@@ -1,3 +1,5 @@
+// types/ocrCreate.ts
+
 export type OcrStep = "camera" | "preview" | "loading";
 
 export interface CapturedImage {
@@ -6,8 +8,13 @@ export interface CapturedImage {
 }
 
 export interface OcrExtractResponse {
-  ocrText: string;
-} // ocr 호출 결과 반환 텍스트
+  text: string;
+}
+
+export interface OcrPageCreateRequest {
+  page: number;
+  text: string;
+}
 
 export interface CameraViewProps {
   onCapture: (image: CapturedImage) => void;
@@ -19,20 +26,3 @@ export interface PreviewViewProps {
   onRetake: () => void;
   onExtract: () => void;
 }
-
-export interface OcrPageCreateRequest {
-  page: number;
-  ocrText: string;
-} // OCR 페이지 생성 - 텍스트 수정 후 API 요청 데이터
-
-export interface OcrPageResponse {
-  ocrPageId: number;
-  roomId: number;
-  page: number;
-  ocrText: string;
-  createdBy: {
-    userId: number;
-    nickname: string;
-  };
-  createdAt: string;
-} // OCR 페이지 생성 - 응답

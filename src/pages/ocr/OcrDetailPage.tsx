@@ -1,6 +1,6 @@
 // OCR 페이지 - OCR 텍스트 + 하이라이트 + 메모 보여주기
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 
 import AddMemoModal from "@/components/ocr/AddMemoModal";
@@ -8,12 +8,16 @@ import HighlightedText from "@/components/ocr/HighLightedText";
 import MemoLayer from "@/components/ocr/MemoLayer";
 
 import {
+  createOcrComment,
   createOcrHighlight,
-  createOcrMemo,
+  getOcrComments,
   getOcrPage,
 } from "@/api/ocr";
 
-import type { OcrPage as OcrPageType } from "@/types/ocr";
+import type {
+  OcrHighlight,
+  OcrPage as OcrPageType,
+} from "@/types/ocr";
 
 interface LocationState {
   ocrPage?: OcrPageType;
@@ -21,8 +25,9 @@ interface LocationState {
 
 interface SelectedRange {
   selectedText: string;
-  startOffset: number;
-  endOffset: number;
+  startIndex: number;
+  endIndex: number;
+  rect: DOMRect;
 }
 
 const getSelectionRange = (
@@ -34,7 +39,6 @@ const getSelectionRange = (
   if (!selection || selection.rangeCount === 0) return null;
 
   const selectedText = selection.toString();
-
   if (!selectedText.trim()) return null;
 
   const range = selection.getRangeAt(0);
@@ -45,21 +49,22 @@ const getSelectionRange = (
   preRange.selectNodeContents(container);
   preRange.setEnd(range.startContainer, range.startOffset);
 
-  const startOffset = preRange.toString().length;
-  const endOffset = startOffset + selectedText.length;
+  const startIndex = preRange.toString().length;
+  const endIndex = startIndex + selectedText.length;
 
   if (
-    startOffset < 0 ||
-    endOffset > fullText.length ||
-    startOffset >= endOffset
+    startIndex < 0 ||
+    endIndex > fullText.length ||
+    startIndex >= endIndex
   ) {
     return null;
   }
 
   return {
     selectedText,
-    startOffset,
-    endOffset,
+    startIndex,
+    endIndex,
+    rect: range.getBoundingClientRect(),
   };
 };
 
@@ -74,6 +79,10 @@ export default function OcrDetailPage() {
     state?.ocrPage ?? null
   );
 
+  const [highlights, setHighlights] = useState<OcrHighlight[]>(
+    state?.ocrPage?.highlights ?? []
+  );
+
   const [loading, setLoading] = useState(!state?.ocrPage);
   const [selectMode, setSelectMode] = useState(false);
   const [selectedRange, setSelectedRange] = useState<SelectedRange | null>(null);
@@ -84,15 +93,36 @@ export default function OcrDetailPage() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [addMemoModalOpen, setAddMemoModalOpen] = useState(false);
 
+  const upsertHighlight = useCallback((newHighlight: OcrHighlight) => {
+    setHighlights((prev) => {
+      const exists = prev.some(
+        (highlight) => highlight.highlightId === newHighlight.highlightId
+      );
+
+      if (exists) {
+        return prev.map((highlight) =>
+          highlight.highlightId === newHighlight.highlightId
+            ? newHighlight
+            : highlight
+        );
+      }
+
+      return [...prev, newHighlight];
+    });
+  }, []);
+
   useEffect(() => {
-    if (ocrPage || !roomId || !ocrPageId) return;
+    if (!roomId || !ocrPageId) return;
 
     const fetchOcrPage = async () => {
       try {
         setLoading(true);
 
         const data = await getOcrPage(Number(roomId), Number(ocrPageId));
+        console.log("OCR 페이지 조회 응답:", data);
+
         setOcrPage(data);
+        setHighlights(data.highlights ?? []);
       } catch (error) {
         console.error(error);
         alert("OCR 페이지 조회에 실패했습니다.");
@@ -102,32 +132,73 @@ export default function OcrDetailPage() {
     };
 
     fetchOcrPage();
-  }, [ocrPage, roomId, ocrPageId]);
+  }, [roomId, ocrPageId]);
 
-    useEffect(() => {
+  // SSE 연결: 이 조회 페이지에서 연결하고, 페이지 이탈 시 close
+  useEffect(() => {
+    if (!ocrPageId) return;
+
+    const eventSource = new EventSource(
+      `/api/ocr/ocrPage/${ocrPageId}/sse`,
+      { withCredentials: true }
+    );
+
+    eventSource.addEventListener("new-highlight", (e) => {
+      const data = JSON.parse(e.data);
+
+      const newHighlight: OcrHighlight = {
+        highlightId: data.highlightId,
+        ocrPageId: Number(ocrPageId),
+        selectedText: data.selectedText,
+        startIndex: data.startIndex,
+        endIndex: data.endIndex,
+        ocrComments: [
+          {
+            ocrCommentId: data.ocrCommentId,
+            content: data.content,
+            color: data.color,
+            createdAt: data.createdAt,
+          },
+        ],
+      };
+
+      upsertHighlight(newHighlight);
+    });
+
+    eventSource.onerror = (error) => {
+      console.error("OCR SSE 연결 오류:", error);
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [ocrPageId, upsertHighlight]);
+
+  useEffect(() => {
     const closeMemo = (e: Event) => {
-        // MemoLayer 내부 스크롤이면 무시
-        if (e.target instanceof Element && e.target.closest("[data-memo-layer]")) return;
-        if (!createModalOpen && !addMemoModalOpen) {
+      if (
+        e.target instanceof Element &&
+        e.target.closest("[data-memo-layer]")
+      ) {
+        return;
+      }
+
+      if (!createModalOpen && !addMemoModalOpen) {
         setActiveHighlightIds([]);
         setAnchorRect(null);
-        }
+      }
     };
-    window.addEventListener("scroll", closeMemo, true);
-    return () => {
-        window.removeEventListener("scroll", closeMemo, true);
-    };
-    }, [createModalOpen, addMemoModalOpen]);
 
-  const highlights = ocrPage?.highlights ?? [];
+    window.addEventListener("scroll", closeMemo, true);
+
+    return () => {
+      window.removeEventListener("scroll", closeMemo, true);
+    };
+  }, [createModalOpen, addMemoModalOpen]);
 
   const activeHighlights = highlights.filter((highlight) =>
     activeHighlightIds.includes(highlight.highlightId)
-    );
-
-  // const activeMemos: OcrMemo[] = activeHighlights.flatMap(
-  //   (highlight) => highlight.memos ?? []
-  // );
+  );
 
   const canAddMemoToActiveHighlight = activeHighlightIds.length === 1;
 
@@ -135,7 +206,7 @@ export default function OcrDetailPage() {
     if (!selectMode || !textRef.current || !ocrPage) return;
 
     setTimeout(() => {
-      const range = getSelectionRange(textRef.current!, ocrPage.ocrText);
+      const range = getSelectionRange(textRef.current!, ocrPage.text);
 
       if (!range) return;
 
@@ -143,23 +214,51 @@ export default function OcrDetailPage() {
     }, 0);
   };
 
-  const handleCreateHighlight = async (memo: string) => {
-    if (!ocrPage || !selectedRange) return;
+  const handleClickHighlightGroup = async (
+    highlightIds: number[],
+    rect: DOMRect
+  ) => {
+    if (!roomId) return;
+
+    setActiveHighlightIds(highlightIds);
+    setAnchorRect(rect);
 
     try {
-      const newHighlight = await createOcrHighlight(ocrPage.ocrPageId, {
-        selectedText: selectedRange.selectedText,
-        startOffset: selectedRange.startOffset,
-        endOffset: selectedRange.endOffset,
-        memoContent: memo,
-      });
+      const results = await Promise.all(
+        highlightIds.map((highlightId) =>
+          getOcrComments(Number(roomId), highlightId)
+        )
+      );
 
-      setOcrPage({
-        ...ocrPage,
-        highlights: [...(ocrPage.highlights ?? []), newHighlight],
-        });
+      results.forEach((highlight) => {
+        upsertHighlight(highlight);
+      });
+    } catch (error) {
+      console.error(error);
+      alert("메모 조회에 실패했습니다.");
+    }
+  };
+
+  const handleCreateHighlight = async (memo: string) => {
+    if (!ocrPage || !selectedRange || !roomId) return;
+
+    try {
+      const newHighlight = await createOcrHighlight(
+        Number(roomId),
+        ocrPage.ocrPageId,
+        {
+          selectedText: selectedRange.selectedText,
+          startIndex: selectedRange.startIndex,
+          endIndex: selectedRange.endIndex,
+          content: memo,
+        }
+      );
+
+      upsertHighlight(newHighlight);
 
       setActiveHighlightIds([newHighlight.highlightId]);
+      setAnchorRect(selectedRange.rect);
+
       setCreateModalOpen(false);
       setSelectMode(false);
       setSelectedRange(null);
@@ -171,26 +270,20 @@ export default function OcrDetailPage() {
   };
 
   const handleAddMemo = async (memo: string) => {
-    if (!ocrPage || activeHighlightIds.length !== 1) return;
+    if (!roomId || activeHighlightIds.length !== 1) return;
 
     const highlightId = activeHighlightIds[0];
 
     try {
-      const newMemo = await createOcrMemo(highlightId, {
-        memoContent: memo,
-      });
+      const updatedHighlight = await createOcrComment(
+        Number(roomId),
+        highlightId,
+        {
+          content: memo,
+        }
+      );
 
-      setOcrPage({
-        ...ocrPage,
-        highlights: (ocrPage.highlights ?? []).map((highlight) =>
-            highlight.highlightId === highlightId
-            ? {
-                ...highlight,
-                memos: [...(highlight.memos ?? []), newMemo],
-                }
-            : highlight
-        ),
-        });
+      upsertHighlight(updatedHighlight);
 
       setAddMemoModalOpen(false);
     } catch (error) {
@@ -204,12 +297,14 @@ export default function OcrDetailPage() {
   }
 
   if (!ocrPage) {
-    return <div className="p-4 text-sm text-sub-black">OCR 페이지가 없습니다.</div>;
+    return (
+      <div className="p-4 text-sm text-sub-black">OCR 페이지가 없습니다.</div>
+    );
   }
 
   return (
     <div
-      className="relative p-4 min-h-full pb-[120px]"
+      className="relative min-h-full p-4 pb-[120px]"
       onClick={() => {
         if (!selectMode && !createModalOpen && !addMemoModalOpen) {
           setActiveHighlightIds([]);
@@ -272,22 +367,20 @@ export default function OcrDetailPage() {
         onMouseUp={handleSelectionEnd}
         onTouchEnd={handleSelectionEnd}
         onClick={(e) => {
-            if (selectMode) return;
-            e.stopPropagation();
-            setActiveHighlightIds([]);
-            setAnchorRect(null);
+          if (selectMode) return;
+
+          e.stopPropagation();
+          setActiveHighlightIds([]);
+          setAnchorRect(null);
         }}
-        >
+      >
         <HighlightedText
-            text={ocrPage.ocrText}
-            highlights={highlights}
-            activeHighlightIds={activeHighlightIds}
-            onClickHighlightGroup={(highlightIds, rect) => {
-            setActiveHighlightIds(highlightIds);
-            setAnchorRect(rect);
-            }}
+          text={ocrPage.text}
+          highlights={highlights}
+          activeHighlightIds={activeHighlightIds}
+          onClickHighlightGroup={handleClickHighlightGroup}
         />
-        </div>
+      </div>
 
       <MemoLayer activeHighlights={activeHighlights} anchorRect={anchorRect} />
 

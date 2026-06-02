@@ -1,136 +1,98 @@
-// 일단 mock 데이터 - api 연동 시 수정
+// api/ocr.ts
 
-import type { OcrExtractResponse, OcrPageCreateRequest, OcrPageResponse } from "@/types/ocrCreate";
+import { api } from "@/api/client";
+
 import type {
-  CreateHighlightRequest,
-  CreateMemoRequest,
+  CreateOcrCommentRequest,
+  CreateOcrHighlightRequest,
   OcrHighlight,
-  OcrMemo,
   OcrPage,
 } from "@/types/ocr";
 
-const MOCK_OCR_TEXT =
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+import type {
+  OcrExtractResponse,
+  OcrPageCreateRequest,
+} from "@/types/ocrCreate";
+
+interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
 
 export const ocrExtract = async (image: File): Promise<OcrExtractResponse> => {
-  console.log("OCR 요청 이미지:", image);
+  const formData = new FormData();
+  formData.append("image", image);
 
-  await new Promise((resolve) => setTimeout(resolve, 1500));
+  const { data } = await api.post<ApiResponse<OcrExtractResponse>>(
+    "api/ocr/extract",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
 
-  return {
-    ocrText: MOCK_OCR_TEXT,
-  };
-}; // 이미지 파일 받아서 OCR 텍스트 추출
+  return data.data;
+};
 
 export const createOcrPage = async (
   roomId: number,
   body: OcrPageCreateRequest
-): Promise<OcrPageResponse> => {
-  console.log("OCR 페이지 생성 요청:", {
-    roomId,
-    body,
-  });
+): Promise<OcrPage> => {
+  const { data } = await api.post<ApiResponse<OcrPage>>(
+    `api/ocr/rooms/${roomId}/ocrSave`,
+    body
+  );
 
-  await new Promise((resolve) => setTimeout(resolve, 800));
-
-  return {
-    ocrPageId: 1,
-    roomId,
-    page: body.page,
-    ocrText: body.ocrText,
-    createdBy: {
-      userId: 1,
-      nickname: "가윤",
-    },
-    createdAt: "2026-05-27T12:00:00",
-  };
-}; // OCR 페이지 생성
-
-const mockPage: OcrPage = {
-  ocrPageId: 1,
-  roomId: 3,
-  page: 159,
-  ocrText:
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  createdBy: {
-    userId: 1,
-    nickname: "가윤",
-  },
-  highlights: [
-    {
-      highlightId: 10,
-      selectedText: "하이라이트 테스트용 문장",
-      startOffset: 20,
-      endOffset: 34,
-      memos: [
-        {
-          memoId: 20,
-          highlightId: 10,
-          content: "이 문장 좋다",
-          color: "#F6D36B",
-          createdAt: "2026-05-27T12:10:00",
-        },
-      ],
-    },
-  ],
+  return data.data;
 };
 
 export const getOcrPage = async (
   roomId: number,
   ocrPageId: number
 ): Promise<OcrPage> => {
-  console.log("OCR 페이지 조회:", { roomId, ocrPageId });
+  const { data } = await api.get<ApiResponse<OcrPage>>(
+    `api/ocr/rooms/${roomId}/ocrPage/${ocrPageId}`
+  );
 
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  return data.data;
+};
 
-  return {
-    ...mockPage,
-    roomId,
-    ocrPageId,
-  };
-}; // 저장된 OCR 페이지 조회
+export const getOcrComments = async (
+  roomId: number,
+  highlightId: number
+): Promise<OcrHighlight> => {
+  const { data } = await api.get<ApiResponse<OcrHighlight>>(
+    `api/ocr/rooms/${roomId}/highlight/${highlightId}/OcrComments`
+  );
+
+  return data.data;
+};
 
 export const createOcrHighlight = async (
+  roomId: number,
   ocrPageId: number,
-  body: CreateHighlightRequest
+  body: CreateOcrHighlightRequest
 ): Promise<OcrHighlight> => {
-  console.log("하이라이트 + 메모 생성:", { ocrPageId, body });
+  const { data } = await api.post<ApiResponse<OcrHighlight>>(
+    `api/ocr/rooms/${roomId}/ocrPage/${ocrPageId}/createOcrComment`,
+    body
+  );
 
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  return data.data;
+};
 
-  const highlightId = Date.now();
-  const memoId = highlightId + 1;
-
-  return {
-    highlightId,
-    selectedText: body.selectedText,
-    startOffset: body.startOffset,
-    endOffset: body.endOffset,
-    memos: [
-      {
-        memoId,
-        highlightId,
-        content: body.memoContent,
-        color: "#F6D36B",
-        createdAt: new Date().toISOString(),
-      },
-    ],
-  };
-}; // 새로운 하이라이트 + 메모 생성 동시에
-
-export const createOcrMemo = async (
+export const createOcrComment = async (
+  roomId: number,
   highlightId: number,
-  body: CreateMemoRequest
-): Promise<OcrMemo> => {
-  console.log("기존 하이라이트에 메모 추가:", { highlightId, body });
+  body: CreateOcrCommentRequest
+): Promise<OcrHighlight> => {
+  const { data } = await api.post<ApiResponse<OcrHighlight>>(
+    `api/ocr/rooms/${roomId}/highlight/${highlightId}/createOcrComment`,
+    body
+  );
 
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  return {
-    memoId: Date.now(),
-    highlightId,
-    content: body.memoContent,
-    color: "#A7D8FF",
-    createdAt: new Date().toISOString(),
-  };
-}; // 이미 존재하는 하이라이트에 메모를 추가
+  return data.data;
+};

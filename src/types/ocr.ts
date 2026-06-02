@@ -1,11 +1,5 @@
-export interface UserSummary {
-  userId: number;
-  nickname: string;
-}
-
-export interface OcrMemo {
-  memoId: number;
-  highlightId: number;
+export interface OcrComment {
+  ocrCommentId: number;
   content: string;
   color: string;
   createdAt: string;
@@ -13,28 +7,29 @@ export interface OcrMemo {
 
 export interface OcrHighlight {
   highlightId: number;
+  ocrPageId: number;
   selectedText: string;
-  startOffset: number;
-  endOffset: number;
-  memos: OcrMemo[];
+  startIndex: number;
+  endIndex: number;
+  ocrComments: OcrComment[];
 }
 
 export interface OcrPage {
   ocrPageId: number;
   roomId: number;
   page: number;
-  ocrText: string;
-  createdBy: UserSummary;
-  highlights: OcrHighlight[];
+  text: string;
+  createdAt: string;
+  highlights?: OcrHighlight[];
 }
 
-export interface CreateHighlightRequest {
+export interface CreateOcrHighlightRequest {
   selectedText: string;
-  startOffset: number;
-  endOffset: number;
-  memoContent: string;
+  startIndex: number;
+  endIndex: number;
+  content: string;
 }
 
-export interface CreateMemoRequest {
-  memoContent: string;
+export interface CreateOcrCommentRequest {
+  content: string;
 }
