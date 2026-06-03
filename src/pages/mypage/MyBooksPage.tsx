@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import backButtonIcon from "@/assets/common/back-button.svg";
 
 const books = [
   { title: '배민다움', publisher: '북스톤', date: '2024.03.01' },
@@ -12,15 +13,24 @@ const MyBooksPage = () => {
 
   return (
     <div className="flex flex-col min-h-[calc(100dvh-var(--bottom-bar-height))] bg-[#FFFFFF]">
-      {/* 뒤로가기 + 제목 */}
-      <div className="flex items-center px-4 py-5 relative bg-[#FFFBEF] ">
-        <button className="absolute left-4 text-xl text-[#3B2E1E]" onClick={() => navigate(-1)}>
-          ‹
-        </button>
-        <p className="w-full text-center font-semibold text-[#3B2E1E]">
-          내 책 모아보기
-        </p>
-      </div>
+        <header className="relative flex h-[80px] items-center bg-main px-4 box-border">
+            <button
+                type="button"
+                onClick={() => navigate("/mypage")}
+                aria-label="이전으로 가기"
+                className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center"
+            >
+                <img
+                src={backButtonIcon}
+                alt=""
+                className="block h-[24px] w-[24px]"
+                />
+            </button>
+
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-black">
+                내 책 모아보기
+            </div>
+        </header>
 
       {/* 완주 횟수 */}
       <div className="flex flex-col items-center mt-16 gap-8">

@@ -7,8 +7,7 @@ const HIDE_HEADER_PATHS = [
   /^\/rooms\/\d+(\/.*)?$/,      // /rooms/:roomId 이하 전부 헤더 가림
   /^\/rooms\/create/,
   /^\/notice/, 
-  /^\/mypage\/rooms/,
-  /^\/mypage\/books/,
+  /^\/mypage\/.+$/,
 ];
 
 export const AppLayout = () => {
