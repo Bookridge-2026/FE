@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ConfirmModal } from "@/components/common/ConfirmModal";
+import backButtonIcon from "@/assets/common/back-button.svg";
 
 type RoomStatus = "waiting" | "inProgress" | "ended";
 
@@ -176,18 +177,24 @@ export default function MyRoomsPage() {
 
   return (
     <div className="flex flex-col min-h-dvh bg-white">
-      {/* 헤더 */}
-      <div className="flex items-center px-4 pt-9 pb-6 gap-2 bg-[#FFFBEF]">
-        <button className="flex items-center pl-4" onClick={() => navigate("/mypage")}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M15 19l-7-7 7-7" stroke="#291A00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-        <span className="flex-1 text-center text-base font-medium text-[#0F0F0F]">
-          내 방 돌려보기
-        </span>
-        <div className="w-6" />
-      </div>
+        <header className="relative flex h-[80px] items-center bg-main px-4 box-border">
+            <button
+                type="button"
+                onClick={() => navigate("/mypage")}
+                aria-label="이전으로 가기"
+                className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center"
+            >
+                <img
+                src={backButtonIcon}
+                alt=""
+                className="block h-[24px] w-[24px]"
+                />
+            </button>
+
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-black">
+                내 방 둘러보기
+            </div>
+        </header>
 
       {/* 탭 바 */}
       <div className="flex px-4 py-2">

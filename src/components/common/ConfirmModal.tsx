@@ -19,8 +19,8 @@ export const ConfirmModal = ({
 
   return (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-    <div className="w-[300px] rounded-2xl bg-white px-6 py-8 shadow-xl">
-        <div className="flex flex-col items-center gap-7 mt-2">
+    <div className="w-[280px] rounded-2xl bg-white px-4 py-6 shadow-xl">
+        <div className="flex flex-col items-center gap-5 mt-2">
             <p className="text-center text-base font-semibold text-black whitespace-pre-line">
             {message}
             </p>

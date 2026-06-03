@@ -199,7 +199,7 @@ const RoomCreatePage = () => {
           />
         </button>
 
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-medium text-black">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-black">
           방 생성
         </div>
       </header>
