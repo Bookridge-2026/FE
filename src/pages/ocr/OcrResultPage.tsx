@@ -5,6 +5,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { BottomButton } from "@/components/common/BottomButton";
 import { createOcrPage } from "@/api/ocr";
+import backButtonIcon from "@/assets/common/back-button.svg";
 
 interface LocationState {
   text: string;
@@ -13,7 +14,7 @@ interface LocationState {
 
 const MAX_TEXTAREA_HEIGHT = 480;
 
-export default function OcrDetailPage() {
+export default function OcrResultPage() {
   const location = useLocation();
   const state = location.state as LocationState | null;
 
@@ -55,7 +56,7 @@ export default function OcrDetailPage() {
 
       const ocrPage = await createOcrPage(Number(roomId), {
         page,
-        ocrText: text,
+        text,
       });
 
       navigate(`/rooms/${roomId}/ocr/${ocrPage.ocrPageId}`, {
@@ -70,23 +71,39 @@ export default function OcrDetailPage() {
   };
 
   if (!state?.text) return null;
-  
 
   return (
-    <div className="flex h-[calc(100dvh-var(--header-height)-var(--bottom-bar-height)-32px)] flex-col">
-      <textarea
-        ref={textareaRef}
-        className="min-h-0 flex-1 resize-none rounded-lg border-[1.5px] border-field bg-transparent p-4 text-sm leading-5 text-black outline-none overflow-y-auto"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="추출된 텍스트가 없습니다."
-      />
+    <div className="flex h-[calc(100dvh-var(--bottom-bar-height))] flex-col">
+      <header className="relative flex h-[80px] items-center bg-main px-4 box-border">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          aria-label="이전으로 가기"
+          className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center"
+        >
+          <img src={backButtonIcon} alt="" className="block h-[24px] w-[24px]" />
+        </button>
 
-      <div className="mt-6 flex justify-center">
-        <BottomButton onClick={handleSave} disabled={!text.trim()}>
-          저장
-        </BottomButton>
-      </div>
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-medium text-black">
+          OCR
+        </div>
+      </header>
+
+      <main className="flex h-[calc(100dvh-80px-var(--bottom-bar-height))] flex-col p-4">
+        <textarea
+          ref={textareaRef}
+          className="min-h-0 flex-1 resize-none rounded-lg border-[1.5px] border-field bg-transparent p-4 text-sm leading-5 text-black outline-none overflow-y-auto"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="추출된 텍스트가 없습니다."
+        />
+
+        <div className="mt-2 flex justify-center">
+          <BottomButton onClick={handleSave} disabled={!text.trim()}>
+            저장
+          </BottomButton>
+        </div>
+      </main>
     </div>
   );
 }

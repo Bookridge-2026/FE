@@ -2,8 +2,8 @@ import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createRoom, searchBooks, type BookSummary } from "@/api/rooms";
 import { ConfirmModal } from "@/components/common/ConfirmModal";
-import { Header } from "@/components/common/Header";
 import { BottomButton } from "@/components/common/BottomButton";
+import backButtonIcon from "@/assets/common/back-button.svg";
 
 // 셀렉트박스
 function SelectField({
@@ -185,30 +185,26 @@ const RoomCreatePage = () => {
 
   return (
     <div>
-      <Header />
-      <div className="px-4 py-4 flex flex-col">
-        {/* 페이지 타이틀 */}
-        <div className="flex items-center mb-6">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="w-8 h-8 flex items-center justify-center -ml-1 mr-2"
-          >
-            <svg width="10" height="18" viewBox="0 0 10 18" fill="none">
-              <path
-                d="M9 1L1 9L9 17"
-                stroke="#291A00"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-          <p className="flex-1 text-center text-base font-semibold text-black mr-8">
-            방 생성
-          </p>
-        </div>
+      <header className="relative flex h-[80px] items-center bg-main px-4 box-border">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          aria-label="이전으로 가기"
+          className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center"
+        >
+          <img
+            src={backButtonIcon}
+            alt=""
+            className="block h-[24px] w-[24px]"
+          />
+        </button>
 
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-medium text-black">
+          방 생성
+        </div>
+      </header>
+
+      <div className="px-4 py-4 flex flex-col">
         {/* 책 선택 */}
         <div className="flex flex-col gap-2 mb-5">
           <p className="text-[13px] font-medium text-black">· 책 선택</p>

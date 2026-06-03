@@ -1,5 +1,3 @@
-// 하이라이트 - 겹침 처리 다시 봐야됨
-
 import type { OcrHighlight } from "@/types/ocr";
 
 interface HighlightedTextProps {
@@ -21,8 +19,8 @@ export default function HighlightedText({
   points.add(text.length);
 
   highlights.forEach((highlight) => {
-    points.add(highlight.startOffset);
-    points.add(highlight.endOffset);
+    points.add(highlight.startIndex);
+    points.add(highlight.endIndex);
   });
 
   const sortedPoints = [...points].sort((a, b) => a - b);
@@ -37,7 +35,7 @@ export default function HighlightedText({
 
         const includedHighlights = highlights.filter(
           (highlight) =>
-            highlight.startOffset < end && highlight.endOffset > start
+            highlight.startIndex < end && highlight.endIndex > start
         );
 
         if (includedHighlights.length === 0) {
@@ -45,17 +43,18 @@ export default function HighlightedText({
         }
 
         const highlightIds = includedHighlights.map((h) => h.highlightId);
-        const isActive = highlightIds.some((id) => activeHighlightIds.includes(id));
+        const isActive = highlightIds.some((id) =>
+          activeHighlightIds.includes(id)
+        );
         const isOverlapping = includedHighlights.length >= 2;
 
-        // 겹침 여부 + 활성 여부 조합으로 4가지 상태
         const markClass = isOverlapping
           ? isActive
-            ? "bg-orange-400/60" // 겹침 + 활성
-            : "bg-[#FFD7C1]" // 겹침 + 비활성
+            ? "bg-orange-400/60"
+            : "bg-[#FFD7C1]"
           : isActive
-            ? "bg-[#FFE085]" // 단일 + 활성
-            : "bg-[#FFF2CB]"; // 단일 + 비활성
+            ? "bg-[#FFE085]"
+            : "bg-[#FFF2CB]";
 
         return (
           <mark
@@ -76,3 +75,4 @@ export default function HighlightedText({
     </p>
   );
 }
+

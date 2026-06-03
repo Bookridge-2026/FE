@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import CameraView from "@/components/ocr/CameraView";
@@ -17,14 +17,6 @@ export default function OcrCreatePage() {
   const [searchParams] = useSearchParams();
 
   const page = Number(searchParams.get("page") ?? 1);
-
-  useEffect(() => {
-    return () => {
-      if (capturedImage?.previewUrl) {
-        URL.revokeObjectURL(capturedImage.previewUrl);
-      }
-    };
-  }, [capturedImage]);
 
   const handleCapture = (image: CapturedImage) => {
     if (capturedImage?.previewUrl) {
@@ -50,11 +42,11 @@ export default function OcrCreatePage() {
     try {
       setStep("loading");
 
-      const { ocrText } = await ocrExtract(capturedImage.file);
+      const { text } = await ocrExtract(capturedImage.file);
 
       navigate(`/rooms/${roomId}/ocr/result`, {
         state: {
-          text: ocrText,
+          text,
           page,
           imageUrl: capturedImage.previewUrl,
         },

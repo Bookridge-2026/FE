@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "../../styles/Roomdetailpage.module.css";
 import AddReactionModal from "../../components/rooms/detail/AddReactionModal";
+import plusIcon from "@/assets/common/plus-icon.svg";
 
 interface User {
   id: number;
@@ -572,13 +573,13 @@ const RoomDetailPage = () => {
 
       {/* FAB - 일반 탭일 때만 */}
       {activeTab === "일반" && (
-        <div className={styles.fabWrapper} onClick={(e) => e.stopPropagation()}>
-          <button onClick={() => setModalStep("main")} className={styles.fabBtn}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M12 5V19M5 12H19" stroke="white" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </button>
-        </div>
+        <button
+          onClick={() => setModalStep("main")}
+          className="fixed left-1/2 bottom-[calc(var(--bottom-bar-height)+20px)] z-40 -translate-x-1/2 translate-x-[129px] rounded-full bg-black flex items-center justify-center shadow-lg w-12 h-12"
+          aria-label="추가"
+        >
+          <img src={plusIcon} alt="추가" className="w-[50px] h-[50px]" />
+        </button>
       )}
 
       <div style={{ marginTop: "auto" }} />
