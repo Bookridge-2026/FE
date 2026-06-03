@@ -1,11 +1,13 @@
 // OCR 페이지 - OCR 텍스트 + 하이라이트 + 메모 보여주기
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { EventSourcePolyfill } from "event-source-polyfill";
 
 import AddMemoModal from "@/components/ocr/AddMemoModal";
 import HighlightedText from "@/components/ocr/HighLightedText";
 import MemoLayer from "@/components/ocr/MemoLayer";
+import backButtonIcon from "@/assets/common/back-button.svg";
 
 import {
   createOcrComment,
@@ -71,6 +73,7 @@ const getSelectionRange = (
 export default function OcrDetailPage() {
   const { roomId, ocrPageId } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const state = location.state as LocationState | null;
 
   const textRef = useRef<HTMLDivElement>(null);
@@ -126,6 +129,7 @@ export default function OcrDetailPage() {
       } catch (error) {
         console.error(error);
         alert("OCR 페이지 조회에 실패했습니다.");
+        navigate(-1);
       } finally {
         setLoading(false);
       }
@@ -135,44 +139,63 @@ export default function OcrDetailPage() {
   }, [roomId, ocrPageId]);
 
   // SSE 연결: 이 조회 페이지에서 연결하고, 페이지 이탈 시 close
+  // 백엔드 keep-alive/broadcast 확인 필요
   useEffect(() => {
-    if (!ocrPageId) return;
+  if (!roomId || !ocrPageId) return;
 
-    const eventSource = new EventSource(
-      `/api/ocr/ocrPage/${ocrPageId}/sse`,
-      { withCredentials: true }
-    );
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "";
+  const token = localStorage.getItem("accessToken");
 
-    eventSource.addEventListener("new-highlight", (e) => {
-      const data = JSON.parse(e.data);
+  const eventSource = new EventSourcePolyfill(
+    `${apiBaseUrl}/api/ocr/rooms/${roomId}/ocrPage/${ocrPageId}/sse`,
+    {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+    }
+  );
 
-      const newHighlight: OcrHighlight = {
-        highlightId: data.highlightId,
-        ocrPageId: Number(ocrPageId),
-        selectedText: data.selectedText,
-        startIndex: data.startIndex,
-        endIndex: data.endIndex,
-        ocrComments: [
-          {
-            ocrCommentId: data.ocrCommentId,
-            content: data.content,
-            color: data.color,
-            createdAt: data.createdAt,
-          },
-        ],
-      };
+  eventSource.onopen = () => {
+    console.log("SSE 연결 성공");
+  };
 
-      upsertHighlight(newHighlight);
-    });
+  eventSource.addEventListener("new-highlight", (e: any) => {
+    console.log("SSE 수신:", e.data);
 
-    eventSource.onerror = (error) => {
-      console.error("OCR SSE 연결 오류:", error);
+    const data = JSON.parse(e.data);
+
+    const newHighlight: OcrHighlight = {
+      highlightId: data.highlightId,
+      ocrPageId: data.ocrPageId ?? Number(ocrPageId),
+      selectedText: data.selectedText,
+      startIndex: data.startIndex,
+      endIndex: data.endIndex,
+
+      // 백엔드 응답 구조 2가지 모두 대응
+      ocrComments: data.ocrComments ?? [
+        {
+          ocrCommentId: data.ocrCommentId,
+          content: data.content,
+          color: data.color,
+          createdAt: data.createdAt,
+        },
+      ],
     };
 
-    return () => {
-      eventSource.close();
-    };
-  }, [ocrPageId, upsertHighlight]);
+    upsertHighlight(newHighlight);
+  });
+
+  eventSource.onerror = (error) => {
+    console.error("SSE 에러:", error);
+    // 여기서 close 하지 않기
+    // SSE는 에러 시 자동 재연결 시도함
+  };
+
+  return () => {
+    console.log("SSE 연결 종료");
+    eventSource.close();
+  };
+}, [roomId, ocrPageId, upsertHighlight]);
 
   useEffect(() => {
     const closeMemo = (e: Event) => {
@@ -303,6 +326,26 @@ export default function OcrDetailPage() {
   }
 
   return (
+  <>
+    <header className="relative flex h-[80px] items-center bg-main px-4 box-border">
+      <button
+        type="button"
+        onClick={() => navigate(`/rooms/${roomId}`)}
+        aria-label="이전으로 가기"
+        className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center"
+      >
+        <img
+          src={backButtonIcon}
+          alt=""
+          className="block h-[24px] w-[24px]"
+        />
+      </button>
+
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-medium text-black">
+        OCR
+      </div>
+    </header>
+
     <div
       className="relative min-h-full p-4 pb-[120px]"
       onClick={() => {
@@ -382,7 +425,10 @@ export default function OcrDetailPage() {
         />
       </div>
 
-      <MemoLayer activeHighlights={activeHighlights} anchorRect={anchorRect} />
+      <MemoLayer
+        activeHighlights={activeHighlights}
+        anchorRect={anchorRect}
+      />
 
       <AddMemoModal
         open={createModalOpen}
@@ -398,5 +444,6 @@ export default function OcrDetailPage() {
         onSave={handleAddMemo}
       />
     </div>
-  );
+  </>
+);
 }

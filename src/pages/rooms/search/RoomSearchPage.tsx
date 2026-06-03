@@ -173,7 +173,7 @@ const RoomSearchPage = () => {
   };
 
   return (
-    <div className="relative pb-4">
+    <div className="p-4 relative">
       {/* 검색바 */}
       <div className="flex items-center gap-2 bg-field rounded-2xl px-4 h-12 mb-5">
         <input

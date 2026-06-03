@@ -1,5 +1,3 @@
-// api/ocr.ts
-
 import { api } from "@/api/client";
 
 import type {
@@ -71,6 +69,7 @@ export const getOcrComments = async (
   return data.data;
 };
 
+// 새로운 OCR 코멘트 생성
 export const createOcrHighlight = async (
   roomId: number,
   ocrPageId: number,
@@ -84,6 +83,7 @@ export const createOcrHighlight = async (
   return data.data;
 };
 
+// 기존 하이라이트에 OCR 코멘트 추가
 export const createOcrComment = async (
   roomId: number,
   highlightId: number,

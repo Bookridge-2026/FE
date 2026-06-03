@@ -184,7 +184,7 @@ const RoomCreatePage = () => {
   const showDropdown = bookSearched && bookResults.length > 0 && !selectedBook;
 
   return (
-    <div className="min-h-[calc(100dvh-var(--header-height)-var(--bottom-bar-height))] flex flex-col">
+    <div className="p-4 min-h-[calc(100dvh-var(--header-height)-var(--bottom-bar-height))] flex flex-col">
       {/* 페이지 타이틀 */}
       <div className="flex items-center mb-6">
         <button

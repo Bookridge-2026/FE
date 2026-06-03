@@ -1,3 +1,5 @@
+// 로그인 연동 전까지 axios 인스턴스 통합하여 사용하면 됨
+
 import axios from "axios";
 
 export const api = axios.create({

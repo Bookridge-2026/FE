@@ -1,5 +1,3 @@
-// types/ocrCreate.ts
-
 export type OcrStep = "camera" | "preview" | "loading";
 
 export interface CapturedImage {
