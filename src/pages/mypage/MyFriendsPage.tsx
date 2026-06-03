@@ -163,7 +163,7 @@ const MyFriendsPage = () => {
     
     <div className="min-h-full p-4 pb-[100px]">
       <section>
-        <h2 className="mb-4 mt-5 text-lg font-semibold text-black">
+        <h2 className="mb-4 mt-3 text-lg font-semibold text-black">
           · 친구 요청
         </h2>
 
