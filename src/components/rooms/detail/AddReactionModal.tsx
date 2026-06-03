@@ -108,7 +108,12 @@ export default function AddReactionModal({
 
           <button
             type="button"
-            onClick={() => onSelectComment(selectedPage)}
+            onClick={() => {
+              handleChangePage();
+              const page = Number(pageInput);
+              if (!Number.isInteger(page) || page < 1 || page > totalPages) return;
+              onSelectComment(page);
+            }}
             className="h-[40px] flex-1 rounded-[10px] bg-black text-base font-normal text-white"
           >
             코멘트
@@ -116,7 +121,12 @@ export default function AddReactionModal({
 
           <button
             type="button"
-            onClick={() => onSelectEmoji(selectedPage)}
+            onClick={() => {
+              handleChangePage();
+              const page = Number(pageInput);
+              if (!Number.isInteger(page) || page < 1 || page > totalPages) return;
+              onSelectEmoji(page);
+            }}
             className="h-[40px] flex-1 rounded-[10px] bg-black text-base font-normal text-white"
           >
             이모지
