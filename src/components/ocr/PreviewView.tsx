@@ -11,7 +11,7 @@ export default function PreviewView({
         <button
           type="button"
           onClick={onRetake}
-          className="rounded-[10px] px-4 py-2 text-sm font-normal text-black bg-main"
+          className="rounded-[10px] px-4 py-2 text-sm font-normal text-primary bg-main"
         >
           다시 찍기
         </button>
@@ -19,7 +19,7 @@ export default function PreviewView({
         <button
           type="button"
           onClick={onExtract}
-          className="rounded-[10px] bg-black px-4 py-2 text-sm font-normal text-main"
+          className="rounded-[10px] bg-primary px-4 py-2 text-sm font-normal text-main"
         >
           텍스트 추출하기
         </button>

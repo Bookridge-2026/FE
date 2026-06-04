@@ -101,7 +101,7 @@ const UserProfilePage = () => {
           <img src={backButtonIcon} alt="" className="h-[24px] w-[24px]" />
         </button>
 
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-black">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-primary">
           프로필
         </div>
       </header>
@@ -117,7 +117,7 @@ const UserProfilePage = () => {
             className="h-24 w-24 rounded-full border-1 border-field object-cover"
           />
 
-          <p className="mt-3 text-lg font-semibold text-black">
+          <p className="mt-3 text-lg font-semibold text-primary">
             {profile.nickname}
           </p>
 

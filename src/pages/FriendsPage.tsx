@@ -125,7 +125,7 @@ const FriendsPage = () => {
 
   return (
     <div className="px-4 py-2">
-      <h1 className="mb-2 text-base font-normal text-black">친구 추가</h1>
+      <h1 className="mb-2 text-base font-normal text-primary">친구 추가</h1>
 
       <div className="flex gap-2">
         <input
@@ -137,16 +137,16 @@ const FriendsPage = () => {
             }
           }}
           placeholder="유저코드를 입력하세요"
-          className="h-11 flex-1 rounded-xl border border-field bg-white px-4 text-sm text-black outline-none placeholder:text-sub-black"
+          className="h-10 flex-1 rounded-xl border border-field bg-white px-4 text-sm text-primary outline-none placeholder:text-sub-black"
         />
 
         <button
           type="button"
           disabled={loading}
           onClick={handleSearch}
-          className="h-11 rounded-xl bg-black px-4 text-sm font-medium text-white disabled:opacity-50"
+          className="h-10 rounded-xl bg-primary px-3 text-sm font-normal text-white disabled:opacity-50"
         >
-          {loading ? "검색 중" : "추가"}
+          추가
         </button>
       </div>
 

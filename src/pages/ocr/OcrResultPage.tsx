@@ -84,7 +84,7 @@ export default function OcrResultPage() {
           <img src={backButtonIcon} alt="" className="block h-[24px] w-[24px]" />
         </button>
 
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-black">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-primary">
           OCR
         </div>
       </header>
@@ -92,7 +92,7 @@ export default function OcrResultPage() {
       <main className="flex h-[calc(100dvh-80px-var(--bottom-bar-height))] flex-col p-4 pt-[96px]">
         <textarea
           ref={textareaRef}
-          className="min-h-0 flex-1 resize-none rounded-lg border-[1.5px] border-field bg-transparent p-4 text-sm leading-5 text-black outline-none overflow-y-auto"
+          className="min-h-0 flex-1 resize-none rounded-lg border-[1.5px] border-field bg-transparent p-4 text-sm leading-5 text-primary outline-none overflow-y-auto"
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="추출된 텍스트가 없습니다."

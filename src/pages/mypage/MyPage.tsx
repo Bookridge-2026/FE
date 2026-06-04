@@ -36,6 +36,12 @@ const MyPage = () => {
   if (loading) return <p>로딩 중...</p>;
   if (error) return <p>에러: {error}</p>;
 
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    navigate("/", { replace: true });
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-[#FFFFFF]">
 
@@ -76,7 +82,10 @@ const MyPage = () => {
 
       {/* 로그아웃 / 회원탈퇴 */}
       <div className="flex justify-center gap-6 mt-8">
-        <button className="text-sm text-gray-400 underline hover:text-gray-600">
+        <button
+          className="text-sm text-gray-400 underline hover:text-gray-600"
+          onClick={handleLogout}
+        >
           로그아웃
         </button>
         <button className="text-sm text-gray-400 underline hover:text-gray-600">

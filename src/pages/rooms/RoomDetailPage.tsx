@@ -607,7 +607,7 @@ const RoomDetailPage = () => {
       {activeTab === "일반" && (
         <button
           onClick={() => setModalStep("main")}
-          className="fixed left-1/2 bottom-[calc(var(--bottom-bar-height)+20px)] z-40 -translate-x-1/2 translate-x-[129px] rounded-full bg-black flex items-center justify-center shadow-lg w-12 h-12"
+          className="fixed left-1/2 bottom-[calc(var(--bottom-bar-height)+20px)] z-40 -translate-x-1/2 translate-x-[129px] rounded-full bg-primary flex items-center justify-center shadow-lg w-12 h-12"
           aria-label="추가"
         >
           <img src={plusIcon} alt="추가" className="w-[50px] h-[50px]" />

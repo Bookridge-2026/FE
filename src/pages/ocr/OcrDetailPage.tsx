@@ -341,7 +341,7 @@ export default function OcrDetailPage() {
         />
       </button>
 
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-black">
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-primary">
         OCR
       </div>
     </header>
@@ -360,7 +360,7 @@ export default function OcrDetailPage() {
           <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
             <button
               type="button"
-              className="rounded-lg border-[2px] border-field bg-main px-2 py-1 text-[13px] text-black"
+              className="rounded-lg border-[2px] border-field bg-main px-2 py-1 text-[13px] text-primary"
               onClick={() => {
                 setSelectMode(false);
                 setSelectedRange(null);
@@ -372,7 +372,7 @@ export default function OcrDetailPage() {
 
             <button
               type="button"
-              className="rounded-lg bg-black px-2 py-1 text-[13px] text-white disabled:bg-sub-black"
+              className="rounded-lg bg-primary px-2 py-1 text-[13px] text-white disabled:bg-sub-black"
               disabled={!selectedRange}
               onClick={() => setCreateModalOpen(true)}
             >
@@ -382,7 +382,7 @@ export default function OcrDetailPage() {
         ) : (
           <button
             type="button"
-            className="rounded-lg border-[2px] border-field bg-main px-2 py-1 text-[13px] text-black disabled:opacity-40"
+            className="rounded-lg border-[2px] border-field bg-main px-2 py-1 text-[13px] text-primary disabled:opacity-40"
             disabled={activeHighlightIds.length > 1}
             onClick={(e) => {
               e.stopPropagation();
