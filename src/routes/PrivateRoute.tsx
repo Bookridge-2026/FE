@@ -1,9 +1,21 @@
-// 후에 기능 추가 - > 로그인 여부 체크, 권한 체크
-
-import { Outlet, Navigate } from "react-router-dom";
+import { Outlet, Navigate, useLocation } from "react-router-dom";
 
 export const PrivateRoute = () => {
-  const token = localStorage.getItem("accessToken");
-  if (!token) return <Navigate to="/" replace />;
+  const location = useLocation();
+
+  const accessToken = localStorage.getItem("accessToken");
+  const refreshToken = localStorage.getItem("refreshToken");
+
+  const searchParams = new URLSearchParams(location.search);
+  const queryAccessToken = searchParams.get("accessToken");
+  const queryRefreshToken = searchParams.get("refreshToken");
+
+  const hasToken =
+    accessToken ||
+    refreshToken ||
+    (queryAccessToken && queryRefreshToken);
+
+  if (!hasToken) return <Navigate to="/" replace />;
+
   return <Outlet />;
 };

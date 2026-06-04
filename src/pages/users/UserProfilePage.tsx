@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import backButtonIcon from "@/assets/common/back-button.svg";
+import defaultProfileImage from "@/assets/default-profile.jpg";
 import { getUserProfile } from "@/api/friend";
 import { sendFriendRequest } from "@/api/friend";
 import type { UserProfile } from "@/types/friend.ts";
@@ -108,9 +109,9 @@ const UserProfilePage = () => {
       <main className="flex flex-1 flex-col">
         <section className="mt-12 flex flex-col items-center px-6">
           <img
-            src={profile.profileImageUrl ?? ""}
+            src={profile.profileImageUrl || defaultProfileImage}
             onError={(e) => {
-              e.currentTarget.src = "";
+              e.currentTarget.src = defaultProfileImage;
             }}
             alt={`${profile.nickname} 프로필`}
             className="h-24 w-24 rounded-full border-1 border-field object-cover"
@@ -128,7 +129,7 @@ const UserProfilePage = () => {
             type="button"
             disabled={!canSendRequest}
             onClick={handleFriendButtonClick}
-            className="mt-3 rounded-xl bg-black px-2 py-2 text-xs font-normal text-white disabled:bg-field disabled:text-sub-black"
+            className="mt-3 rounded-xl bg-[#291A00] px-2 py-2 text-xs font-normal text-white disabled:bg-field disabled:text-sub-black"
           >
             {friendButtonText}
           </button>
