@@ -1,4 +1,5 @@
 import mainLogo from "@/assets/main-logo.svg";
+import googleIcon from "@/assets/google-logo.svg";
 
 export default function LoginPage() {
   const handleGoogleLogin = () => {
@@ -7,30 +8,28 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center gap-8 px-8 bg-main">
+    <div className="min-h-dvh flex flex-col items-center justify-center gap-8 px-8 bg-white">
       <div className="flex flex-col items-center gap-3">
         <img
           src={mainLogo}
           alt="Book Bridge"
-          className="h-16"
+          className="h-18"
         />
 
-        <p className="text-sub-black text-sm text-center">
+        <p className="text-sub-black text-base text-center">
           함께 읽는 독서 모임 플랫폼
         </p>
       </div>
 
-      <div className="w-full max-w-[300px]">
+      <div className="mt-10 w-full max-w-[300px]">
         <button
           type="button"
           onClick={handleGoogleLogin}
-          className="w-full h-14 flex items-center justify-center gap-3 rounded-2xl border border-[#EEEAE6] bg-white text-base font-medium text-black shadow-sm"
+          className="w-full h-12 flex items-center justify-center gap-3 rounded-2xl border border-[#EEEAE6] bg-black text-base font-normal text-white shadow-sm"
         >
-          <svg width="20" height="20" viewBox="0 0 48 48" fill="none">
-            ...
-          </svg>
+          <img src={googleIcon} alt="Google" className="w-5 h-5" />
 
-          Google로 로그인
+          구글로 로그인
         </button>
       </div>
     </div>

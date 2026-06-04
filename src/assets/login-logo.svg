@@ -1,0 +1,37 @@
+<svg width="140" height="140" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_i_225_245)">
+<rect width="140" height="140" rx="30" fill="#291A00"/>
+</g>
+<rect x="50.6073" y="32.7305" width="19" height="77" rx="4" fill="#9D968C"/>
+<rect x="50.6073" y="32.7305" width="19" height="77" rx="4" stroke="#FFF8ED" stroke-width="4"/>
+<rect x="50.6073" y="32.7305" width="19" height="77" rx="4" stroke="#FFF8ED" stroke-width="4"/>
+<rect x="50.6073" y="32.7305" width="19" height="77" rx="4" stroke="#FFF8ED" stroke-width="4"/>
+<rect x="70.6073" y="32.7305" width="19" height="77" rx="4" fill="#9D968C"/>
+<rect x="70.6073" y="32.7305" width="19" height="77" rx="4" stroke="#FFF8ED" stroke-width="4"/>
+<rect x="70.6073" y="32.7305" width="19" height="77" rx="4" stroke="#FFF8ED" stroke-width="4"/>
+<rect x="70.6073" y="32.7305" width="19" height="77" rx="4" stroke="#FFF8ED" stroke-width="4"/>
+<rect x="89.5756" y="35.1722" width="19" height="77" rx="4" transform="rotate(-14 89.5756 35.1722)" fill="#9D968C"/>
+<rect x="89.5756" y="35.1722" width="19" height="77" rx="4" transform="rotate(-14 89.5756 35.1722)" stroke="#FFF8ED" stroke-width="4"/>
+<rect x="89.5756" y="35.1722" width="19" height="77" rx="4" transform="rotate(-14 89.5756 35.1722)" stroke="#FFF8ED" stroke-width="4"/>
+<rect x="89.5756" y="35.1722" width="19" height="77" rx="4" transform="rotate(-14 89.5756 35.1722)" stroke="#FFF8ED" stroke-width="4"/>
+<line x1="50.6073" y1="51.7305" x2="69.6073" y2="51.7305" stroke="#FFF8ED" stroke-width="4"/>
+<line x1="70.6073" y1="90.7305" x2="89.6073" y2="90.7305" stroke="#FFF8ED" stroke-width="4"/>
+<line x1="95.4057" y1="56.0882" x2="113.841" y2="51.4917" stroke="#FFF8ED" stroke-width="4"/>
+<rect x="2.42444" y="-1.45675" width="19" height="77" rx="4" transform="matrix(-0.970296 -0.241922 -0.241922 0.970296 52.6392 37.172)" fill="#9D968C"/>
+<rect x="2.42444" y="-1.45675" width="19" height="77" rx="4" transform="matrix(-0.970296 -0.241922 -0.241922 0.970296 52.6392 37.172)" stroke="#FFF8ED" stroke-width="4"/>
+<rect x="2.42444" y="-1.45675" width="19" height="77" rx="4" transform="matrix(-0.970296 -0.241922 -0.241922 0.970296 52.6392 37.172)" stroke="#FFF8ED" stroke-width="4"/>
+<rect x="2.42444" y="-1.45675" width="19" height="77" rx="4" transform="matrix(-0.970296 -0.241922 -0.241922 0.970296 52.6392 37.172)" stroke="#FFF8ED" stroke-width="4"/>
+<line y1="-2" x2="19" y2="-2" transform="matrix(-0.970296 -0.241922 -0.241922 0.970296 36.3252 93.0288)" stroke="#FFF8ED" stroke-width="4"/>
+<defs>
+<filter id="filter0_i_225_245" x="0" y="0" width="140" height="140" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset/>
+<feGaussianBlur stdDeviation="5"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+<feBlend mode="normal" in2="shape" result="effect1_innerShadow_225_245"/>
+</filter>
+</defs>
+</svg>
