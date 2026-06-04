@@ -142,7 +142,7 @@ const MyFriendsPage = () => {
 
   return (
     <>
-    <header className="relative flex h-[80px] items-center bg-main px-4 box-border">
+    <header className="fixed top-0 left-1/2 z-50 flex h-[80px] w-full max-w-[390px] -translate-x-1/2 items-center bg-main px-4 box-border">
       <button
         type="button"
         onClick={() => navigate("/mypage")}
@@ -161,7 +161,7 @@ const MyFriendsPage = () => {
       </div>
     </header>
     
-    <div className="min-h-full p-4 pb-[100px]">
+    <div className="pt-[96px] min-h-full p-4 pb-[100px]">
       <section>
         <h2 className="mb-4 mt-3 text-lg font-semibold text-black">
           · 친구 요청

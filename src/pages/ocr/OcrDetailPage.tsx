@@ -327,7 +327,7 @@ export default function OcrDetailPage() {
 
   return (
   <>
-    <header className="relative flex h-[80px] items-center bg-main px-4 box-border">
+    <header className="fixed top-0 left-1/2 z-50 flex h-[80px] w-full max-w-[390px] -translate-x-1/2 items-center bg-main px-4 box-border">
       <button
         type="button"
         onClick={() => navigate(`/rooms/${roomId}`)}
@@ -347,7 +347,7 @@ export default function OcrDetailPage() {
     </header>
 
     <div
-      className="relative min-h-full p-4 pb-[120px]"
+      className="pt-[96px] relative min-h-full p-4 pb-[120px]"
       onClick={() => {
         if (!selectMode && !createModalOpen && !addMemoModalOpen) {
           setActiveHighlightIds([]);
@@ -360,7 +360,7 @@ export default function OcrDetailPage() {
           <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
             <button
               type="button"
-              className="rounded-lg border-[2px] border-field bg-main px-3 py-2 text-sm text-black"
+              className="rounded-lg border-[2px] border-field bg-main px-2 py-1 text-[13px] text-black"
               onClick={() => {
                 setSelectMode(false);
                 setSelectedRange(null);
@@ -372,7 +372,7 @@ export default function OcrDetailPage() {
 
             <button
               type="button"
-              className="rounded-lg bg-black px-3 py-2 text-sm text-white disabled:bg-sub-black"
+              className="rounded-lg bg-black px-2 py-1 text-[13px] text-white disabled:bg-sub-black"
               disabled={!selectedRange}
               onClick={() => setCreateModalOpen(true)}
             >
@@ -382,7 +382,7 @@ export default function OcrDetailPage() {
         ) : (
           <button
             type="button"
-            className="rounded-lg border-[2px] border-field bg-main px-3 py-2 text-sm text-black disabled:opacity-40"
+            className="rounded-lg border-[2px] border-field bg-main px-2 py-1 text-[13px] text-black disabled:opacity-40"
             disabled={activeHighlightIds.length > 1}
             onClick={(e) => {
               e.stopPropagation();

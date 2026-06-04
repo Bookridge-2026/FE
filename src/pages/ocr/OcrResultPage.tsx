@@ -74,7 +74,7 @@ export default function OcrResultPage() {
 
   return (
     <div className="flex h-[calc(100dvh-var(--bottom-bar-height))] flex-col">
-      <header className="relative flex h-[80px] items-center bg-main px-4 box-border">
+      <header className="fixed top-0 left-1/2 z-50 flex h-[80px] w-full max-w-[390px] -translate-x-1/2 items-center bg-main px-4 box-border">
         <button
           type="button"
           onClick={() => navigate(-1)}
@@ -89,7 +89,7 @@ export default function OcrResultPage() {
         </div>
       </header>
 
-      <main className="flex h-[calc(100dvh-80px-var(--bottom-bar-height))] flex-col p-4">
+      <main className="flex h-[calc(100dvh-80px-var(--bottom-bar-height))] flex-col p-4 pt-[96px]">
         <textarea
           ref={textareaRef}
           className="min-h-0 flex-1 resize-none rounded-lg border-[1.5px] border-field bg-transparent p-4 text-sm leading-5 text-black outline-none overflow-y-auto"

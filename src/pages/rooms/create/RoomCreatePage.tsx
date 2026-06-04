@@ -185,7 +185,7 @@ const RoomCreatePage = () => {
 
   return (
     <div>
-      <header className="relative flex h-[80px] items-center bg-main px-4 box-border">
+      <header className="fixed top-0 left-1/2 z-50 flex h-[80px] w-full max-w-[390px] -translate-x-1/2 items-center bg-main px-4 box-border">
         <button
           type="button"
           onClick={() => navigate(-1)}
@@ -204,7 +204,7 @@ const RoomCreatePage = () => {
         </div>
       </header>
 
-      <div className="px-4 py-4 flex flex-col">
+      <div className="px-4 py-4 flex flex-col pt-[96px]">
         {/* 책 선택 */}
         <div className="flex flex-col gap-2 mb-5">
           <p className="text-[13px] font-medium text-black">· 책 선택</p>
