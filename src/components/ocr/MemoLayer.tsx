@@ -136,7 +136,7 @@ export default function MemoLayer({
                 }}
               >
                 <div className="p-2" style={{ height: MEMO_HEIGHT }}>
-                  <p className="line-clamp-7 break-words text-[9px] leading-snug text-black">
+                  <p className="line-clamp-7 break-words text-[9px] leading-snug text-primary">
                     {comment.content}
                   </p>
                 </div>

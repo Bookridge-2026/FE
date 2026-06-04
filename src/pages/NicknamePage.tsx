@@ -82,7 +82,7 @@ const NicknamePage = () => {
           }}
           maxLength={6}
           placeholder="2~6자 사이의 닉네임을 입력해주세요"
-          className="h-[46px] w-full rounded-xl bg-field px-4 text-center text-sm text-black outline-none placeholder:text-sub-black"
+          className="h-[46px] w-full rounded-xl bg-field px-4 text-center text-sm text-primary outline-none placeholder:text-sub-black"
         />
 
         <div className="mt-2 min-h-[20px] text-center text-xs text-red-500">

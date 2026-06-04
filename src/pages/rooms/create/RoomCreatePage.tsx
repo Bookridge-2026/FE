@@ -22,7 +22,7 @@ function SelectField({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full h-14 bg-field rounded-2xl px-4 pr-10 text-[15px] text-black appearance-none outline-none"
+        className="w-full h-14 bg-field rounded-2xl px-4 pr-10 text-[15px] text-primary appearance-none outline-none"
       >
         <option value="" disabled>
           {placeholder}
@@ -90,7 +90,7 @@ function BookItem({
         }}
       />
       <div className="flex flex-col gap-[3px] flex-1 min-w-0">
-        <p className="text-[14px] font-semibold text-black line-clamp-1">
+        <p className="text-[14px] font-semibold text-primary line-clamp-1">
           {book.title}
         </p>
         <p className="text-[13px] text-sub-black">
@@ -199,7 +199,7 @@ const RoomCreatePage = () => {
           />
         </button>
 
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-black">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-primary">
           방 생성
         </div>
       </header>
@@ -207,7 +207,7 @@ const RoomCreatePage = () => {
       <div className="px-4 py-4 flex flex-col pt-[96px]">
         {/* 책 선택 */}
         <div className="flex flex-col gap-2 mb-5">
-          <p className="text-[13px] font-medium text-black">· 책 선택</p>
+          <p className="text-[13px] font-medium text-primary">· 책 선택</p>
           <div className="relative">
             <div className="flex items-center gap-2 bg-field rounded-2xl px-4 h-14">
               <input
@@ -225,7 +225,7 @@ const RoomCreatePage = () => {
                 }}
                 onKeyDown={(e) => e.key === "Enter" && handleBookSearch()}
                 placeholder="제목 / ISBN 코드"
-                className="flex-1 bg-transparent outline-none text-[15px] text-black placeholder:text-sub-black"
+                className="flex-1 bg-transparent outline-none text-[15px] text-primary placeholder:text-sub-black"
               />
               <button
                 type="button"
@@ -281,7 +281,7 @@ const RoomCreatePage = () => {
         {/* 전체 페이지 수 */}
         <div className="flex flex-col gap-2 mb-5">
           <div className="flex items-center gap-2">
-            <p className="text-[13px] font-medium text-black">
+            <p className="text-[13px] font-medium text-primary">
               · 전체 페이지 수
             </p>
           </div>
@@ -293,7 +293,7 @@ const RoomCreatePage = () => {
               onChange={(e) => handleTotalPageChange(e.target.value)}
               placeholder="예) 328"
               maxLength={5}
-              className="flex-1 bg-transparent outline-none text-[15px] text-black placeholder:text-sub-black"
+              className="flex-1 bg-transparent outline-none text-[15px] text-primary placeholder:text-sub-black"
             />
             {totalPage && (
               <span className="text-[14px] text-sub-black shrink-0">쪽</span>
@@ -303,7 +303,7 @@ const RoomCreatePage = () => {
 
         {/* 최소 인원 */}
         <div className="flex flex-col gap-2 mb-5">
-          <p className="text-[13px] font-medium text-black">
+          <p className="text-[13px] font-medium text-primary">
             · 최소 인원 (최대 인원은 10명으로 제한)
           </p>
           <SelectField
@@ -316,7 +316,7 @@ const RoomCreatePage = () => {
 
         {/* 기간 */}
         <div className="flex flex-col gap-2 mb-5">
-          <p className="text-[13px] font-medium text-black">
+          <p className="text-[13px] font-medium text-primary">
             · 기간 (1일 - 90일 선택)
           </p>
           <SelectField
@@ -329,7 +329,7 @@ const RoomCreatePage = () => {
 
         {/* 찌르기 횟수 */}
         <div className="flex flex-col gap-2 mb-5">
-          <p className="text-[13px] font-medium text-black">· 찌르기 횟수</p>
+          <p className="text-[13px] font-medium text-primary">· 찌르기 횟수</p>
           <SelectField
             value={poke}
             options={pokeOptions}
@@ -340,14 +340,14 @@ const RoomCreatePage = () => {
 
         {/* 상세 설명 */}
         <div className="flex flex-col gap-2 mb-8">
-          <p className="text-[13px] font-medium text-black">· 상세 설명</p>
+          <p className="text-[13px] font-medium text-primary">· 상세 설명</p>
           <textarea
             value={detail}
             onChange={(e) => setDetail(e.target.value)}
             placeholder="우리 방을 한 문장으로 설명해주세요"
             maxLength={100}
             rows={3}
-            className="w-full bg-field rounded-2xl px-4 py-4 text-[15px] text-black placeholder:text-sub-black outline-none resize-none"
+            className="w-full bg-field rounded-2xl px-4 py-4 text-[15px] text-primary placeholder:text-sub-black outline-none resize-none"
           />
         </div>
 

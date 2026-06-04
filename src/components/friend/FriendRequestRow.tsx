@@ -13,12 +13,12 @@ export const FriendRequestRow = ({
 }: FriendRequestRowProps) => {
   return (
     <div className="flex items-center justify-between py-2">
-      <span className="text-sm text-black">{request.sender.nickname}</span>
+      <span className="text-base font-semibold text-primary">{request.sender.nickname}</span>
 
       <div className="flex gap-2">
         <button
           type="button"
-          className="h-8 rounded-lg bg-black px-3 text-sm text-main"
+          className="h-8 rounded-lg bg-primary px-3 text-sm text-main"
           onClick={() => onAccept(request)}
         >
           수락
@@ -26,7 +26,7 @@ export const FriendRequestRow = ({
 
         <button
           type="button"
-          className="h-8 rounded-lg bg-black px-3 text-sm text-main"
+          className="h-8 rounded-lg bg-primary px-3 text-sm text-main"
           onClick={() => onReject(request)}
         >
           거절

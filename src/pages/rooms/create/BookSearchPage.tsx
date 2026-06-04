@@ -28,7 +28,7 @@ function BookCard({
         }}
       />
       <div className="flex flex-col gap-1 flex-1 min-w-0">
-        <p className="text-base font-semibold text-black line-clamp-2">
+        <p className="text-base font-semibold text-primary line-clamp-2">
           {book.title}
         </p>
         <p className="text-sm text-sub-black">
@@ -92,7 +92,7 @@ const BookSearchPage = () => {
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="w-8 h-8 flex items-center justify-center text-black"
+          className="w-8 h-8 flex items-center justify-center text-primary"
         >
           <svg width="10" height="18" viewBox="0 0 10 18" fill="none">
             <path
@@ -112,7 +112,7 @@ const BookSearchPage = () => {
             onChange={(e) => setKeyword(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             placeholder="제목 / ISBN 코드"
-            className="flex-1 bg-transparent outline-none text-base text-black placeholder:text-sub-black"
+            className="flex-1 bg-transparent outline-none text-base text-primary placeholder:text-sub-black"
           />
           <button type="button" onClick={handleSearch}>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">

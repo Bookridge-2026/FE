@@ -191,7 +191,7 @@ export default function MyRoomsPage() {
                 />
             </button>
 
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-black">
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-primary">
                 내 방 둘러보기
             </div>
         </header>

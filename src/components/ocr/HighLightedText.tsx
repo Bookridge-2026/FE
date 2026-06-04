@@ -26,7 +26,7 @@ export default function HighlightedText({
   const sortedPoints = [...points].sort((a, b) => a - b);
 
   return (
-    <p className="whitespace-pre-wrap text-sm leading-relaxed text-black">
+    <p className="whitespace-pre-wrap text-sm leading-relaxed text-primary">
       {sortedPoints.map((start, index) => {
         const end = sortedPoints[index + 1];
         if (end === undefined) return null;

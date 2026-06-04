@@ -99,15 +99,14 @@ export default function RoomManagePage() {
           <img src={backButtonIcon} alt="" className="block h-[24px] w-[24px]" />
         </button>
 
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-black">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-primary">
           방 관리
         </div>
       </header>
 
       <div className="px-6 pb-1 pt-[96px]">
-        <h2 className="flex items-center gap-2 text-base font-bold text-[#2A211C]">
-          <span className="text-xs">●</span>
-          멤버 목록
+        <h2 className="flex items-center gap-2 text-base font-bold text-primary">
+          • 멤버 목록
         </h2>
       </div>
 
@@ -123,14 +122,14 @@ export default function RoomManagePage() {
                 className="flex flex-1 items-center gap-4 text-left transition active:opacity-60"
               >
                 <span
-                  className="block h-9 w-9 shrink-0 rounded-full border border-[#2A211C]"
+                  className="block h-9 w-9 shrink-0 rounded-full border border-sub-black"
                   style={{
                     backgroundColor: (m.color ?? "#E6E1D5").trim(),
                   }}
                   aria-hidden="true"
                 />
 
-                <span className="text-[15px] font-semibold text-[#2A211C]">
+                <span className="text-[15px] font-semibold text-primary">
                   {m.user.nickname}
                 </span>
               </button>
@@ -138,7 +137,7 @@ export default function RoomManagePage() {
               <div className="flex shrink-0 items-center gap-2">
                 {isHost ? (
                   <span
-                    className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2A211C]"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary"
                     aria-label="방장"
                   >
                     <img src={crown} alt="방장" className="h-5 w-5" />
@@ -160,7 +159,7 @@ export default function RoomManagePage() {
                     <button
                       onClick={() => handlePoke(m)}
                       disabled={isLoading}
-                      className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2A211C] transition active:scale-95 disabled:opacity-40"
+                      className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary transition active:scale-95 disabled:opacity-40"
                       aria-label="콕 찌르기"
                     >
                       <img src={tap} alt="콕 찌르기" className="h-5 w-5" />
