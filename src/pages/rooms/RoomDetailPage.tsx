@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import styles from "../../styles/Roomdetailpage.module.css";
 import AddReactionModal from "../../components/rooms/detail/AddReactionModal";
 import plusIcon from "@/assets/common/plus-icon.svg";
+import musicIcon from "@/assets/rooms/music.svg";
 
 interface User {
   id: number;
@@ -49,6 +50,14 @@ interface RoomDetail {
   totalPages: number;
   readers: { user: User; page: number }[];
   pages: PageData[];
+}
+
+interface SongRecommendation {
+    songRecommendationId: number;
+    title: string;
+    artist: string;
+    url: string;
+    createdAt: string;
 }
 
 type Tab = "일반" | "OCR";
@@ -135,7 +144,13 @@ const MOCK_ROOM: RoomDetail = {
 ],
 };
 
-
+const MOCK_SONG_RECOMMENDATION: SongRecommendation = {
+  songRecommendationId: 10,
+  title: "노스탤지어",
+  artist: "윤마치",
+  url: "https://www.youtube.com/watch?v=...",
+  createdAt: "2026-05-30T12:34:56.000Z",
+};
 
 const ReadingProgress = ({
   readers,
@@ -513,6 +528,23 @@ const RoomDetailPage = () => {
 
       {/* 독서 진행도 */}
       <ReadingProgress readers={room.readers} totalPages={room.totalPages} />
+
+      {/* 랜덤 노래 추천 */}
+      <div className={styles.songRecommendationSection}>
+        <button
+          type="button"
+          className={styles.songRecommendationCard}
+          onClick={() => window.open(MOCK_SONG_RECOMMENDATION.url, "_blank", "noopener,noreferrer")}
+        >
+          <span className={styles.songRecommendationIcon}>
+            <img src={musicIcon} alt="" className="h-5 w-5" />
+          </span>
+
+          <span className={styles.songRecommendationText}>
+            {MOCK_SONG_RECOMMENDATION.title} - {MOCK_SONG_RECOMMENDATION.artist}
+          </span>
+        </button>
+      </div>
 
       {/* 탭 */}
       <TabBar active={activeTab} onChange={setActiveTab} />

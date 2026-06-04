@@ -52,16 +52,16 @@ export const UserBookStack = ({ books }: UserBookStackProps) => {
           {stacks.map((stack, stackIndex) => (
             <div
               key={stackIndex}
-              className="flex w-[calc(100vw-32px)] max-w-[354px] shrink-0 flex-col-reverse pb-2"
+              className="flex w-[calc(100vw-32px)] max-w-[354px] shrink-0 flex-col-reverse pb-4"
             >
               {stack.map((book, index) => (
                 <div
                   key={`${book.roomId}-${book.title}-${index}`}
                   style={{
                     zIndex: index,
-                    marginTop: index === 0 ? 0 : -4,
+                    marginTop: index === 0 ? 0 : -2,
                   }}
-                  className="relative rounded-xl bg-main px-3 py-4 text-sm text-black shadow-sm ring-1 ring-field"
+                  className="relative rounded-xl bg-main px-3 py-4 text-sm text-black shadow-md ring-1 ring-field"
                 >
                   <div className="flex min-w-0 items-center overflow-hidden">
                     <span className="min-w-0 flex-1 truncate font-medium">

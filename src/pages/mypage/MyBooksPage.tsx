@@ -13,7 +13,7 @@ const MyBooksPage = () => {
 
   return (
     <div className="flex flex-col min-h-[calc(100dvh-var(--bottom-bar-height))] bg-[#FFFFFF]">
-        <header className="relative flex h-[80px] items-center bg-main px-4 box-border">
+        <header className="fixed top-0 left-1/2 z-50 flex h-[80px] w-full max-w-[390px] -translate-x-1/2 items-center bg-main px-4 box-border">
             <button
                 type="button"
                 onClick={() => navigate("/mypage")}
@@ -33,7 +33,7 @@ const MyBooksPage = () => {
         </header>
 
       {/* 완주 횟수 */}
-      <div className="flex flex-col items-center mt-16 gap-8">
+      <div className="flex flex-col items-center mt-[144px] gap-8">
         <p className="text-center text-[#3B2E1E] text-base leading-relaxed">
           지금까지 교환독서를<br />
           총 [ {completionCount} ]번 완주했어요!
