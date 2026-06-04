@@ -8,6 +8,7 @@ const HIDE_HEADER_PATHS = [
   /^\/rooms\/create/,
   /^\/notice/, 
   /^\/mypage\/.+$/,
+  /^\/users\/.+$/, 
 ];
 
 export const AppLayout = () => {

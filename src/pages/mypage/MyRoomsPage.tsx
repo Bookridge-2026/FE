@@ -177,7 +177,7 @@ export default function MyRoomsPage() {
 
   return (
     <div className="flex flex-col min-h-dvh bg-white">
-        <header className="relative flex h-[80px] items-center bg-main px-4 box-border">
+        <header className="fixed top-0 left-1/2 z-50 flex h-[80px] w-full max-w-[390px] -translate-x-1/2 items-center bg-main px-4 box-border">
             <button
                 type="button"
                 onClick={() => navigate("/mypage")}
@@ -197,7 +197,7 @@ export default function MyRoomsPage() {
         </header>
 
       {/* 탭 바 */}
-      <div className="flex px-4 py-2">
+      <div className="flex px-4 py-2 pt-[88px]">
         {TABS.map((tab) => (
           <button
             key={tab.key}

@@ -19,14 +19,25 @@
   flex-direction: column;
   min-height: 100dvh;
   background-color: var(--color-bg);
+
+  padding-top: 80px;
 }
 
 .header {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+
+  width: 100%;
+  max-width: 390px;
+
   display: flex;
   align-items: center;
   gap: 8px;
   height: 80px;
-  padding: 32px 16px 32px;
+  padding: 32px 16px;
   background-color: var(--color-main);
   box-sizing: border-box;
 }
@@ -716,4 +727,44 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.songRecommendationSection {
+  padding: 0 13px 15px;
+}
+
+.songRecommendationCard {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 30px;
+  background: #fff;
+  padding: 4px 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  text-align: left;
+}
+
+.songRecommendationIcon {
+  display: flex;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-main);
+}
+
+.songRecommendationText {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--color-text-primary);
 }
