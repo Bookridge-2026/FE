@@ -4,6 +4,7 @@ import { createRoom, searchBooks, type BookSummary } from "@/api/rooms";
 import { ConfirmModal } from "@/components/common/ConfirmModal";
 import { BottomButton } from "@/components/common/BottomButton";
 import backButtonIcon from "@/assets/common/back-button.svg";
+import { createSongRecommendations } from "@/api/song";
 
 // 셀렉트박스
 function SelectField({
@@ -158,27 +159,34 @@ const RoomCreatePage = () => {
     setBookSearched(false);
     setTotalPage(""); // 책 바꾸면 페이지수 초기화
   };
-
-  // 방 생성
+ 
+  // 방 생성 -> 노래 추천
   const handleConfirm = async () => {
-    if (!selectedBook) return;
-    setConfirmOpen(false);
-    setSubmitting(true);
-    try {
-      await createRoom({
-        isbn: selectedBook.isbn,
-        period: Number(period),
-        atLeastPeople: Number(atLeastPeople),
-        poke: poke ? Number(poke) : 3,
-        detail: detail || undefined,
-        totalPage: totalPage ? Number(totalPage) : undefined,
-      });
-      navigate("/rooms/search");
-    } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : "방 생성에 실패했습니다.");
-    } finally {
-      setSubmitting(false);
-    }
+  if (!selectedBook) return;
+
+  setConfirmOpen(false);
+  setSubmitting(true);
+
+  try {
+    const room = await createRoom({
+      isbn: selectedBook.isbn,
+      period: Number(period),
+      atLeastPeople: Number(atLeastPeople),
+      poke: poke ? Number(poke) : 3,
+      detail: detail || undefined,
+      totalPage: totalPage ? Number(totalPage) : undefined,
+    });
+
+    createSongRecommendations(room.roomId).catch((error) => {
+      console.error("노래 추천 생성 실패:", error);
+    });
+
+    navigate("/rooms/search");
+  } catch (e: unknown) {
+    alert(e instanceof Error ? e.message : "방 생성에 실패했습니다.");
+  } finally {
+    setSubmitting(false);
+  }
   };
 
   const showDropdown = bookSearched && bookResults.length > 0 && !selectedBook;
