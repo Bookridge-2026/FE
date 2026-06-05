@@ -114,7 +114,7 @@ const UserProfilePage = () => {
               e.currentTarget.src = defaultProfileImage;
             }}
             alt={`${profile.nickname} 프로필`}
-            className="h-24 w-24 rounded-full border-1 border-field object-cover"
+            className="h-24 w-24 rounded-full border-2 border-field object-cover"
           />
 
           <p className="mt-3 text-lg font-semibold text-primary">
@@ -141,7 +141,7 @@ const UserProfilePage = () => {
           </p>
         </section>
 
-        <UserBookStack books={profile.books} />
+        <UserBookStack books={[...profile.books].reverse()} />
       </main>
     </div>
   );

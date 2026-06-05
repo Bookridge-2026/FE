@@ -168,31 +168,31 @@ export default function OcrDetailPage() {
     console.log("SSE 연결 성공");
   };
 
-  eventSource.addEventListener("new-highlight", (e: any) => {
-    console.log("SSE 수신:", e.data);
+  eventSource.addEventListener("new-highlight", (e) => {
+    const messageEvent = e as MessageEvent<string>;
 
-    const data = JSON.parse(e.data);
+    console.log("SSE 수신:", messageEvent.data);
+
+    const data = JSON.parse(messageEvent.data);
 
     const newHighlight: OcrHighlight = {
-      highlightId: data.highlightId,
-      ocrPageId: data.ocrPageId ?? Number(ocrPageId),
-      selectedText: data.selectedText,
-      startIndex: data.startIndex,
-      endIndex: data.endIndex,
-
-      // 백엔드 응답 구조 2가지 모두 대응
-      ocrComments: data.ocrComments ?? [
+        highlightId: data.highlightId,
+        ocrPageId: data.ocrPageId ?? Number(ocrPageId),
+        selectedText: data.selectedText,
+        startIndex: data.startIndex,
+        endIndex: data.endIndex,
+        ocrComments: data.ocrComments ?? [
         {
-          ocrCommentId: data.ocrCommentId,
-          content: data.content,
-          color: data.color,
-          createdAt: data.createdAt,
+            ocrCommentId: data.ocrCommentId,
+            content: data.content,
+            color: data.color,
+            createdAt: data.createdAt,
         },
-      ],
+        ],
     };
 
     upsertHighlight(newHighlight);
-  });
+    });
 
   eventSource.onerror = (error) => {
     console.error("SSE 에러:", error);
