@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getRooms, joinRoom, type RoomSummary } from "@/api/rooms";
 import plusIcon from "@/assets/common/plus-icon.svg";
+import { Header } from "@/components/common/Header";
 
 // 페이지네이션
 function Pagination({
@@ -34,7 +35,7 @@ function Pagination({
           key={p}
           type="button"
           onClick={() => onChange(p)}
-          className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${p === current ? "bg-primary text-white" : "text-primary"}`}
+          className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${p === current ? "bg-black text-white" : "text-black"}`}
         >
           {p}
         </button>
@@ -77,7 +78,7 @@ function RoomCard({
         }}
       />
       <div className="flex flex-col gap-[6px] flex-1 min-w-0">
-        <p className="text-[15px] font-semibold text-primary leading-snug">
+        <p className="text-[15px] font-semibold text-black leading-snug">
           {room.book.title}
         </p>
         <p className="text-sm text-sub-black">
@@ -86,7 +87,7 @@ function RoomCard({
         {room.detail && (
           <p className="text-sm text-sub-black">{truncate(room.detail, 18)}</p>
         )}
-        <span className="mt-[2px] self-start px-3 py-[5px] rounded-full border border-[#D4CFC9] text-sm text-primary leading-none">
+        <span className="mt-[2px] self-start px-3 py-[5px] rounded-full border border-[#D4CFC9] text-sm text-black leading-none">
           {room.currentMembers} / {room.atLeastPeople}
         </span>
       </div>
@@ -118,6 +119,7 @@ const RoomSearchPage = () => {
     try {
       const res = await getRooms({
         keyword: kw || undefined,
+        status: "waiting",
         page,
         size: 10,
       });
@@ -137,6 +139,7 @@ const RoomSearchPage = () => {
 
       try {
         const res = await getRooms({
+          status: "waiting",
           page: 1,
           size: 10,
         });
@@ -164,7 +167,8 @@ const RoomSearchPage = () => {
     try {
       await joinRoom(selectedRoom.roomId);
       setSelectedRoom(null);
-      navigate(`/rooms/${selectedRoom.roomId}`);
+      // 참여 요청 성공 → pending 상태이므로 방 상세가 아닌 알림 팝업 후 목록 유지
+      alert("입장 요청이 전송되었습니다. 방장의 수락을 기다려주세요.");
     } catch (e: unknown) {
       alert(e instanceof Error ? e.message : "참여에 실패했습니다.");
     } finally {
@@ -174,7 +178,8 @@ const RoomSearchPage = () => {
 
   return (
     <div className="relative">
-      <div className="px-4 py-2">
+      <Header />
+      <div className="px-4 py-4">
         {/* 검색바 */}
         <div className="flex items-center gap-2 bg-field rounded-2xl px-4 h-12 mb-5">
           <input
@@ -184,7 +189,7 @@ const RoomSearchPage = () => {
             onChange={(e) => setKeyword(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             placeholder="책 제목을 검색해보세요"
-            className="flex-1 bg-transparent outline-none text-[15px] text-primary placeholder:text-sub-black"
+            className="flex-1 bg-transparent outline-none text-[15px] text-black placeholder:text-sub-black"
           />
           <button type="button" onClick={handleSearch} className="p-1 -mr-1">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -254,10 +259,10 @@ const RoomSearchPage = () => {
         {selectedRoom && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
             <div className="w-[300px] rounded-2xl bg-white px-7 py-8 shadow-xl">
-              <p className="text-center text-[15px] font-semibold text-primary mb-6">
+              <p className="text-center text-[15px] font-semibold text-black mb-6">
                 이 방에 참여하시겠습니까?
               </p>
-              <ul className="flex flex-col gap-[10px] text-sm text-primary mb-7">
+              <ul className="flex flex-col gap-[10px] text-sm text-black mb-7">
                 <li className="flex gap-2">
                   <span className="text-sub-black shrink-0">· 현재 / 최소</span>
                   <span className="ml-2">
@@ -279,7 +284,7 @@ const RoomSearchPage = () => {
               <div className="flex gap-3 justify-center">
                 <button
                   type="button"
-                  className="h-11 w-[105px] rounded-2xl bg-field text-[15px] font-medium text-primary"
+                  className="h-11 w-[105px] rounded-2xl bg-field text-[15px] font-medium text-black"
                   onClick={() => setSelectedRoom(null)}
                 >
                   취소
@@ -287,7 +292,7 @@ const RoomSearchPage = () => {
                 <button
                   type="button"
                   disabled={joining}
-                  className="h-11 w-[105px] rounded-2xl bg-primary text-[15px] font-medium text-white disabled:opacity-50"
+                  className="h-11 w-[105px] rounded-2xl bg-black text-[15px] font-medium text-white disabled:opacity-50"
                   onClick={handleJoinConfirm}
                 >
                   {joining ? "참여 중…" : "참여"}
