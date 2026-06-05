@@ -35,3 +35,6 @@ export const acceptInvite = (roomId: number) =>
 
 export const rejectInvite = (roomId: number) =>
   api.patch(`/api/rooms/${roomId}/invite/reject`);
+
+export const startRoom = (roomId: number) =>
+  api.patch(`/api/rooms/${roomId}/start`);
