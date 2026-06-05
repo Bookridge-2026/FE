@@ -152,6 +152,7 @@ export default function OcrDetailPage() {
       headers: {
         Authorization: token ? `Bearer ${token}` : "",
       },
+      heartbeatTimeout: 60000,
     }
   );
 
