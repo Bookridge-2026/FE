@@ -79,3 +79,9 @@ export const getUserProfile = async (userId: number) => {
 
   return response.data.data;
 };
+
+export const getFriendsForInvite = (roomId: number, search: string) =>
+  api.get(`/api/friends/invite/room/${roomId}`, { params: { search } });
+
+export const inviteFriend = (roomId: number, targetUserId: number) =>
+  api.post(`/api/friends/invite/room/${roomId}`, { targetUserId });

@@ -1,11 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ConfirmModal } from "@/components/common/ConfirmModal";
 import backButtonIcon from "@/assets/common/back-button.svg";
-import { getMyRooms, getOngoingRooms, getClosedRooms, acceptMember, rejectMember, acceptInvite, rejectInvite } from "@/api/mypage";
+import { getMyRooms, getOngoingRooms, getClosedRooms, acceptMember, rejectMember, acceptInvite, rejectInvite, startRoom } from "@/api/mypage";
+import { getFriendsForInvite, inviteFriend } from "@/api/friend"; // 추가 필요
 import type { InvitedRoom, LeaderRoom, OtherRoom, OngoingRoom } from "@/types/myrooms";
 
 type RoomStatus = "waiting" | "inProgress" | "ended";
+
+interface FriendInvite {
+  userId: number;
+  nickname: string;
+  inviteStatus: "none" | "invited" | "pending" | "attend";
+}
 
 const TABS: { key: RoomStatus; label: string }[] = [
   { key: "waiting", label: "대기 중인 방" },
@@ -17,23 +24,145 @@ const Divider = () => (
   <div className="relative h-[0.1px] bg-[#ffffff] overflow-visible after:content-[''] after:absolute after:left-0 after:right-0 after:top-0 after:h-[3px] after:bg-gradient-to-b after:from-black/[0.2] after:to-transparent" />
 );
 
+// ── 친구 초대 모달 ──
+function InviteModal({
+  roomId,
+  onClose,
+}: {
+  roomId: number;
+  onClose: () => void;
+}) {
+  const [search, setSearch] = useState("");
+  const [query, setQuery] = useState("");
+  const [friends, setFriends] = useState<FriendInvite[]>([]);
+  const [loading, setLoading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const fetchFriends = (q: string) => {
+    setLoading(true);
+    getFriendsForInvite(roomId, q)
+      .then((res) => {
+        if (res.data.success) setFriends(res.data.data);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchFriends("");
+  }, [roomId]);
+
+  const handleSearch = () => {
+    setQuery(search);
+    fetchFriends(search);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") handleSearch();
+  };
+
+  const handleInvite = (userId: number) => {
+    inviteFriend(roomId, userId)
+      .then(() => fetchFriends(query))
+      .catch(console.error);
+  };
+
+  const statusButton = (friend: FriendInvite) => {
+    switch (friend.inviteStatus) {
+      case "none":
+        return (
+          <button
+            onClick={() => handleInvite(friend.userId)}
+            className="h-8 px-3 rounded-lg bg-[#291A00] text-white text-xs font-medium shrink-0 mr-2"
+          >
+            초대
+          </button>
+        );
+      case "invited":
+        return (
+          <span className="h-8 px-3 rounded-lg bg-[#9D968C] text-white text-xs font-medium flex items-center shrink-0 mr-2">
+            초대함
+          </span>
+        );
+      case "pending":
+        return (
+          <span className="h-8 px-3 rounded-lg bg-[#9D968C] text-white text-xs font-medium flex items-center shrink-0 mr-2">
+            참여요청
+          </span>
+        );
+      case "attend":
+        return (
+          <span className="h-8 px-3 rounded-lg bg-[#9D968C] text-white text-xs font-medium flex items-center shrink-0 mr-2">
+            참여
+          </span>
+        );
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-2xl mx-6 w-full max-w-[340px] shadow-xl overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* 검색창 */}
+        <div className="px-4 pt-4 pb-3">
+          <div className="flex items-center gap-2 bg-[#F5F3EF] rounded-xl px-3 py-2.5">
+            <input
+              ref={inputRef}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="친구 검색"
+              className="flex-1 bg-transparent text-sm text-[#291A00] placeholder-[#9e9890] outline-none"
+            />
+            <button onClick={handleSearch} className="shrink-0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <circle cx="11" cy="11" r="7" stroke="#9e9890" strokeWidth="1.8" />
+                <path d="M16.5 16.5l3.5 3.5" stroke="#9e9890" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* 친구 목록 */}
+        <div className="max-h-[280px] overflow-y-auto px-4 pb-4">
+          {loading ? (
+            <p className="text-sm text-[#9e9890] text-center py-6">불러오는 중...</p>
+          ) : friends.length === 0 ? (
+            <p className="text-sm text-[#9e9890] text-center py-6">친구가 없습니다.</p>
+          ) : (
+            friends.map((friend) => (
+              <div key={friend.userId} className="flex items-center justify-between py-3 ml-3">
+                <span className="text-sm text-[#291A00] font-medium truncate mr-3">
+                  {friend.nickname}
+                </span>
+                {statusButton(friend)}
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function MyRoomsPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<RoomStatus>("waiting");
   const [expandedRooms, setExpandedRooms] = useState<Record<number, boolean>>({});
   const [loading, setLoading] = useState(false);
   const [titleModal, setTitleModal] = useState<string | null>(null);
+  const [inviteRoomId, setInviteRoomId] = useState<number | null>(null); // 추가
 
-  // ── waiting 데이터 ──
   const [invitedRooms, setInvitedRooms] = useState<InvitedRoom[]>([]);
   const [leaderRooms, setLeaderRooms] = useState<LeaderRoom[]>([]);
   const [otherRooms, setOtherRooms] = useState<OtherRoom[]>([]);
-
-  // ── ongoing 데이터 ──
   const [ongoingLeaderRooms, setOngoingLeaderRooms] = useState<OngoingRoom[]>([]);
   const [ongoingOtherRooms, setOngoingOtherRooms] = useState<OngoingRoom[]>([]);
-
-  // ── closed 데이터 ──
   const [closedLeaderRooms, setClosedLeaderRooms] = useState<OngoingRoom[]>([]);
   const [closedOtherRooms, setClosedOtherRooms] = useState<OngoingRoom[]>([]);
 
@@ -115,15 +244,25 @@ export default function MyRoomsPage() {
   const handleConfirm = () => {
     const { type, roomId, userId } = modal;
     setModal({ open: false, type: null, roomId: null });
-    if (type === "start" || type === "enter") {
+
+    if (type === "start") {
+      if (!roomId) return;
+      startRoom(roomId)
+        .then(() => navigate(`/rooms/${roomId}`))  // 시작 성공 후 이동
+        .catch(console.error);
+
+    } else if (type === "enter") {
       navigate(`/rooms/${roomId}`);
+
     } else if ((type === "accept" || type === "reject") && roomId && userId) {
       const action = type === "accept"
         ? acceptMember(roomId, userId)
         : rejectMember(roomId, userId);
       action.then(refreshWaiting).catch(console.error);
+
     } else if (type === "acceptInvite" && roomId) {
       acceptInvite(roomId).then(refreshWaiting).catch(console.error);
+
     } else if (type === "rejectInvite" && roomId) {
       rejectInvite(roomId).then(refreshWaiting).catch(console.error);
     }
@@ -317,8 +456,12 @@ export default function MyRoomsPage() {
                                 <p className="text-sm text-[#9e9890] text-center py-3 mb-1">새로운 요청이 없습니다</p>
                               )}
 
+                              {/* ── 친구 초대하기 버튼 ── */}
                               <div className="flex justify-center mb-3">
-                                <button className="text-xs font-medium text-[#291A00] bg-[#FFFBEF] border border-[#e5e0d8] rounded-full px-3 py-1">
+                                <button
+                                  onClick={() => setInviteRoomId(room.roomId)}
+                                  className="text-xs font-medium text-[#291A00] bg-[#FFFBEF] border border-[#e5e0d8] rounded-full px-3 py-1"
+                                >
                                   친구 초대하기
                                 </button>
                               </div>
@@ -487,6 +630,17 @@ export default function MyRoomsPage() {
             <p className="text-sm text-[#291A00] font-medium text-center leading-relaxed">{titleModal}</p>
           </div>
         </div>
+      )}
+
+      {/* ── 친구 초대 모달 ── */}
+      {inviteRoomId !== null && (
+        <InviteModal
+          roomId={inviteRoomId}
+          onClose={() => {
+            setInviteRoomId(null);
+            refreshWaiting();
+          }}
+        />
       )}
 
       <ConfirmModal
