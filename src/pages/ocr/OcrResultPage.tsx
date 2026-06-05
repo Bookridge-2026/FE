@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { BottomButton } from "@/components/common/BottomButton";
+import OcrWatermark from "@/components/ocr/OcrWaterMark";
 import { createOcrPage } from "@/api/ocr";
+import { getStoredUserCode } from "@/utils/watermark";
 import backButtonIcon from "@/assets/common/back-button.svg";
 
 interface LocationState {
@@ -26,6 +28,11 @@ export default function OcrResultPage() {
   const [text, setText] = useState(state?.text ?? "");
   const [page] = useState(state?.page ?? 1);
   const [saving, setSaving] = useState(false);
+  const [userCode, setUserCode] = useState("");
+
+  useEffect(() => {
+    setUserCode(getStoredUserCode());
+  }, []);
 
   useEffect(() => {
     if (!state?.text) {
@@ -73,7 +80,7 @@ export default function OcrResultPage() {
   if (!state?.text) return null;
 
   return (
-    <div className="flex h-[calc(100dvh-var(--bottom-bar-height))] flex-col">
+    <div className="flex h-[calc(100dvh-var(--bottom-bar-height))] flex-col bg-white">
       <header className="fixed top-0 left-1/2 z-50 flex h-[80px] w-full max-w-[390px] -translate-x-1/2 items-center bg-main px-4 box-border">
         <button
           type="button"
@@ -89,16 +96,18 @@ export default function OcrResultPage() {
         </div>
       </header>
 
-      <main className="flex h-[calc(100dvh-80px-var(--bottom-bar-height))] flex-col p-4 pt-[96px]">
+      <main className="relative flex flex-1 flex-col overflow-hidden p-4 pt-[96px] pb-[16px]">
+        <OcrWatermark userCode={userCode} />
+
         <textarea
           ref={textareaRef}
-          className="min-h-0 flex-1 resize-none rounded-lg border-[1.5px] border-field bg-transparent p-4 text-sm leading-5 text-primary outline-none overflow-y-auto"
+          className="relative z-10 min-h-0 flex-1 resize-none rounded-lg border-[1.5px] border-field p-4 text-sm leading-5 text-primary outline-none overflow-y-auto"
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="추출된 텍스트가 없습니다."
         />
 
-        <div className="mt-2 flex justify-center">
+        <div className="relative z-10 mt-3 flex justify-center">
           <BottomButton onClick={handleSave} disabled={!text.trim()}>
             저장
           </BottomButton>

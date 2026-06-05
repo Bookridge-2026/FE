@@ -8,6 +8,8 @@ import AddMemoModal from "@/components/ocr/AddMemoModal";
 import HighlightedText from "@/components/ocr/HighLightedText";
 import MemoLayer from "@/components/ocr/MemoLayer";
 import backButtonIcon from "@/assets/common/back-button.svg";
+import OcrWatermark from "@/components/ocr/OcrWaterMark";
+import { getStoredUserCode } from "@/utils/watermark";
 
 import {
   createOcrComment,
@@ -95,6 +97,12 @@ export default function OcrDetailPage() {
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [addMemoModalOpen, setAddMemoModalOpen] = useState(false);
+
+  const [userCode, setUserCode] = useState("");
+
+  useEffect(() => {
+  setUserCode(getStoredUserCode());
+  }, []);
 
   const upsertHighlight = useCallback((newHighlight: OcrHighlight) => {
     setHighlights((prev) => {
@@ -348,15 +356,17 @@ export default function OcrDetailPage() {
     </header>
 
     <div
-      className="pt-[96px] relative min-h-full p-4 pb-[120px]"
-      onClick={() => {
-        if (!selectMode && !createModalOpen && !addMemoModalOpen) {
-          setActiveHighlightIds([]);
-          setAnchorRect(null);
-        }
-      }}
-    >
-      <div className="mb-2 flex justify-end">
+        className="relative min-h-full overflow-hidden p-4 pt-[136px] pb-[120px]"
+        onClick={() => {
+            if (!selectMode && !createModalOpen && !addMemoModalOpen) {
+            setActiveHighlightIds([]);
+            setAnchorRect(null);
+            }
+        }}
+        >
+        <OcrWatermark userCode={userCode} />
+
+      <div className="fixed top-[92px] left-1/2 z-40 flex w-full max-w-[390px] -translate-x-1/2 justify-end px-4">
         {selectMode ? (
           <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
             <button

@@ -39,6 +39,7 @@ const MyPage = () => {
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    localStorage.removeItem("userCode");
     navigate("/", { replace: true });
   };
 
