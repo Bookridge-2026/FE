@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getRooms, joinRoom, type RoomSummary } from "@/api/rooms";
 import plusIcon from "@/assets/common/plus-icon.svg";
-import { Header } from "@/components/common/Header";
 
 // 페이지네이션
 function Pagination({
@@ -178,10 +177,9 @@ const RoomSearchPage = () => {
 
   return (
     <div className="relative">
-      <Header />
-      <div className="px-4 py-4">
+      <div className="px-4">
         {/* 검색바 */}
-        <div className="flex items-center gap-2 bg-field rounded-2xl px-4 h-12 mb-5">
+        <div className="flex items-center gap-2 bg-field rounded-2xl px-4 h-12 mb-4">
           <input
             ref={inputRef}
             type="text"
