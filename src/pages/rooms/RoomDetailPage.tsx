@@ -4,6 +4,7 @@ import styles from "../../styles/Roomdetailpage.module.css";
 import AddReactionModal from "../../components/rooms/detail/AddReactionModal";
 
 import plusIcon from "@/assets/common/plus-icon.svg";
+import musicIcon from "@/assets/rooms/music.svg";
 
 import {
   fetchPages, fetchComments, fetchReactions, fetchReplies, fetchProgress,
@@ -18,7 +19,21 @@ type Reader = { user: User; page: number };
 type Tab = "일반" | "OCR";
 type ModalStep = "main" | "comment" | "emoji";
 
-// ─────────────────────────────────────────────────────────────────────────────
+interface SongRecommendation {
+    songRecommendationId: number;
+    title: string;
+    artist: string;
+    url: string;
+    createdAt: string;
+}
+
+const MOCK_SONG_RECOMMENDATION: SongRecommendation = {
+  songRecommendationId: 10,
+  title: "노스탤지어",
+  artist: "윤마치",
+  url: "https://www.youtube.com/watch?v=...",
+  createdAt: "2026-05-30T12:34:56.000Z",
+};
 
 const ReadingProgress = ({
   readers,
@@ -420,7 +435,7 @@ const RoomDetailPage = () => {
     >
       {/* 헤더 */}
       <div className={styles.header} onClick={(e) => e.stopPropagation()}>
-        <button className={styles.backBtn} onClick={() => navigate("/home")}>
+        <button className={styles.backBtn} onClick={() => navigate(-1)}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -442,6 +457,23 @@ const RoomDetailPage = () => {
 
       {/* 독서 진행바 */}
       <ReadingProgress readers={readers} totalPages={totalPages} />
+
+      {/* 랜덤 노래 추천 */}
+      <div className={styles.songRecommendationSection}>
+        <button
+          type="button"
+          className={styles.songRecommendationCard}
+          onClick={() => window.open(MOCK_SONG_RECOMMENDATION.url, "_blank", "noopener,noreferrer")}
+        >
+          <span className={styles.songRecommendationIcon}>
+            <img src={musicIcon} alt="" className="h-5 w-5" />
+          </span>
+
+          <span className={styles.songRecommendationText}>
+            {MOCK_SONG_RECOMMENDATION.title} - {MOCK_SONG_RECOMMENDATION.artist}
+          </span>
+        </button>
+      </div>
 
       {/* 탭 */}
       <TabBar active={activeTab} onChange={setActiveTab} />
@@ -511,7 +543,7 @@ const RoomDetailPage = () => {
       {activeTab === "일반" && (
         <button
           onClick={() => setModalStep("main")}
-          className="fixed left-1/2 bottom-[calc(var(--bottom-bar-height)+20px)] z-40 -translate-x-1/2 translate-x-[129px] rounded-full bg-black flex items-center justify-center shadow-lg w-12 h-12"
+          className="fixed left-1/2 bottom-[calc(var(--bottom-bar-height)+20px)] z-40 -translate-x-1/2 translate-x-[129px] rounded-full bg-primary flex items-center justify-center shadow-lg w-12 h-12"
           aria-label="추가"
         >
           <img src={plusIcon} alt="추가" className="w-[50px] h-[50px]" />
@@ -521,17 +553,17 @@ const RoomDetailPage = () => {
       <div style={{ marginTop: "auto" }} />
 
       {/* 모달 */}
-      {modalStep === "main" && selectedPage != null && (
-        <AddReactionModal
-          open
-          currentPage={selectedPage}
-          totalPages={totalPages}
-          onClose={handleCloseAll}
-          onSelectOCR={(page) => console.log("OCR:", page)}
-          onSelectComment={handleSelectComment}
-          onSelectEmoji={handleSelectEmoji}
-        />
-      )}
+      {modalStep === "main" && (
+  <AddReactionModal
+    open
+    currentPage={selectedPage ?? 1}
+    totalPages={totalPages}
+    onClose={handleCloseAll}
+    onSelectOCR={(page) => console.log("OCR:", page)}
+    onSelectComment={handleSelectComment}
+    onSelectEmoji={handleSelectEmoji}
+  />
+)}
       {modalStep === "comment" && modalPage !== null && (
         <CommentModal page={modalPage} onClose={handleCloseAll} onConfirm={handleCommentConfirm} />
       )}

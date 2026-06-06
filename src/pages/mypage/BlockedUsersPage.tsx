@@ -52,7 +52,7 @@ const BlockedUsersPage = () => {
 
   return (
     <>
-    <header className="relative flex h-[80px] items-center bg-main px-4 box-border">
+    <header className="fixed top-0 left-1/2 z-50 flex h-[80px] w-full max-w-[390px] -translate-x-1/2 items-center bg-main px-4 box-border">
       <button
         type="button"
         onClick={() => navigate("/mypage")}
@@ -66,15 +66,15 @@ const BlockedUsersPage = () => {
         />
       </button>
 
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-black">
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-primary">
         차단 목록
       </div>
     </header>
 
-    <div className="min-h-full p-4 pb-[100px]">
+    <div className="pt-[96px] min-h-full p-4 pb-[100px]">
       <section>
 
-        <div className="space-y-1 pl-4">
+        <div className="space-y-1 pl-2">
           {blockedUsers.length > 0 ? (
             blockedUsers.map((user) => (
               <BlockedUserRow

@@ -48,12 +48,12 @@ export const router = createBrowserRouter([
         element: <OAuthCallbackPage />,
       },
       {
+        path: "/nickname",
+        element: <NicknamePage />,
+      },
+      {
         element: <PrivateRoute />,
         children: [
-          {
-            path: "/nickname",
-            element: <NicknamePage />,
-          },
           {
             path: "/rooms/:roomId/ocr/create",
             element: <OcrCreatePage />,

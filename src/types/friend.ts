@@ -36,3 +36,22 @@ export interface FriendItem {
   profileImageUrl: string | null;
   createdAt: string;
 }
+
+export interface UserProfileBook {
+  roomId: number;
+  state: "ongoing" | "closed" | string;
+  startDate: string;
+  title: string;
+  author: string;
+}
+
+export interface UserProfile {
+  userId: number;
+  nickname: string;
+  profileImageUrl: string | null;
+  userCode: string;
+  friendStatus: FriendStatus;
+  isBlocked: boolean;
+  recentBookTitle: string | null;
+  books: UserProfileBook[];
+}
