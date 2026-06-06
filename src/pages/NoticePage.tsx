@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "../styles/NoticePage.module.css";
+import styles from "../styles/Noticepage.module.css";
 import { fetchNotifications, markAsRead, markAllAsRead } from "../api/notificationApi";
 import type { NotifType, NotificationItem as ApiNotification } from "../api/notificationApi";
 
