@@ -14,6 +14,7 @@ export interface RoomBook {
 export interface JoinedRoom {
   roomId: number;
   state: 'ongoing' | 'waiting';
+  myRole: 'leader' | 'member';
   book: RoomBook;
   period: number;
   daysLeft?: number;

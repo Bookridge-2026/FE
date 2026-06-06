@@ -53,6 +53,15 @@ const HomePage = () => {
     setCurrentIndex((prev) => (prev === rooms.length - 1 ? 0 : prev + 1));
   };
 
+  const handleCardClick = () => {
+    if (room.state === 'ongoing') {
+      navigate(`/rooms/${room.roomId}`);
+    } else if (room.myRole === 'leader') {
+      navigate('/mypage/rooms');
+    }
+    // member면 아무것도 안함
+  };
+
   const room = rooms[currentIndex];
 
   return (
@@ -84,8 +93,9 @@ const HomePage = () => {
             </button>
 
             {/* 카드 */}
-            <div className="w-[87%] bg-[#FFFBEF] rounded-2xl p-4 shadow-sm cursor-pointer" 
-            onClick={() => navigate(`/rooms/${room.roomId}`)}>
+            <div className="w-[87%] bg-[#FFFBEF] rounded-2xl p-4 shadow-sm 
+            ${room.state === 'ongoing' || room.myRole === 'leader' ? 'cursor-pointer' : '' }"
+              onClick={handleCardClick}>
 
               <div className="flex gap-4">
                 {/* 책 표지 */}
@@ -172,8 +182,9 @@ const HomePage = () => {
             <Plus size={24} color="white" />
           </button>
         </>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 };
 
