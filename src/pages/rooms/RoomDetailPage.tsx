@@ -1,56 +1,23 @@
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "../../styles/Roomdetailpage.module.css";
 import AddReactionModal from "../../components/rooms/detail/AddReactionModal";
+
 import plusIcon from "@/assets/common/plus-icon.svg";
 import musicIcon from "@/assets/rooms/music.svg";
 
-interface User {
-  id: number;
-  name: string;
-  color: string;
-}
+import {
+  fetchPages, fetchComments, fetchReactions, fetchReplies, fetchProgress,
+  fetchRoomDetail, fetchOcrPage,
+  createComment as apiCreateComment, addReaction as apiAddReaction,
+  EMOJI_TYPES,
+  type User, type Reply, type Comment, type PageReaction,
+  type RoomDetail, type OcrPage,
+} from "../../api/roomDetail";
 
-interface PageReaction {
-  id: number;
-  user: User;
-  emoji: string;
-}
-
-interface Reply {
-  id: number;
-  author: User;
-  text: string;
-}
-
-interface Comment {
-  id: number;
-  page: number;
-  quote: string;
-  author: User;
-  text?: string;
-  replies: Reply[];
-}
-
-interface OcrItem {
-  id: number;
-}
-
-interface PageData {
-  page: number;
-  reactions: PageReaction[];
-  comments: Comment[];
-  ocrItems: OcrItem[]; 
-}
-
-interface RoomDetail {
-  id: number;
-  bookTitle: string;
-  publisher: string;
-  totalPages: number;
-  readers: { user: User; page: number }[];
-  pages: PageData[];
-}
+type Reader = { user: User; page: number };
+type Tab = "일반" | "OCR";
+type ModalStep = "main" | "comment" | "emoji";
 
 interface SongRecommendation {
     songRecommendationId: number;
@@ -59,90 +26,6 @@ interface SongRecommendation {
     url: string;
     createdAt: string;
 }
-
-type Tab = "일반" | "OCR";
-type ModalStep = "main" | "comment" | "emoji";
-
-
-const EMOJI_OPTIONS = ["😮", "😨", "😢", "😠", "❤️"];
-
-// ─── 목 데이터 ─────────────────────────────────────────────────────────────────
-
-const MOCK_ROOM: RoomDetail = {
-  id: 1,
-  bookTitle: "죽은 시인의 사회",
-  publisher: "서교출판사",
-  totalPages: 310,
-  readers: [
-    { user: { id: 1, name: "나", color: "#F9A8B8" }, page: 55 },
-    { user: { id: 2, name: "유저2", color: "#7EC8D8" }, page: 100 },
-    { user: { id: 3, name: "유저3", color: "#C4A7E0" }, page: 100 },
-    { user: { id: 4, name: "유저4", color: "#A8D95E" }, page: 200 },
-  ],
-  pages: [
-  {
-    page: 55,
-    reactions: [
-      { id: 1, user: { id: 1, name: "나", color: "#F9A8B8" }, emoji: "😮" },
-      { id: 2, user: { id: 2, name: "유저2", color: "#7EC8D8" }, emoji: "😨" },
-    ],
-    comments: [
-      {
-        id: 10,
-        page: 55,
-        quote: "두려움은 적이 아니라 교사다",
-        author: { id: 1, name: "나", color: "#F9A8B8" },
-        text: "이 말이 계속 머릿속에 맴돌아",
-        replies: [],
-      },
-    ],
-    ocrItems: [
-      { id: 1  },
-      { id: 2 },
-    ],
-  },
-  {
-    page: 159,
-    reactions: [
-      { id: 3, user: { id: 4, name: "유저4", color: "#A8D95E" }, emoji: "😮" },
-      { id: 4, user: { id: 2, name: "유저2", color: "#7EC8D8" }, emoji: "😮" },
-      { id: 5, user: { id: 1, name: "나", color: "#F9A8B8" }, emoji: "😨" },
-      { id: 6, user: { id: 3, name: "유저3", color: "#C4A7E0" }, emoji: "❤️" },
-    ],
-    comments: [
-      {
-        id: 1,
-        page: 159,
-        quote: "오 캡틴 마이 캡틴",
-        author: { id: 4, name: "유저4", color: "#A8D95E" },
-        text: "이게 비극적 결말을 예고하는 복선이 될줄이야...",
-        replies: [
-          { id: 1, author: { id: 2, name: "유저2", color: "#7EC8D8" }, text: "아니 뭐임;; 스포 ㄴㄴ" },
-        ],
-      },
-    ],
-    ocrItems: [
-      { id: 3 },
-    ],
-  },
-  {
-    page: 200,
-    reactions: [
-      { id: 7, user: { id: 2, name: "유저2", color: "#7EC8D8" }, emoji: "❤️" },
-    ],
-    comments: [
-      {
-        id: 2,
-        page: 200,
-        quote: "현재를 붙잡아라, 오늘을 살아라,\n너의 삶을 특별하게 만들어라.",
-        author: { id: 1, name: "나", color: "#F9A8B8" },
-        replies: [],
-      },
-    ],
-    ocrItems: [],
-  },
-],
-};
 
 const MOCK_SONG_RECOMMENDATION: SongRecommendation = {
   songRecommendationId: 10,
@@ -156,13 +39,13 @@ const ReadingProgress = ({
   readers,
   totalPages,
 }: {
-  readers: RoomDetail["readers"];
+  readers: Reader[];
   totalPages: number;
 }) => {
   const [openUserId, setOpenUserId] = useState<number | null>(null);
 
   const groups = useMemo(() => {
-    const map = new Map<number, RoomDetail["readers"]>();
+    const map = new Map<number, Reader[]>();
     readers.forEach((r) => {
       if (!map.has(r.page)) map.set(r.page, []);
       map.get(r.page)!.push(r);
@@ -171,12 +54,7 @@ const ReadingProgress = ({
   }, [readers]);
 
   return (
-    <div
-      className={styles.progressWrapper}
-      
-      onClick={() => setOpenUserId(null)}
-    >
-      {/* 진행 바 */}
+    <div className={styles.progressWrapper} onClick={() => setOpenUserId(null)}>
       <div className={styles.progressBar}>
         {readers.map((r) => (
           <div
@@ -186,18 +64,13 @@ const ReadingProgress = ({
           />
         ))}
       </div>
-
-      {/* 아바타 영역 */}
       <div className={styles.avatarArea} style={{ height: 48 }}>
         {Array.from(groups.entries()).map(([page, group]) =>
           group.map((r, idx) => {
             const isOpen = openUserId === r.user.id;
             const leftPct = `calc(${(page / totalPages) * 100}% - 16px + ${idx * 10}px)`;
             return (
-              <div
-                key={r.user.id}
-                style={{ position: "absolute", top: 0, left: leftPct }}
-              >
+              <div key={r.user.id} style={{ position: "absolute", top: 0, left: leftPct }}>
                 <button
                   className={styles.avatarDot}
                   style={{ backgroundColor: r.user.color, position: "relative" }}
@@ -206,7 +79,6 @@ const ReadingProgress = ({
                     setOpenUserId(isOpen ? null : r.user.id);
                   }}
                 />
-                {/* 팝업: 이름 + 현재 쪽수 */}
                 {isOpen && (
                   <div className={styles.avatarPopup}>
                     <span className={styles.avatarPopupName}>{r.user.name}</span>
@@ -237,26 +109,16 @@ const TabBar = ({ active, onChange }: { active: Tab; onChange: (t: Tab) => void 
 );
 
 const PagePicker = ({
-  selectedPage,
-  pages,
-  open,
-  onToggle,
-  onSelect,
+  selectedPage, pages, open, onToggle, onSelect,
 }: {
-  selectedPage: number;
-  pages: number[];
-  open: boolean;
-  onToggle: () => void;
-  onSelect: (p: number) => void;
+  selectedPage: number; pages: number[]; open: boolean;
+  onToggle: () => void; onSelect: (p: number) => void;
 }) => (
   <div className={styles.pagePickerWrapper} onClick={(e) => e.stopPropagation()}>
     <button onClick={onToggle} className={styles.pagePickerTrigger}>
       {selectedPage}p
       <svg
-        width="14"
-        height="14"
-        viewBox="0 0 24 24"
-        fill="none"
+        width="14" height="14" viewBox="0 0 24 24" fill="none"
         className={`${styles.pagePickerChevron} ${open ? styles.pagePickerChevronOpen : ""}`}
       >
         <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -279,9 +141,7 @@ const PagePicker = ({
 );
 
 const PageEmojiRow = ({
-  reactions,
-  openPopupId,
-  setOpenPopupId,
+  reactions, openPopupId, setOpenPopupId,
 }: {
   reactions: PageReaction[];
   openPopupId: number | null;
@@ -299,10 +159,7 @@ const PageEmojiRow = ({
         const isOpen = openPopupId === r.id;
         return (
           <div key={r.id} style={{ position: "relative" }}>
-            <button
-              onClick={() => setOpenPopupId(isOpen ? null : r.id)}
-              className={styles.emojiChip}
-            >
+            <button onClick={() => setOpenPopupId(isOpen ? null : r.id)} className={styles.emojiChip}>
               {r.emoji}
             </button>
             {isOpen && (
@@ -337,9 +194,22 @@ const ReplyItem = ({ reply }: { reply: Reply }) => (
   </div>
 );
 
-const CommentCard = ({ comment }: { comment: Comment }) => {
+const CommentCard = ({ comment, roomId }: { comment: Comment; roomId: string }) => {
   const [repliesOpen, setRepliesOpen] = useState(false);
-  const hasReplies = comment.replies.length > 0;
+  const [replies, setReplies] = useState<Reply[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  const hasReplies = comment.replyCount > 0;
+
+  const toggle = async () => {
+    const next = !repliesOpen;
+    setRepliesOpen(next);
+    if (next && !loaded) {
+      try {
+        setReplies(await fetchReplies(roomId, comment.id));
+        setLoaded(true);
+      } catch (e) { console.error(e); }
+    }
+  };
 
   return (
     <div className={styles.card}>
@@ -356,7 +226,7 @@ const CommentCard = ({ comment }: { comment: Comment }) => {
             <span className={styles.commentText}>{comment.text}</span>
             {hasReplies && (
               <button
-                onClick={() => setRepliesOpen((v) => !v)}
+                onClick={toggle}
                 className={`${styles.chevronBtn} ${repliesOpen ? styles.chevronBtnOpen : ""}`}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -367,7 +237,7 @@ const CommentCard = ({ comment }: { comment: Comment }) => {
           </div>
           {repliesOpen && (
             <div className={styles.repliesList}>
-              {comment.replies.map((r) => <ReplyItem key={r.id} reply={r} />)}
+              {replies.map((r) => <ReplyItem key={r.id} reply={r} />)}
             </div>
           )}
         </div>
@@ -376,23 +246,16 @@ const CommentCard = ({ comment }: { comment: Comment }) => {
   );
 };
 
-
 const ModalOverlay = ({ onClose, children }: { onClose: () => void; children: React.ReactNode }) => (
   <div className={styles.overlay} onClick={onClose}>
-    <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
-      {children}
-    </div>
+    <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>{children}</div>
   </div>
 );
 
 const CommentModal = ({
-  page,
-  onClose,
-  onConfirm,
+  page, onClose, onConfirm,
 }: {
-  page: number;
-  onClose: () => void;
-  onConfirm: (quote: string, comment: string) => void;
+  page: number; onClose: () => void; onConfirm: (quote: string, comment: string) => void;
 }) => {
   const [quote, setQuote] = useState("");
   const [comment, setComment] = useState("");
@@ -430,27 +293,23 @@ const CommentModal = ({
 };
 
 const EmojiSelectModal = ({
-  page,
-  onClose,
-  onConfirm,
+  page, onClose, onConfirm,
 }: {
-  page: number;
-  onClose: () => void;
-  onConfirm: (emoji: string) => void;
+  page: number; onClose: () => void; onConfirm: (emojiTypeId: number) => void;
 }) => {
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<number | null>(null);
 
   return (
     <ModalOverlay onClose={onClose}>
       <p className={styles.modalPageLabel}>{page}p</p>
       <div className={styles.emojiSelectRow}>
-        {EMOJI_OPTIONS.map((emoji) => (
+        {EMOJI_TYPES.map(({ id, char }) => (
           <button
-            key={emoji}
-            onClick={() => setSelected(emoji)}
-            className={`${styles.emojiSelectBtn} ${selected === emoji ? styles.emojiSelectBtnActive : ""}`}
+            key={id}
+            onClick={() => setSelected(id)}
+            className={`${styles.emojiSelectBtn} ${selected === id ? styles.emojiSelectBtnActive : ""}`}
           >
-            {emoji}
+            {char}
           </button>
         ))}
       </div>
@@ -468,38 +327,104 @@ const EmojiSelectModal = ({
   );
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+
 const RoomDetailPage = () => {
   const navigate = useNavigate();
   const { roomId } = useParams<{ roomId: string }>();
 
-  const room = MOCK_ROOM;
-
-  const sortedPages = useMemo(
-    () => [...room.pages].sort((a, b) => a.page - b.page),
-    [room.pages]
-  );
-
   const [activeTab, setActiveTab] = useState<Tab>("일반");
-  const [selectedPage, setSelectedPage] = useState<number>(sortedPages[0]?.page ?? 0);
+  const [roomDetail, setRoomDetail] = useState<RoomDetail | null>(null);
+  const [pages, setPages] = useState<number[]>([]);
+  const [selectedPage, setSelectedPage] = useState<number | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [reactions, setReactions] = useState<PageReaction[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [readers, setReaders] = useState<Reader[]>([]);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [ocrData, setOcrData] = useState<OcrPage | null>(null);
+  const [ocrLoading, setOcrLoading] = useState(false);
+
   const [pagePickerOpen, setPagePickerOpen] = useState(false);
   const [openPopupId, setOpenPopupId] = useState<number | null>(null);
   const [manageActive, setManageActive] = useState(false);
   const [modalStep, setModalStep] = useState<ModalStep | null>(null);
   const [modalPage, setModalPage] = useState<number | null>(null);
 
-  const currentPageData = sortedPages.find((p) => p.page === selectedPage);
+  // 방 기본정보 + 페이지 목록 + 독서 진행도
+  useEffect(() => {
+    if (!roomId) return;
+
+    fetchRoomDetail(roomId)
+      .then((detail) => {
+        setRoomDetail(detail);
+        setTotalPages(detail.book.totalPage);
+      })
+      .catch(console.error);
+
+    fetchPages(roomId)
+      .then((list) => {
+        setPages(list);
+        setSelectedPage((prev) => prev ?? list[0] ?? null);
+      })
+      .catch(console.error);
+
+    fetchProgress(roomId)
+      .then(({ readers }) => setReaders(readers))
+      .catch(console.error);
+  }, [roomId]);
+
+  // 일반 탭: 선택 페이지의 코멘트 + 리액션
+  useEffect(() => {
+    if (!roomId || selectedPage == null || activeTab !== "일반") return;
+    setLoading(true);
+    Promise.all([fetchComments(roomId, selectedPage), fetchReactions(roomId, selectedPage)])
+      .then(([c, r]) => { setComments(c); setReactions(r); })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, [roomId, selectedPage, activeTab]);
+
+  // OCR 탭: 선택 페이지의 OCR 데이터
+  useEffect(() => {
+    if (!roomId || selectedPage == null || activeTab !== "OCR") return;
+    setOcrLoading(true);
+    fetchOcrPage(roomId, selectedPage)
+      .then(setOcrData)
+      .catch(console.error)
+      .finally(() => setOcrLoading(false));
+  }, [roomId, selectedPage, activeTab]);
+
+  const reload = async (page: number) => {
+    if (!roomId) return;
+    const list = await fetchPages(roomId);
+    setPages(list);
+    if (page === selectedPage) {
+      const [c, r] = await Promise.all([fetchComments(roomId, page), fetchReactions(roomId, page)]);
+      setComments(c); setReactions(r);
+    } else {
+      setSelectedPage(page);
+    }
+  };
 
   const handleCloseAll = () => setModalStep(null);
   const handleSelectComment = (page: number) => { setModalPage(page); setModalStep("comment"); };
   const handleSelectEmoji = (page: number) => { setModalPage(page); setModalStep("emoji"); };
 
-  const handleCommentConfirm = (quote: string, comment: string) => {
-    console.log("코멘트 저장:", { page: modalPage, quote, comment });
+  const handleCommentConfirm = async (quote: string, comment: string) => {
+    if (!roomId || modalPage == null) return;
+    try {
+      await apiCreateComment(roomId, modalPage, quote, comment);
+      await reload(modalPage);
+    } catch (e) { console.error(e); }
     setModalStep(null);
   };
 
-  const handleEmojiConfirm = (emoji: string) => {
-    console.log("이모지 저장:", { page: modalPage, emoji });
+  const handleEmojiConfirm = async (emojiTypeId: number) => {
+    if (!roomId || modalPage == null) return;
+    try {
+      await apiAddReaction(roomId, modalPage, emojiTypeId);
+      await reload(modalPage);
+    } catch (e) { console.error(e); }
     setModalStep(null);
   };
 
@@ -515,7 +440,11 @@ const RoomDetailPage = () => {
             <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
-        <h1 className={styles.headerTitle}>{room.bookTitle} | {room.publisher}</h1>
+        <h1 className={styles.headerTitle}>
+          {roomDetail
+            ? `${roomDetail.book.title} | ${roomDetail.book.publisher}`
+            : "불러오는 중…"}
+        </h1>
         <button
           className={`${styles.manageBtn} ${manageActive ? styles.manageBtnActive : ""}`}
           onPointerDown={() => setManageActive(true)}
@@ -526,8 +455,8 @@ const RoomDetailPage = () => {
         </button>
       </div>
 
-      {/* 독서 진행도 */}
-      <ReadingProgress readers={room.readers} totalPages={room.totalPages} />
+      {/* 독서 진행바 */}
+      <ReadingProgress readers={readers} totalPages={totalPages} />
 
       {/* 랜덤 노래 추천 */}
       <div className={styles.songRecommendationSection}>
@@ -549,65 +478,72 @@ const RoomDetailPage = () => {
       {/* 탭 */}
       <TabBar active={activeTab} onChange={setActiveTab} />
 
-      {/* 필터 행 - 일반 탭일 때만 */}
+      {/* 일반 탭: 페이지 피커 + 이모지 */}
       {activeTab === "일반" && (
         <div className={styles.filterRow} onClick={(e) => e.stopPropagation()}>
           <PagePicker
-            selectedPage={selectedPage}
-            pages={sortedPages.map((p) => p.page)}
+            selectedPage={selectedPage ?? 0}
+            pages={pages}
             open={pagePickerOpen}
             onToggle={() => setPagePickerOpen((v) => !v)}
             onSelect={setSelectedPage}
           />
-          {currentPageData && (
-            <PageEmojiRow
-              reactions={currentPageData.reactions}
-              openPopupId={openPopupId}
-              setOpenPopupId={setOpenPopupId}
-            />
-          )}
+          <PageEmojiRow
+            reactions={reactions}
+            openPopupId={openPopupId}
+            setOpenPopupId={setOpenPopupId}
+          />
         </div>
       )}
 
-      {/* 탭별 컨텐츠 */}
+      {/* 콘텐츠 영역 */}
       {activeTab === "OCR" ? (
         <div className={styles.commentList}>
-          {!currentPageData?.ocrItems?.length ? (
-            <p className={styles.emptyText}>이 페이지에 OCR이 없어요</p>
+          {/* OCR 탭 페이지 피커 */}
+          <div className={styles.filterRow} onClick={(e) => e.stopPropagation()}>
+            <PagePicker
+              selectedPage={selectedPage ?? 0}
+              pages={pages}
+              open={pagePickerOpen}
+              onToggle={() => setPagePickerOpen((v) => !v)}
+              onSelect={(p) => { setSelectedPage(p); setOcrData(null); }}
+            />
+          </div>
+
+          {ocrLoading ? (
+            <p className={styles.emptyText}>불러오는 중…</p>
+          ) : !ocrData ? (
+            <p className={styles.emptyText}>이 페이지에 OCR 데이터가 없어요</p>
           ) : (
-            currentPageData.ocrItems.map((item, index) => (
-            <button
-              key={item.id}
-              className={styles.ocrLinkCard}
-              onClick={() => navigate(`/ocr/${item.id}`)}
-            >
-              <span className={styles.ocrLinkText}>
-                {selectedPage}p OCR - {index + 1}
-              </span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M9 18L15 12L9 6" stroke="#9e9890" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-          ))
+            <div className={styles.card}>
+              {ocrData.imageUrl && (
+                <img
+                  src={ocrData.imageUrl}
+                  alt={`${ocrData.page}p 원본`}
+                  style={{ width: "100%", borderRadius: 8, marginBottom: 12 }}
+                />
+              )}
+              <p style={{ whiteSpace: "pre-wrap", lineHeight: 1.7 }}>{ocrData.text}</p>
+            </div>
           )}
         </div>
       ) : (
         <div className={styles.commentList}>
-          {!currentPageData?.comments.length ? (
+          {loading ? (
+            <p className={styles.emptyText}>불러오는 중…</p>
+          ) : !comments.length ? (
             <p className={styles.emptyText}>이 페이지에 코멘트가 없어요</p>
           ) : (
-            currentPageData.comments.map((comment) => (
-              <CommentCard key={comment.id} comment={comment} />
-            ))
+            comments.map((c) => <CommentCard key={c.id} comment={c} roomId={roomId!} />)
           )}
         </div>
       )}
 
-      {/* FAB - 일반 탭일 때만 */}
+      {/* FAB */}
       {activeTab === "일반" && (
         <button
           onClick={() => setModalStep("main")}
-          className="fixed left-1/2 bottom-[calc(var(--bottom-bar-height)+20px)] z-40 -translate-x-1/2 translate-x-[129px] rounded-full bg-black flex items-center justify-center shadow-lg w-12 h-12"
+          className="fixed left-1/2 bottom-[calc(var(--bottom-bar-height)+20px)] z-40 -translate-x-1/2 translate-x-[129px] rounded-full bg-primary flex items-center justify-center shadow-lg w-12 h-12"
           aria-label="추가"
         >
           <img src={plusIcon} alt="추가" className="w-[50px] h-[50px]" />
@@ -618,16 +554,16 @@ const RoomDetailPage = () => {
 
       {/* 모달 */}
       {modalStep === "main" && (
-        <AddReactionModal
-          open={true}
-          currentPage={selectedPage}
-          totalPages={room.totalPages}
-          onClose={handleCloseAll}
-          onSelectOCR={(page) => console.log("OCR:", page)}
-          onSelectComment={handleSelectComment}
-          onSelectEmoji={handleSelectEmoji}
-        />
-      )}
+  <AddReactionModal
+    open
+    currentPage={selectedPage ?? 1}
+    totalPages={totalPages}
+    onClose={handleCloseAll}
+    onSelectOCR={(page) => console.log("OCR:", page)}
+    onSelectComment={handleSelectComment}
+    onSelectEmoji={handleSelectEmoji}
+  />
+)}
       {modalStep === "comment" && modalPage !== null && (
         <CommentModal page={modalPage} onClose={handleCloseAll} onConfirm={handleCommentConfirm} />
       )}
@@ -637,6 +573,5 @@ const RoomDetailPage = () => {
     </div>
   );
 };
-
 
 export default RoomDetailPage;

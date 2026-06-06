@@ -21,11 +21,11 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <div className="mt-10 w-full max-w-[300px]">
+      <div className="mt-5 w-full max-w-[300px]">
         <button
           type="button"
           onClick={handleGoogleLogin}
-          className="w-full h-12 flex items-center justify-center gap-3 rounded-2xl border border-[#EEEAE6] bg-black text-base font-normal text-white shadow-sm"
+          className="w-full h-12 flex items-center justify-center gap-3 rounded-2xl border border-[#EEEAE6] bg-primary text-base font-normal text-white shadow-sm"
         >
           <img src={googleIcon} alt="Google" className="w-5 h-5" />
 

@@ -13,7 +13,7 @@ export const BottomButton = ({ children, onClick, disabled }: BottomButtonProps)
       onClick={onClick}
       disabled={disabled}
       className={`w-[340px] h-[60px] rounded-2xl text-base font-normal flex items-center justify-center transition-colors
-        ${disabled ? "bg-sub-black text-main" : "bg-black text-main"}`}
+        ${disabled ? "bg-sub-black text-main" : "bg-primary text-main"}`}
     >
       {children}
     </button>

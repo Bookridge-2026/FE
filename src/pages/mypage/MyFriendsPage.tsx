@@ -156,15 +156,15 @@ const MyFriendsPage = () => {
         />
       </button>
 
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-black">
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-primary">
         친구 관리
       </div>
     </header>
     
     <div className="pt-[96px] min-h-full p-4 pb-[100px]">
       <section>
-        <h2 className="mb-4 mt-3 text-lg font-semibold text-black">
-          · 친구 요청
+        <h2 className="mb-4 mt-3 text-lg font-semibold text-primary">
+            • 친구 요청
         </h2>
 
         <div className="space-y-1 pl-4">
@@ -192,8 +192,8 @@ const MyFriendsPage = () => {
       <div className="my-5 h-px bg-sub-black" />
 
       <section>
-        <h2 className="mb-4 mt-5 text-lg font-semibold text-black">
-          · 친구 목록
+        <h2 className="mb-4 mt-5 text-lg font-semibold text-primary">
+          • 친구 목록
         </h2>
 
         <div className="space-y-1 pl-4">

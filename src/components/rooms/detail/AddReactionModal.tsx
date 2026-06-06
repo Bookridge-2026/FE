@@ -85,14 +85,14 @@ export default function AddReactionModal({
                   e.currentTarget.blur();
                 }
               }}
-              className="w-[36px] bg-transparent text-center text-base font-semibold text-black outline-none"
+              className="w-[36px] bg-transparent text-center text-base font-semibold text-primary outline-none"
             />
             <span className="text-sm font-semibold text-sub-black">
               / {totalPages}p
             </span>
           </div>
 
-          <p className="text-base font-semibold text-black">
+          <p className="text-base font-semibold text-primary">
             에 어떤 반응을 남길까요?
           </p>
         </div>
@@ -101,7 +101,7 @@ export default function AddReactionModal({
           <button
             type="button"
             onClick={handleOCR}
-            className="h-[40px] flex-1 rounded-[10px] bg-black text-base font-normal text-white"
+            className="h-[40px] flex-1 rounded-[10px] bg-primary text-base font-normal text-white"
           >
             OCR
           </button>
@@ -114,7 +114,7 @@ export default function AddReactionModal({
               if (!Number.isInteger(page) || page < 1 || page > totalPages) return;
               onSelectComment(page);
             }}
-            className="h-[40px] flex-1 rounded-[10px] bg-black text-base font-normal text-white"
+            className="h-[40px] flex-1 rounded-[10px] bg-primary text-base font-normal text-white"
           >
             코멘트
           </button>
@@ -127,7 +127,7 @@ export default function AddReactionModal({
               if (!Number.isInteger(page) || page < 1 || page > totalPages) return;
               onSelectEmoji(page);
             }}
-            className="h-[40px] flex-1 rounded-[10px] bg-black text-base font-normal text-white"
+            className="h-[40px] flex-1 rounded-[10px] bg-primary text-base font-normal text-white"
           >
             이모지
           </button>

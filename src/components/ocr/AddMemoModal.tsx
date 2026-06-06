@@ -48,7 +48,7 @@ export default function AddMemoModal({
         className="w-[300px] rounded-2xl bg-white px-4 py-4 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <p className="mb-3 text-sm font-semibold text-black">{title}</p>
+        <p className="mb-3 text-sm font-semibold text-primary">{title}</p>
 
         <textarea
           className="h-[90px] w-full resize-none rounded-xl bg-field p-3 text-sm outline-none"
@@ -65,7 +65,7 @@ export default function AddMemoModal({
         <div className="mt-4 flex gap-3">
           <button
             type="button"
-            className="h-10 flex-1 rounded-xl bg-field text-sm text-black"
+            className="h-10 flex-1 rounded-xl bg-field text-sm text-primary"
             onClick={handleClose}
           >
             취소
@@ -73,7 +73,7 @@ export default function AddMemoModal({
 
           <button
             type="button"
-            className="h-10 flex-1 rounded-xl bg-black text-sm text-white disabled:bg-sub-black"
+            className="h-10 flex-1 rounded-xl bg-primary text-sm text-white disabled:bg-sub-black"
             disabled={!memo.trim()}
             onClick={handleSave}
           >

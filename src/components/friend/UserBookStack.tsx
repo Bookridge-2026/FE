@@ -21,7 +21,7 @@ export const UserBookStack = ({ books }: UserBookStackProps) => {
     return (
       <div className="mt-auto px-6 pb-10">
         <div className="rounded-2xl bg-main px-5 py-6 text-center shadow-sm">
-          <p className="text-sm font-medium text-black">
+          <p className="text-sm font-medium text-primary">
             아직 함께한 책이 없습니다.
           </p>
         </div>
@@ -61,7 +61,7 @@ export const UserBookStack = ({ books }: UserBookStackProps) => {
                     zIndex: index,
                     marginTop: index === 0 ? 0 : -2,
                   }}
-                  className="relative rounded-xl bg-main px-3 py-4 text-sm text-black shadow-md ring-1 ring-field"
+                  className="relative rounded-xl bg-main px-3 py-4 text-sm text-primary shadow-md ring-1 ring-field"
                 >
                   <div className="flex min-w-0 items-center overflow-hidden">
                     <span className="min-w-0 flex-1 truncate font-medium">

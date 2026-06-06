@@ -101,7 +101,7 @@ const UserProfilePage = () => {
           <img src={backButtonIcon} alt="" className="h-[24px] w-[24px]" />
         </button>
 
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-black">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[17px] font-semibold text-primary">
           프로필
         </div>
       </header>
@@ -114,10 +114,10 @@ const UserProfilePage = () => {
               e.currentTarget.src = defaultProfileImage;
             }}
             alt={`${profile.nickname} 프로필`}
-            className="h-24 w-24 rounded-full border-1 border-field object-cover"
+            className="h-24 w-24 rounded-full border-2 border-field object-cover"
           />
 
-          <p className="mt-3 text-lg font-semibold text-black">
+          <p className="mt-3 text-lg font-semibold text-primary">
             {profile.nickname}
           </p>
 
@@ -141,7 +141,7 @@ const UserProfilePage = () => {
           </p>
         </section>
 
-        <UserBookStack books={profile.books} />
+        <UserBookStack books={[...profile.books].reverse()} />
       </main>
     </div>
   );
