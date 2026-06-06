@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Plus, MoreHorizontal } from "lucide-react";
 import { getJoinedRooms } from "@/api/rooms";
+import { useSearchParams } from 'react-router-dom';
 import type { JoinedRoom } from "@/types/room";
 
 const quotes = [
@@ -22,6 +23,7 @@ const quotes = [
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [quote] = useState(
     () => quotes[Math.floor(Math.random() * quotes.length)]
@@ -29,6 +31,17 @@ const HomePage = () => {
   const [rooms, setRooms] = useState<JoinedRoom[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const accessToken = searchParams.get("accessToken");
+    const refreshToken = searchParams.get("refreshToken");
+
+    if (accessToken && refreshToken) {
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+      navigate("/home", { replace: true });
+    }
+  }, [searchParams, navigate]);
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -80,7 +93,10 @@ const HomePage = () => {
       {loading ? (
         <div className="w-full bg-gray-100 rounded-2xl h-64 animate-pulse" />
       ) : rooms.length === 0 ? (
-        <p className="text-center text-gray-600 mt-16">텅</p>
+        <div className="flex flex-col items-center mt-16 gap-2">
+          <p className="text-6xl mb-2">텅</p>
+          <p className="text-sm text-gray-400">현재 참여 중인 방이 없습니다.</p>
+        </div>
       ) : (
         <>
 
