@@ -5,6 +5,8 @@ import AddReactionModal from "../../components/rooms/detail/AddReactionModal";
 
 import plusIcon from "@/assets/common/plus-icon.svg";
 import musicIcon from "@/assets/rooms/music.svg";
+import { fetchRandomSongRecommendation } from "../../api/song";
+import type { SongRecommendationWithCreatedAt } from "@/types/song";
 
 import {
   fetchPages, fetchComments, fetchReactions, fetchReplies, fetchProgress,
@@ -19,21 +21,6 @@ type Reader = { user: User; page: number };
 type Tab = "일반" | "OCR";
 type ModalStep = "main" | "comment" | "emoji";
 
-interface SongRecommendation {
-    songRecommendationId: number;
-    title: string;
-    artist: string;
-    url: string;
-    createdAt: string;
-}
-
-const MOCK_SONG_RECOMMENDATION: SongRecommendation = {
-  songRecommendationId: 10,
-  title: "노스탤지어",
-  artist: "윤마치",
-  url: "https://www.youtube.com/watch?v=...",
-  createdAt: "2026-05-30T12:34:56.000Z",
-};
 
 const ReadingProgress = ({
   readers,
@@ -333,6 +320,9 @@ const RoomDetailPage = () => {
   const navigate = useNavigate();
   const { roomId } = useParams<{ roomId: string }>();
 
+  const [songRecommendation, setSongRecommendation] =
+  useState<SongRecommendationWithCreatedAt | null>(null);
+
   const [activeTab, setActiveTab] = useState<Tab>("일반");
   const [roomDetail, setRoomDetail] = useState<RoomDetail | null>(null);
   const [pages, setPages] = useState<number[]>([]);
@@ -373,6 +363,16 @@ const RoomDetailPage = () => {
       .then(({ readers }) => setReaders(readers))
       .catch(console.error);
   }, [roomId]);
+
+  useEffect(() => {
+  if (!roomId) return;
+
+  fetchRandomSongRecommendation(roomId)
+    .then((res) => {
+      setSongRecommendation(res.data);
+    })
+    .catch(console.error);
+}, [roomId]);
 
   // 일반 탭: 선택 페이지의 코멘트 + 리액션
   useEffect(() => {
@@ -461,19 +461,25 @@ const RoomDetailPage = () => {
       {/* 랜덤 노래 추천 */}
       <div className={styles.songRecommendationSection}>
         <button
-          type="button"
-          className={styles.songRecommendationCard}
-          onClick={() => window.open(MOCK_SONG_RECOMMENDATION.url, "_blank", "noopener,noreferrer")}
+            type="button"
+            className={styles.songRecommendationCard}
+            disabled={!songRecommendation}
+            onClick={() => {
+            if (!songRecommendation?.url) return;
+            window.open(songRecommendation.url, "_blank", "noopener,noreferrer");
+            }}
         >
-          <span className={styles.songRecommendationIcon}>
+            <span className={styles.songRecommendationIcon}>
             <img src={musicIcon} alt="" className="h-5 w-5" />
-          </span>
+            </span>
 
-          <span className={styles.songRecommendationText}>
-            {MOCK_SONG_RECOMMENDATION.title} - {MOCK_SONG_RECOMMENDATION.artist}
-          </span>
+            <span className={styles.songRecommendationText}>
+            {songRecommendation
+                ? `${songRecommendation.title} - ${songRecommendation.artist}`
+                : "추천 노래를 불러오는 중..."}
+            </span>
         </button>
-      </div>
+        </div>
 
       {/* 탭 */}
       <TabBar active={activeTab} onChange={setActiveTab} />
