@@ -781,7 +781,7 @@
   flex-shrink: 0;
 }
 .replyToggleBtn:hover {
-  color: #ffffff;
+  color: black;
 }
 
 /* 대댓글 입력 행 */
@@ -797,7 +797,7 @@
   background: transparent;
   border: none;
   border-bottom: 1px solid #3a3a3a;
-  color: #ffffff;
+  color: black;
   font-size: 13px;
   padding: 4px 0;
   outline: none;
