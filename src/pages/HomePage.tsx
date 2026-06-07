@@ -80,8 +80,8 @@ const HomePage = () => {
     <div className="flex flex-col flex-1 bg-[#FFFFFF] px-6 py-1 relative ">
 
       {/* 명언 */}
-      <div className="h-23 flex flex-col items-center justify-center overflow-hidden">
-        <p className=" text-center text-[#3B2E1E] text-sm font-bold leading-relaxed whitespace-pre-line">
+      <div className="h-33 flex flex-col items-center justify-center overflow-hidden">
+        <p className=" text-center text-[#3B2E1E] text-[15px] font-bold leading-relaxed whitespace-pre-line">
           {quote.text}
         </p>
         <p className="text-center text-[#3B2E1E] text-xs mt-2 mb-2">
@@ -108,7 +108,7 @@ const HomePage = () => {
             </button>
 
             {/* 카드 */}
-            <div className="w-[95%] bg-[#FFFBEF] rounded-lg p-4 shadow-sm border border-[#EEEAE6]
+            <div className="w-[87%] bg-[#FFFBEF] rounded-lg p-4 shadow-sm border border-[#EEEAE6]
             ${room.state === 'ongoing' || room.myRole === 'leader' ? 'cursor-pointer' : '' }"
               onClick={handleCardClick}>
 
