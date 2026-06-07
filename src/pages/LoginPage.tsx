@@ -21,7 +21,7 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <div className="mt-10 w-full max-w-[300px]">
+      <div className="mt-5 w-full max-w-[300px]">
         <button
           type="button"
           onClick={handleGoogleLogin}

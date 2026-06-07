@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { BottomButton } from "@/components/common/BottomButton";
 import { registerOAuthUser } from "@/api/auth";
 import defaultProfile from "@/assets/default-profile.jpg";
+import axios from "axios";
 
 const NICKNAME_REGEX = /^[가-힣a-zA-Z0-9]{2,6}$/;
 
@@ -53,9 +54,10 @@ const NicknamePage = () => {
       localStorage.setItem("refreshToken", result.refreshToken);
 
       navigate("/home", { replace: true });
-    } catch (error: any) {
-      const message =
-        error.response?.data?.message ?? "회원가입에 실패했습니다.";
+    } catch (error: unknown) {
+      const message = axios.isAxiosError(error)
+        ? error.response?.data?.message ?? "회원가입에 실패했습니다."
+        : "회원가입에 실패했습니다.";
 
       setServerError(message);
     } finally {

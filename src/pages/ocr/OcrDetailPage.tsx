@@ -8,6 +8,8 @@ import AddMemoModal from "@/components/ocr/AddMemoModal";
 import HighlightedText from "@/components/ocr/HighLightedText";
 import MemoLayer from "@/components/ocr/MemoLayer";
 import backButtonIcon from "@/assets/common/back-button.svg";
+import OcrWatermark from "@/components/ocr/OcrWaterMark";
+import { getStoredUserCode } from "@/utils/watermark";
 
 import {
   createOcrComment,
@@ -96,6 +98,12 @@ export default function OcrDetailPage() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [addMemoModalOpen, setAddMemoModalOpen] = useState(false);
 
+  const [userCode, setUserCode] = useState("");
+
+  useEffect(() => {
+  setUserCode(getStoredUserCode());
+  }, []);
+
   const upsertHighlight = useCallback((newHighlight: OcrHighlight) => {
     setHighlights((prev) => {
       const exists = prev.some(
@@ -160,31 +168,31 @@ export default function OcrDetailPage() {
     console.log("SSE 연결 성공");
   };
 
-  eventSource.addEventListener("new-highlight", (e: any) => {
-    console.log("SSE 수신:", e.data);
+  eventSource.addEventListener("new-highlight", (e) => {
+    const messageEvent = e as MessageEvent<string>;
 
-    const data = JSON.parse(e.data);
+    console.log("SSE 수신:", messageEvent.data);
+
+    const data = JSON.parse(messageEvent.data);
 
     const newHighlight: OcrHighlight = {
-      highlightId: data.highlightId,
-      ocrPageId: data.ocrPageId ?? Number(ocrPageId),
-      selectedText: data.selectedText,
-      startIndex: data.startIndex,
-      endIndex: data.endIndex,
-
-      // 백엔드 응답 구조 2가지 모두 대응
-      ocrComments: data.ocrComments ?? [
+        highlightId: data.highlightId,
+        ocrPageId: data.ocrPageId ?? Number(ocrPageId),
+        selectedText: data.selectedText,
+        startIndex: data.startIndex,
+        endIndex: data.endIndex,
+        ocrComments: data.ocrComments ?? [
         {
-          ocrCommentId: data.ocrCommentId,
-          content: data.content,
-          color: data.color,
-          createdAt: data.createdAt,
+            ocrCommentId: data.ocrCommentId,
+            content: data.content,
+            color: data.color,
+            createdAt: data.createdAt,
         },
-      ],
+        ],
     };
 
     upsertHighlight(newHighlight);
-  });
+    });
 
   eventSource.onerror = (error) => {
     console.error("SSE 에러:", error);
@@ -348,15 +356,17 @@ export default function OcrDetailPage() {
     </header>
 
     <div
-      className="pt-[96px] relative min-h-full p-4 pb-[120px]"
-      onClick={() => {
-        if (!selectMode && !createModalOpen && !addMemoModalOpen) {
-          setActiveHighlightIds([]);
-          setAnchorRect(null);
-        }
-      }}
-    >
-      <div className="mb-2 flex justify-end">
+        className="relative min-h-full overflow-hidden p-4 pt-[136px] pb-[120px]"
+        onClick={() => {
+            if (!selectMode && !createModalOpen && !addMemoModalOpen) {
+            setActiveHighlightIds([]);
+            setAnchorRect(null);
+            }
+        }}
+        >
+        <OcrWatermark userCode={userCode} />
+
+      <div className="fixed top-[92px] left-1/2 z-40 flex w-full max-w-[390px] -translate-x-1/2 justify-end px-4">
         {selectMode ? (
           <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
             <button

@@ -1,4 +1,5 @@
 import { api, refreshApi } from "@/api/client";
+import type { MyPageResponse } from "@/types/user";
 
 interface RegisterRequest {
   tempToken: string;
@@ -27,5 +28,9 @@ export const refreshAccessToken = async (refreshToken: string) => {
   });
 
   return response.data.accessToken;
+};
 
+export const getMyPage = async () => {
+  const { data } = await api.get<MyPageResponse>("/api/oauth2/mypage");
+  return data;
 };

@@ -5,6 +5,8 @@ import AddReactionModal from "../../components/rooms/detail/AddReactionModal";
 
 import plusIcon from "@/assets/common/plus-icon.svg";
 import musicIcon from "@/assets/rooms/music.svg";
+import { fetchRandomSongRecommendation } from "../../api/song";
+import type { SongRecommendationWithCreatedAt } from "@/types/song";
 
 import {
   fetchPages, fetchComments, fetchReactions, fetchReplies, fetchProgress,
@@ -15,119 +17,14 @@ import {
   type RoomDetail, type OcrPage,
 } from "../../api/roomDetail";
 
-
-
 type Reader = { user: User; page: number };
 
-/*
-type Tab = "일반" | "OCR";
-type ModalStep = "main" | "comment" | "emoji";
-*/
-
-
-interface SongRecommendation {
-    songRecommendationId: number;
-    title: string;
-    artist: string;
-    url: string;
-    createdAt: string;
-
-  }
 
 type Tab = "일반" | "OCR";
 type ModalStep = "main" | "comment" | "emoji";
 
 
-const EMOJI_OPTIONS = ["😮", "😨", "😢", "😠", "❤️"];
 
-// ─── 목 데이터 ─────────────────────────────────────────────────────────────────
-
-/*
-const MOCK_ROOM: RoomDetail = {
-  id: 1,
-  bookTitle: "죽은 시인의 사회",
-  publisher: "서교출판사",
-  totalPages: 310,
-  readers: [
-    { user: { id: 1, name: "나", color: "#F9A8B8" }, page: 55 },
-    { user: { id: 2, name: "유저2", color: "#7EC8D8" }, page: 100 },
-    { user: { id: 3, name: "유저3", color: "#C4A7E0" }, page: 100 },
-    { user: { id: 4, name: "유저4", color: "#A8D95E" }, page: 200 },
-  ],
-  pages: [
-  {
-    page: 55,
-    reactions: [
-      { id: 1, user: { id: 1, name: "나", color: "#F9A8B8" }, emoji: "😮" },
-      { id: 2, user: { id: 2, name: "유저2", color: "#7EC8D8" }, emoji: "😨" },
-    ],
-    comments: [
-      {
-        id: 10,
-        page: 55,
-        quote: "두려움은 적이 아니라 교사다",
-        author: { id: 1, name: "나", color: "#F9A8B8" },
-        text: "이 말이 계속 머릿속에 맴돌아",
-        replies: [],
-      },
-    ],
-    ocrItems: [
-      { id: 1  },
-      { id: 2 },
-    ],
-  },
-  {
-    page: 159,
-    reactions: [
-      { id: 3, user: { id: 4, name: "유저4", color: "#A8D95E" }, emoji: "😮" },
-      { id: 4, user: { id: 2, name: "유저2", color: "#7EC8D8" }, emoji: "😮" },
-      { id: 5, user: { id: 1, name: "나", color: "#F9A8B8" }, emoji: "😨" },
-      { id: 6, user: { id: 3, name: "유저3", color: "#C4A7E0" }, emoji: "❤️" },
-    ],
-    comments: [
-      {
-        id: 1,
-        page: 159,
-        quote: "오 캡틴 마이 캡틴",
-        author: { id: 4, name: "유저4", color: "#A8D95E" },
-        text: "이게 비극적 결말을 예고하는 복선이 될줄이야...",
-        replies: [
-          { id: 1, author: { id: 2, name: "유저2", color: "#7EC8D8" }, text: "아니 뭐임;; 스포 ㄴㄴ" },
-        ],
-      },
-    ],
-    ocrItems: [
-      { id: 3 },
-    ],
-  },
-  {
-    page: 200,
-    reactions: [
-      { id: 7, user: { id: 2, name: "유저2", color: "#7EC8D8" }, emoji: "❤️" },
-    ],
-    comments: [
-      {
-        id: 2,
-        page: 200,
-        quote: "현재를 붙잡아라, 오늘을 살아라,\n너의 삶을 특별하게 만들어라.",
-        author: { id: 1, name: "나", color: "#F9A8B8" },
-        replies: [],
-      },
-    ],
-    ocrItems: [],
-  },
-],
-};
-
-*/
-
-const MOCK_SONG_RECOMMENDATION: SongRecommendation = {
-  songRecommendationId: 10,
-  title: "노스탤지어",
-  artist: "윤마치",
-  url: "https://www.youtube.com/watch?v=...",
-  createdAt: "2026-05-30T12:34:56.000Z",
-};
 
 const ReadingProgress = ({
   readers,
@@ -427,6 +324,9 @@ const RoomDetailPage = () => {
   const navigate = useNavigate();
   const { roomId } = useParams<{ roomId: string }>();
 
+  const [songRecommendation, setSongRecommendation] =
+  useState<SongRecommendationWithCreatedAt | null>(null);
+
   const [activeTab, setActiveTab] = useState<Tab>("일반");
   const [roomDetail, setRoomDetail] = useState<RoomDetail | null>(null);
   const [pages, setPages] = useState<number[]>([]);
@@ -467,6 +367,16 @@ const RoomDetailPage = () => {
       .then(({ readers }) => setReaders(readers))
       .catch(console.error);
   }, [roomId]);
+
+  useEffect(() => {
+  if (!roomId) return;
+
+  fetchRandomSongRecommendation(roomId)
+    .then((res) => {
+      setSongRecommendation(res.data);
+    })
+    .catch(console.error);
+}, [roomId]);
 
   // 일반 탭: 선택 페이지의 코멘트 + 리액션
   useEffect(() => {
@@ -555,19 +465,25 @@ const RoomDetailPage = () => {
       {/* 랜덤 노래 추천 */}
       <div className={styles.songRecommendationSection}>
         <button
-          type="button"
-          className={styles.songRecommendationCard}
-          onClick={() => window.open(MOCK_SONG_RECOMMENDATION.url, "_blank", "noopener,noreferrer")}
+            type="button"
+            className={styles.songRecommendationCard}
+            disabled={!songRecommendation}
+            onClick={() => {
+            if (!songRecommendation?.url) return;
+            window.open(songRecommendation.url, "_blank", "noopener,noreferrer");
+            }}
         >
-          <span className={styles.songRecommendationIcon}>
+            <span className={styles.songRecommendationIcon}>
             <img src={musicIcon} alt="" className="h-5 w-5" />
-          </span>
+            </span>
 
-          <span className={styles.songRecommendationText}>
-            {MOCK_SONG_RECOMMENDATION.title} - {MOCK_SONG_RECOMMENDATION.artist}
-          </span>
+            <span className={styles.songRecommendationText}>
+            {songRecommendation
+                ? `${songRecommendation.title} - ${songRecommendation.artist}`
+                : "추천 노래를 불러오는 중..."}
+            </span>
         </button>
-      </div>
+        </div>
 
       {/* 탭 */}
       <TabBar active={activeTab} onChange={setActiveTab} />
@@ -647,17 +563,17 @@ const RoomDetailPage = () => {
       <div style={{ marginTop: "auto" }} />
 
       {/* 모달 */}
-      {modalStep === "main" && selectedPage != null && (
-        <AddReactionModal
-          open
-          currentPage={selectedPage}
-          totalPages={totalPages}
-          onClose={handleCloseAll}
-          onSelectOCR={(page) => console.log("OCR:", page)}
-          onSelectComment={handleSelectComment}
-          onSelectEmoji={handleSelectEmoji}
-        />
-      )}
+      {modalStep === "main" && (
+  <AddReactionModal
+    open
+    currentPage={selectedPage ?? 1}
+    totalPages={totalPages}
+    onClose={handleCloseAll}
+    onSelectOCR={(page) => console.log("OCR:", page)}
+    onSelectComment={handleSelectComment}
+    onSelectEmoji={handleSelectEmoji}
+  />
+)}
       {modalStep === "comment" && modalPage !== null && (
         <CommentModal page={modalPage} onClose={handleCloseAll} onConfirm={handleCommentConfirm} />
       )}
