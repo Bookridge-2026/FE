@@ -18,3 +18,11 @@ export interface MyPageResponse {
   message: string;
   user: UserInfo;
 }
+
+export interface UpdateNicknameData {
+  nickname: string;
+}
+
+export interface UpdateProfileImageData {
+  profileImageUrl: string;
+}

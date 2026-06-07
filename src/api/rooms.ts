@@ -1,3 +1,6 @@
+import { api } from '@/api/client';
+import type { JoinedRoom } from '@/types/room';
+
 // 공통 fetch 래퍼
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000";
 
@@ -162,3 +165,7 @@ export async function getRoomByInviteCode(
   );
   return res.data;
 }
+
+// 내가 참여한 방 목록 조회
+export const getJoinedRooms = () =>
+  api.get<{ success: boolean; data: JoinedRoom[] }>('/api/rooms/joined');
