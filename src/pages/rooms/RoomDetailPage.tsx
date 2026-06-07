@@ -589,7 +589,7 @@ const RoomDetailPage = () => {
       {activeTab === "OCR" ? (
         <div className={styles.commentList}>
           {/* OCR 탭 페이지 피커 */}
-          <div className={styles.filterRow} onClick={(e) => e.stopPropagation()}>
+          <div onClick={(e) => e.stopPropagation()}>
             <PagePicker
               selectedPage={selectedPage ?? 0}
               pages={pages}
