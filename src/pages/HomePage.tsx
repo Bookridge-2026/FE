@@ -77,20 +77,20 @@ const HomePage = () => {
   const room = rooms[currentIndex];
 
   return (
-    <div className="flex flex-col flex-1 bg-[#FFFFFF] px-6 py-8 relative ">
+    <div className="flex flex-col flex-1 bg-[#FFFFFF] px-6 py-1 relative ">
 
       {/* 명언 */}
       <div className="h-28 flex flex-col items-center justify-center overflow-hidden">
-        <p className="mt-2 text-center text-[#3B2E1E] text-base font-bold leading-relaxed whitespace-pre-line">
+        <p className=" text-center text-[#3B2E1E] text-sm font-bold leading-relaxed whitespace-pre-line">
           {quote.text}
         </p>
-        <p className="text-center text-[#3B2E1E] text-xs mt-2 mb-8">
+        <p className="text-center text-[#3B2E1E] text-xs mt-2 mb-2">
           - {quote.author} -
         </p>
       </div>
 
       {loading ? (
-        <div className="w-full bg-gray-100 rounded-2xl h-64 animate-pulse" />
+        <div className="w-full bg-gray-100 rounded-lg h-64 animate-pulse" />
       ) : rooms.length === 0 ? (
         <div className="flex flex-col items-center mt-16 gap-2">
           <p className="text-6xl mb-2">텅</p>
@@ -108,7 +108,7 @@ const HomePage = () => {
             </button>
 
             {/* 카드 */}
-            <div className="w-[87%] bg-[#FFFBEF] rounded-2xl p-4 shadow-sm border border-[#EEEAE6]
+            <div className="w-[95%] bg-[#FFFBEF] rounded-lg p-4 shadow-sm border border-[#EEEAE6]
             ${room.state === 'ongoing' || room.myRole === 'leader' ? 'cursor-pointer' : '' }"
               onClick={handleCardClick}>
 
@@ -117,47 +117,43 @@ const HomePage = () => {
                 <img
                   src={room.book.thumbnail}
                   alt={room.book.title}
-                  className="w-24 h-37 object-cover rounded-lg bg-gray-200"
+                  className="w-24 h-37 object-cover rounded-lg bg-gray-200 mt-1"
                 />
 
                 {/* 책 정보 */}
                 <div className="flex flex-col flex-1 gap-1">
-                  <p className="font-semibold text-[#3B2E1E]">{room.book.title}</p>
-                  <p className="text-xs text-gray-400">
+                  <p className="font-semibold text-sm text-[#3B2E1E]">{room.book.title}</p>
+                  <p className="text-[11px] text-gray-400">
                     {room.book.author} · {room.book.publisher}
                   </p>
 
                   {/* 뱃지 */}
                   {room.state === "ongoing" ? (
-                    <span className="mt-2 self-start px-3 py-1 border border-[#3B2E1E] rounded-full text-xs text-[#3B2E1E]">
+                    <span className="mt-auto self-start px-2 py-1 border border-[#3B2E1E] rounded-lg text-xs text-[#3B2E1E] font-semibold">
                       D - {room.daysLeft}
                     </span>
                   ) : (
-                    <span className="mt-2 self-start px-3 py-1 border border-[#3B2E1E] rounded-full text-xs text-[#3B2E1E]">
+                    <span className="mt-auto self-start px-2 py-1 border border-[#3B2E1E] rounded-lg text-xs text-[#3B2E1E] font-semibold whitespace-nowrap">
                       {room.period}일간 진행 예정
                     </span>
                   )}
 
-                  {/* 진행률 */}
-                  <p className="mt-7 text-xs text-[#291A00]">
-                    {room.progressRate}%
-                  </p>
+                  {/* 진행률 + 멤버 수 */}
+                  <div className="flex justify-between mt-1">
+                    <p className="text-xs text-[#291A00]">{room.progressRate}%</p>
+                    <p className="text-xs text-[#291A00]">{room.memberProfiles.length}/{room.atLeastPeople}</p>
+                  </div>
                   <div className="w-full h-1.5 bg-gray-200 rounded-full">
                     <div
                       className="h-1.5 bg-[#3B2E1E] rounded-full"
                       style={{ width: `${room.progressRate}%` }}
                     />
                   </div>
-
-                  {/* 멤버 수 */}
-                  <p className="text-xs text-[#291A00] text-right">
-                    {room.memberProfiles.length}/{room.atLeastPeople}
-                  </p>
                 </div>
               </div>
 
               {/* 하단 프로필 + 화살표 */}
-              <div className="flex items-center justify-between mt-4">
+              <div className="flex items-center justify-between mt-2">
                 <div className="flex items-center gap-1">
                   {room.memberProfiles.slice(0, 3).map((member, i) => (
                     <img
@@ -193,11 +189,6 @@ const HomePage = () => {
               />
             ))}
           </div>
-
-          {/* + 버튼 */}
-          <button className="fixed bottom-24 right-6 w-12 h-12 bg-[#3B2E1E] rounded-full flex items-center justify-center shadow-lg">
-            <Plus size={24} color="white" />
-          </button>
         </>
       )
       }
