@@ -1,4 +1,8 @@
-import { api } from "./client";
+import { api } from '@/api/client';
+import type { JoinedRoom } from '@/types/room';
+
+// 공통 fetch 래퍼
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000";
 
 // ─── 타입 정의 ─────────────────────────────────────────────────────────────
 
@@ -116,24 +120,6 @@ export interface MemberProgress {
   progressRate: number;
 }
 
-export interface JoinedRoom {
-  roomId: number;
-  state: string;
-  myRole: string;
-  book: {
-    title: string;
-    author: string;
-    publisher: string;
-    thumbnail: string;
-  };
-  period: number;
-  daysLeft?: number;
-  minMembers: number;
-  progressRate: number;
-  maxReadPage: number;
-  totalPages: number;
-  memberProfiles: { profileImage: string; color: string }[];
-}
 
 export interface MyRoomsResult {
   invitedRooms?: {
@@ -280,13 +266,6 @@ export async function getMembersProgress(
   return res.data.data;
 }
 
-// 참여 중인 방 목록 조회
-export async function getJoinedRooms(): Promise<JoinedRoom[]> {
-  const res = await api.get<{ success: boolean; data: JoinedRoom[] }>(
-    "/api/rooms/joined",
-  );
-  return res.data.data;
-}
 
 // 초대 수락
 export async function acceptInvite(
@@ -342,3 +321,6 @@ export async function getMyRooms(
   );
   return res.data.data;
 }
+// 내가 참여한 방 목록 조회
+export const getJoinedRooms = () =>
+  api.get<{ success: boolean; data: JoinedRoom[] }>('/api/rooms/joined');

@@ -1,6 +1,6 @@
 import { api } from "@/api/client";
 import type { MyBooksResponse } from '@/types/book';
-import type { UserProfile } from '@/types/user';
+import type { UserProfile, MyPageResponse } from '@/types/user';
 import type { WaitingRoomsResponse, OngoingRoomsResponse } from '@/types/myrooms'
 
 interface ApiResponse<T> {
@@ -14,6 +14,9 @@ export const getMyBooks = () =>
 
 export const getMyProfile = () =>
   api.get<ApiResponse<UserProfile>>('/api/users/me');
+
+export const getMyPageInfo = () =>
+  api.get<MyPageResponse>('/api/oauth2/mypage');
 
 export const getMyRooms = (state: "waiting" | "ongoing" | "closed") =>
   api.get<ApiResponse<WaitingRoomsResponse>>(`/api/rooms/my?state=${state}`);

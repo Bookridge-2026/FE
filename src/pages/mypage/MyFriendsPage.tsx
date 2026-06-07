@@ -29,26 +29,27 @@ const MyFriendsPage = () => {
   const navigate = useNavigate();
 
   const fetchFriendsData = async () => {
-    try {
-      setLoading(true);
+  try {
+    const [requestList, friendList] = await Promise.all([
+      getReceivedFriendRequests(),
+      getFriends(),
+    ]);
 
-      const [requestList, friendList] = await Promise.all([
-        getReceivedFriendRequests(),
-        getFriends(),
-      ]);
-
-      setRequests(requestList);
-      setFriends(friendList);
-    } catch (error) {
-      console.error(error);
-      alert("친구 정보를 불러오지 못했습니다.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    setRequests(requestList);
+    setFriends(friendList);
+  } catch (error) {
+    console.error(error);
+    alert("친구 정보를 불러오지 못했습니다.");
+  }
+};
 
   useEffect(() => {
-    fetchFriendsData();
+    const init = async () => {
+      await fetchFriendsData();
+      setLoading(false);
+    };
+
+    init();
   }, []);
 
   const modalMessage = (() => {
