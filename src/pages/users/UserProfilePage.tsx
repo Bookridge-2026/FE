@@ -3,10 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import backButtonIcon from "@/assets/common/back-button.svg";
 import defaultProfileImage from "@/assets/default-profile.jpg";
-import { getUserProfile } from "@/api/friend";
-import { sendFriendRequest } from "@/api/friend";
+import { blockUser, getUserProfile, sendFriendRequest } from "@/api/friend";
 import type { UserProfile } from "@/types/friend.ts";
 import { UserBookStack } from "@/components/friend/UserBookStack";
+import { ConfirmModal } from "@/components/common/ConfirmModal";
 import { useToastContext } from "@/components/common/ToastProvider";
 
 const UserProfilePage = () => {
@@ -16,6 +16,8 @@ const UserProfilePage = () => {
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [blockModalOpen, setBlockModalOpen] = useState(false);
+  const [actionMenuOpen, setActionMenuOpen] = useState(false);
 
   const fetchProfile = async () => {
     if (!userId) return;
@@ -64,6 +66,7 @@ const UserProfilePage = () => {
   }, [profile]);
 
   const canSendRequest = profile?.friendStatus === "NONE";
+  const canBlock = profile?.friendStatus !== "ME";
 
   const handleFriendButtonClick = async () => {
     if (!profile || !canSendRequest) return;
@@ -80,6 +83,21 @@ const UserProfilePage = () => {
     } catch (error) {
       console.error(error);
       show("친구 요청에 실패했습니다.");
+    }
+  };
+
+  const handleBlockConfirm = async () => {
+    if (!profile || !canBlock) return;
+
+    try {
+      await blockUser(profile.userId);
+      show(`${profile.nickname}님을 차단했습니다.`);
+      setActionMenuOpen(false);
+      setBlockModalOpen(false);
+      navigate(-1);
+    } catch (error) {
+      console.error(error);
+      show("차단에 실패했습니다.");
     }
   };
 
@@ -121,9 +139,54 @@ const UserProfilePage = () => {
             {profile.nickname}
           </p>
 
-          <p className="text-sm text-sub-black">
-            @{profile.userCode}
-          </p>
+          <div className="relative mt-1 flex items-center gap-1">
+            <p className="text-sm text-sub-black">
+              @{profile.userCode}
+            </p>
+
+            {canBlock && (
+              <div className="relative">
+                <button
+                  type="button"
+                  aria-label="더보기"
+                  onClick={() => setActionMenuOpen((prev) => !prev)}
+                  className="flex h-6 w-6 items-center justify-center rounded-full text-sub-black transition-colors hover:bg-field"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    aria-hidden="true"
+                    className={`transition-transform ${actionMenuOpen ? "rotate-180" : ""}`}
+                  >
+                    <path
+                      d="M6 14L12 8L18 14"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+
+                {actionMenuOpen && (
+                  <div className="absolute right-0 top-full z-10 mt-2 rounded-xl border border-[#E7E1DA] bg-white px-3 py-2 shadow-sm">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActionMenuOpen(false);
+                        setBlockModalOpen(true);
+                      }}
+                      className="whitespace-nowrap text-xs font-medium text-[#B3261E]"
+                    >
+                      차단하기
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           <button
             type="button"
@@ -143,6 +206,15 @@ const UserProfilePage = () => {
 
         <UserBookStack books={[...profile.books].reverse()} />
       </main>
+
+      <ConfirmModal
+        open={blockModalOpen}
+        message={`${profile.nickname}님을\n차단하시겠습니까?`}
+        onCancel={() => setBlockModalOpen(false)}
+        onConfirm={handleBlockConfirm}
+        cancelText="취소"
+        confirmText="차단"
+      />
     </div>
   );
 };
