@@ -30,7 +30,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       {children}
       {visible && (
         <div className="pointer-events-none fixed left-1/2 bottom-[120px] z-[100] -translate-x-1/2">
-          <div className="inline-flex max-w-[360px] justify-center break-words rounded-lg bg-black px-3 py-2 text-center text-sm text-white shadow-md">
+          <div className="inline-flex max-w-[360px] justify-center break-words rounded-lg bg-black font-normal px-3 py-2 text-center text-sm text-white shadow-md">
             {message}
           </div>
         </div>

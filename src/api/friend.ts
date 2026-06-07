@@ -1,5 +1,5 @@
 import { api } from "@/api/client";
-import type { FriendItem, FriendRequestItem, SearchedUser } from "@/types/friend.ts";
+import type { FriendItem, FriendRequestItem, SearchedUser, UserProfile } from "@/types/friend.ts";
 
 interface ApiResponse<T> {
   success: boolean;
@@ -71,3 +71,17 @@ export const blockUser = async (userId: number) => {
 
   return response.data;
 };
+
+export const getUserProfile = async (userId: number) => {
+  const response = await api.get<ApiResponse<UserProfile>>(
+    `/api/users/${userId}/profile`
+  );
+
+  return response.data.data;
+};
+
+export const getFriendsForInvite = (roomId: number, search: string) =>
+  api.get(`/api/friends/invite/room/${roomId}`, { params: { search } });
+
+export const inviteFriend = (roomId: number, targetUserId: number) =>
+  api.post(`/api/friends/invite/room/${roomId}`, { targetUserId });

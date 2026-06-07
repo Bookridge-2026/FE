@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getRooms, joinRoom, type RoomSummary } from "@/api/rooms";
 import plusIcon from "@/assets/common/plus-icon.svg";
+import { Header } from "@/components/common/Header";
 
 // 페이지네이션
 function Pagination({
@@ -118,6 +119,7 @@ const RoomSearchPage = () => {
     try {
       const res = await getRooms({
         keyword: kw || undefined,
+        status: "waiting",
         page,
         size: 10,
       });
@@ -137,6 +139,7 @@ const RoomSearchPage = () => {
 
       try {
         const res = await getRooms({
+          status: "waiting",
           page: 1,
           size: 10,
         });
@@ -164,7 +167,8 @@ const RoomSearchPage = () => {
     try {
       await joinRoom(selectedRoom.roomId);
       setSelectedRoom(null);
-      navigate(`/rooms/${selectedRoom.roomId}`);
+      // 참여 요청 성공 → pending 상태이므로 방 상세가 아닌 알림 팝업 후 목록 유지
+      alert("입장 요청이 전송되었습니다. 방장의 수락을 기다려주세요.");
     } catch (e: unknown) {
       alert(e instanceof Error ? e.message : "참여에 실패했습니다.");
     } finally {
@@ -174,7 +178,8 @@ const RoomSearchPage = () => {
 
   return (
     <div className="relative">
-      <div className="px-4 py-2">
+      <Header />
+      <div className="px-4 py-4">
         {/* 검색바 */}
         <div className="flex items-center gap-2 bg-field rounded-2xl px-4 h-12 mb-5">
           <input

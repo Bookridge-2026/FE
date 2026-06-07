@@ -23,14 +23,14 @@ export const ConfirmModal = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="w-[280px] rounded-2xl bg-white px-6 py-8 shadow-xl">
         <div className="mt-2 flex flex-col items-center gap-7">
-          <p className="whitespace-pre-line text-center text-base font-semibold text-black">
+          <p className="whitespace-pre-line text-center text-base font-semibold text-primary">
             {message}
           </p>
 
           <div className="flex gap-3">
             <button
               type="button"
-              className="h-10 w-[100px] rounded-xl bg-field text-base font-normal text-black"
+              className="h-10 w-[100px] rounded-xl bg-field text-base font-normal text-primary"
               onClick={onCancel}
             >
               {cancelText}
@@ -39,7 +39,7 @@ export const ConfirmModal = ({
             {showConfirm && (
               <button
                 type="button"
-                className="h-10 w-[100px] rounded-xl bg-black text-base font-normal text-white"
+                className="h-10 w-[100px] rounded-xl bg-primary text-base font-normal text-white"
                 onClick={onConfirm}
               >
                 {confirmText}

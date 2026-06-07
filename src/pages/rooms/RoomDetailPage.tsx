@@ -4,6 +4,7 @@ import styles from "../../styles/Roomdetailpage.module.css";
 import AddReactionModal from "../../components/rooms/detail/AddReactionModal";
 
 import plusIcon from "@/assets/common/plus-icon.svg";
+import musicIcon from "@/assets/rooms/music.svg";
 
 import {
   fetchPages, fetchComments, fetchReactions, fetchReplies, fetchProgress,
@@ -14,11 +15,119 @@ import {
   type RoomDetail, type OcrPage,
 } from "../../api/roomDetail";
 
+
+
 type Reader = { user: User; page: number };
+
+/*
+type Tab = "일반" | "OCR";
+type ModalStep = "main" | "comment" | "emoji";
+*/
+
+
+interface SongRecommendation {
+    songRecommendationId: number;
+    title: string;
+    artist: string;
+    url: string;
+    createdAt: string;
+
+  }
+
 type Tab = "일반" | "OCR";
 type ModalStep = "main" | "comment" | "emoji";
 
-// ─────────────────────────────────────────────────────────────────────────────
+
+const EMOJI_OPTIONS = ["😮", "😨", "😢", "😠", "❤️"];
+
+// ─── 목 데이터 ─────────────────────────────────────────────────────────────────
+
+/*
+const MOCK_ROOM: RoomDetail = {
+  id: 1,
+  bookTitle: "죽은 시인의 사회",
+  publisher: "서교출판사",
+  totalPages: 310,
+  readers: [
+    { user: { id: 1, name: "나", color: "#F9A8B8" }, page: 55 },
+    { user: { id: 2, name: "유저2", color: "#7EC8D8" }, page: 100 },
+    { user: { id: 3, name: "유저3", color: "#C4A7E0" }, page: 100 },
+    { user: { id: 4, name: "유저4", color: "#A8D95E" }, page: 200 },
+  ],
+  pages: [
+  {
+    page: 55,
+    reactions: [
+      { id: 1, user: { id: 1, name: "나", color: "#F9A8B8" }, emoji: "😮" },
+      { id: 2, user: { id: 2, name: "유저2", color: "#7EC8D8" }, emoji: "😨" },
+    ],
+    comments: [
+      {
+        id: 10,
+        page: 55,
+        quote: "두려움은 적이 아니라 교사다",
+        author: { id: 1, name: "나", color: "#F9A8B8" },
+        text: "이 말이 계속 머릿속에 맴돌아",
+        replies: [],
+      },
+    ],
+    ocrItems: [
+      { id: 1  },
+      { id: 2 },
+    ],
+  },
+  {
+    page: 159,
+    reactions: [
+      { id: 3, user: { id: 4, name: "유저4", color: "#A8D95E" }, emoji: "😮" },
+      { id: 4, user: { id: 2, name: "유저2", color: "#7EC8D8" }, emoji: "😮" },
+      { id: 5, user: { id: 1, name: "나", color: "#F9A8B8" }, emoji: "😨" },
+      { id: 6, user: { id: 3, name: "유저3", color: "#C4A7E0" }, emoji: "❤️" },
+    ],
+    comments: [
+      {
+        id: 1,
+        page: 159,
+        quote: "오 캡틴 마이 캡틴",
+        author: { id: 4, name: "유저4", color: "#A8D95E" },
+        text: "이게 비극적 결말을 예고하는 복선이 될줄이야...",
+        replies: [
+          { id: 1, author: { id: 2, name: "유저2", color: "#7EC8D8" }, text: "아니 뭐임;; 스포 ㄴㄴ" },
+        ],
+      },
+    ],
+    ocrItems: [
+      { id: 3 },
+    ],
+  },
+  {
+    page: 200,
+    reactions: [
+      { id: 7, user: { id: 2, name: "유저2", color: "#7EC8D8" }, emoji: "❤️" },
+    ],
+    comments: [
+      {
+        id: 2,
+        page: 200,
+        quote: "현재를 붙잡아라, 오늘을 살아라,\n너의 삶을 특별하게 만들어라.",
+        author: { id: 1, name: "나", color: "#F9A8B8" },
+        replies: [],
+      },
+    ],
+    ocrItems: [],
+  },
+],
+};
+
+*/
+
+const MOCK_SONG_RECOMMENDATION: SongRecommendation = {
+  songRecommendationId: 10,
+  title: "노스탤지어",
+  artist: "윤마치",
+  url: "https://www.youtube.com/watch?v=...",
+  createdAt: "2026-05-30T12:34:56.000Z",
+};
 
 const ReadingProgress = ({
   readers,
@@ -420,7 +529,7 @@ const RoomDetailPage = () => {
     >
       {/* 헤더 */}
       <div className={styles.header} onClick={(e) => e.stopPropagation()}>
-        <button className={styles.backBtn} onClick={() => navigate("/home")}>
+        <button className={styles.backBtn} onClick={() => navigate(-1)}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -442,6 +551,23 @@ const RoomDetailPage = () => {
 
       {/* 독서 진행바 */}
       <ReadingProgress readers={readers} totalPages={totalPages} />
+
+      {/* 랜덤 노래 추천 */}
+      <div className={styles.songRecommendationSection}>
+        <button
+          type="button"
+          className={styles.songRecommendationCard}
+          onClick={() => window.open(MOCK_SONG_RECOMMENDATION.url, "_blank", "noopener,noreferrer")}
+        >
+          <span className={styles.songRecommendationIcon}>
+            <img src={musicIcon} alt="" className="h-5 w-5" />
+          </span>
+
+          <span className={styles.songRecommendationText}>
+            {MOCK_SONG_RECOMMENDATION.title} - {MOCK_SONG_RECOMMENDATION.artist}
+          </span>
+        </button>
+      </div>
 
       {/* 탭 */}
       <TabBar active={activeTab} onChange={setActiveTab} />
@@ -511,7 +637,7 @@ const RoomDetailPage = () => {
       {activeTab === "일반" && (
         <button
           onClick={() => setModalStep("main")}
-          className="fixed left-1/2 bottom-[calc(var(--bottom-bar-height)+20px)] z-40 -translate-x-1/2 translate-x-[129px] rounded-full bg-black flex items-center justify-center shadow-lg w-12 h-12"
+          className="fixed left-1/2 bottom-[calc(var(--bottom-bar-height)+20px)] z-40 -translate-x-1/2 translate-x-[129px] rounded-full bg-primary flex items-center justify-center shadow-lg w-12 h-12"
           aria-label="추가"
         >
           <img src={plusIcon} alt="추가" className="w-[50px] h-[50px]" />
