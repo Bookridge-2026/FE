@@ -6,7 +6,8 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { BottomButton } from "@/components/common/BottomButton";
 import OcrWatermark from "@/components/ocr/OcrWaterMark";
 import { createOcrPage } from "@/api/ocr";
-import { getStoredUserCode } from "@/utils/watermark";
+import { getStoredUserCode, setStoredUserCode } from "@/utils/watermark";
+import { getMyPageInfo } from "@/api/mypage";
 import backButtonIcon from "@/assets/common/back-button.svg";
 
 interface LocationState {
@@ -31,7 +32,28 @@ export default function OcrResultPage() {
   const [userCode, setUserCode] = useState("");
 
   useEffect(() => {
-    setUserCode(getStoredUserCode());
+    const storedCode = getStoredUserCode();
+
+    if (storedCode) {
+      setUserCode(storedCode);
+      return;
+    }
+
+    const fetchUserCode = async () => {
+      try {
+        const response = await getMyPageInfo();
+        const code = response.data.user.userCode;
+
+        if (!code) return;
+
+        setStoredUserCode(code);
+        setUserCode(code);
+      } catch (error) {
+        console.error("워터마크 userCode 조회 실패:", error);
+      }
+    };
+
+    fetchUserCode();
   }, []);
 
   useEffect(() => {
