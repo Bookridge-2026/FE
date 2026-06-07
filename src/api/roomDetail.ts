@@ -63,6 +63,12 @@ export const EMOJI_TYPES = [
   { id: 4, char: "👍" },
   { id: 5, char: "🔥" },
 ];
+
+
+export const createReply = (roomId: string, commentId: number, content: string) =>
+  client.post(`/api/rooms/${roomId}/comments/${commentId}/replies`, { content });
+
+
 const EMOJI_BY_TYPE: Record<number, string> =
   Object.fromEntries(EMOJI_TYPES.map((e) => [e.id, e.char]));
 

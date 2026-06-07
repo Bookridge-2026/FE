@@ -209,17 +209,20 @@ const NoticePage: React.FC = () => {
   return (
     <div className={styles.noticePage}>
       <header className={styles.noticeHeader}>
-        <h1 className={styles.noticeTitle}>알림</h1>
-        {newNotifs.length > 0 && (
-          <span className={styles.noticeCount}>{newNotifs.length}</span>
-        )}
+        <div className={styles.noticeHeaderLeft}>
+          <h1 className={styles.noticeTitle}>알림</h1>
+          {newNotifs.length > 0 && (
+            <span className={styles.noticeCount}>{newNotifs.length}</span>
+          )}
+        </div>
+
         {newNotifs.length > 0 && (
           <button
             className={styles.readAllBtn}
             onClick={handleReadAll}
             type="button"
           >
-            모두 읽음
+            전체 읽음
           </button>
         )}
       </header>
