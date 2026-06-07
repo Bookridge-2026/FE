@@ -113,7 +113,7 @@ const NotifItem: React.FC<NotifItemProps> = ({ notif, onRead }) => {
     }
 
     if (isFriend) {
-      navigate("/friends");
+      navigate("/mypage/friends");
     } else if (notif.book) {
       navigate(`/rooms/${notif.book.roomId}?page=${notif.book.page}`);
     }
