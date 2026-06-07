@@ -12,6 +12,7 @@ import {
   fetchPages, fetchComments, fetchReactions, fetchReplies, fetchProgress,
   fetchRoomDetail, fetchOcrPage,
   createComment as apiCreateComment, addReaction as apiAddReaction,
+  createReply as apiCreateReply,
   EMOJI_TYPES,
   type User, type Reply, type Comment, type PageReaction,
   type RoomDetail, type OcrPage,
@@ -185,10 +186,21 @@ const ReplyItem = ({ reply }: { reply: Reply }) => (
   </div>
 );
 
-const CommentCard = ({ comment, roomId }: { comment: Comment; roomId: string }) => {
+const CommentCard = ({
+  comment,
+  roomId,
+  onReply,                                         // ← 추가
+}: {
+  comment: Comment;
+  roomId: string;
+  onReply?: (commentId: number, text: string) => Promise<void>; // ← 추가
+}) => {
   const [repliesOpen, setRepliesOpen] = useState(false);
   const [replies, setReplies] = useState<Reply[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [replyOpen, setReplyOpen] = useState(false);   // ← 입력창 토글
+  const [replyText, setReplyText] = useState("");       // ← 입력값
+  const [submitting, setSubmitting] = useState(false);  // ← 제출 중 상태
   const hasReplies = comment.replyCount > 0;
 
   const toggle = async () => {
@@ -200,6 +212,23 @@ const CommentCard = ({ comment, roomId }: { comment: Comment; roomId: string }) 
         setLoaded(true);
       } catch (e) { console.error(e); }
     }
+  };
+
+  
+
+  const handleReplySubmit = async () => {
+    if (!replyText.trim() || !onReply) return;
+    setSubmitting(true);
+    try {
+      await onReply(comment.id, replyText.trim());
+      // 제출 후 목록 새로고침
+      setReplies(await fetchReplies(roomId, comment.id));
+      setLoaded(true);
+      setRepliesOpen(true);
+      setReplyText("");
+      setReplyOpen(false);
+    } catch (e) { console.error(e); }
+    finally { setSubmitting(false); }
   };
 
   return (
@@ -215,20 +244,63 @@ const CommentCard = ({ comment, roomId }: { comment: Comment; roomId: string }) 
           <div className={styles.commentRow}>
             <span className={styles.commentDot} style={{ backgroundColor: comment.author.color }} />
             <span className={styles.commentText}>{comment.text}</span>
+
+            {/* 답글 버튼 */}
+            <button
+              onClick={() => setReplyOpen((v) => !v)}
+              className={styles.replyToggleBtn}           // ← CSS 추가 필요
+              aria-label="답글 쓰기"
+            >
+              답글
+            </button>
+
             {hasReplies && (
               <button
                 onClick={toggle}
                 className={`${styles.chevronBtn} ${repliesOpen ? styles.chevronBtnOpen : ""}`}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M6 9L12 15L18 9" stroke="#9E9890" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M6 9L12 15L18 9" stroke="#9E9890" strokeWidth="2"
+                    strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
             )}
           </div>
+
+          {/* 대댓글 목록 */}
           {repliesOpen && (
             <div className={styles.repliesList}>
               {replies.map((r) => <ReplyItem key={r.id} reply={r} />)}
+            </div>
+          )}
+
+          {/* 대댓글 입력창 */}
+          {replyOpen && (
+            <div className={styles.replyInputRow}>            
+              <span className={styles.replyPrefix}>ㄴ</span>
+              <input
+                className={styles.replyInput}                 
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleReplySubmit();
+                  }
+                }}
+                placeholder="답글을 입력하세요"
+                disabled={submitting}
+                autoFocus
+              />
+              <button
+                onClick={handleReplySubmit}
+                disabled={!replyText.trim() || submitting}
+                className={`${styles.replySubmitBtn} ${
+                  !replyText.trim() ? styles.replySubmitBtnDisabled : ""
+                }`}                                       
+              >
+                {submitting ? "…" : "등록"}
+              </button>
             </div>
           )}
         </div>
@@ -432,6 +504,11 @@ const RoomDetailPage = () => {
     setModalStep(null);
   };
 
+  const handleReply = async (commentId: number, text: string) => {
+  if (!roomId) return;
+  await apiCreateReply(roomId, commentId, text);
+};
+
   return (
     <div
       className={styles.root}
@@ -506,6 +583,8 @@ const RoomDetailPage = () => {
         </div>
       )}
 
+      
+
       {/* 콘텐츠 영역 */}
       {activeTab === "OCR" ? (
         <div className={styles.commentList}>
@@ -544,7 +623,9 @@ const RoomDetailPage = () => {
           ) : !comments.length ? (
             <p className={styles.emptyText}>이 페이지에 코멘트가 없어요</p>
           ) : (
-            comments.map((c) => <CommentCard key={c.id} comment={c} roomId={roomId!} />)
+            comments.map((c) => (
+              <CommentCard key={c.id} comment={c} roomId={roomId!} onReply={handleReply} />
+            ))
           )}
         </div>
       )}

@@ -768,3 +768,55 @@
   font-weight: 400;
   color: var(--color-text-secondary);
 }
+
+/* 답글 버튼 */
+.replyToggleBtn {
+  margin-left: auto;
+  font-size: 12px;
+  color: #9E9890;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  flex-shrink: 0;
+}
+.replyToggleBtn:hover {
+  color: #ffffff;
+}
+
+/* 대댓글 입력 행 */
+.replyInputRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0 2px;
+}
+
+.replyInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #3a3a3a;
+  color: #ffffff;
+  font-size: 13px;
+  padding: 4px 0;
+  outline: none;
+}
+.replyInput::placeholder {
+  color: #5a5a5a;
+}
+
+/* 등록 버튼 */
+.replySubmitBtn {
+  font-size: 12px;
+  color: var(--color-primary, #8b6cff);
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-weight: 600;
+}
+.replySubmitBtnDisabled {
+  color: #4a4a4a;
+  cursor: default;
+}
