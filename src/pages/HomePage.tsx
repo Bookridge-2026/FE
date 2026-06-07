@@ -13,7 +13,6 @@ const quotes = [
   { text: "독서는 마음의 양식이다.", author: "키케로" },
   { text: "책 속에 길이 있다.", author: "작자 미상" },
   { text: "책 한 권 한 권이\n당신의 방에 새로운 문을 만든다.", author: "작자 미상" },
-  { text: "어떤 책이든 읽어라.\n좋은 책은 지식을 주고\n나쁜 책도 경험을 준다.", author: "작자 미상" },
   { text: "독서 없는 삶은\n창문 없는 방과 같다.", author: "작자 미상" },
   { text: "책은 시간을 초월한\n가장 조용한 친구다.", author: "찰스 W. 엘리엇" },
   { text: "좋은 책을 읽는 것은\n과거의 훌륭한 사람들과 대화하는 것이다.", author: "데카르트" },
@@ -82,7 +81,7 @@ const HomePage = () => {
 
       {/* 명언 */}
       <div className="h-28 flex flex-col items-center justify-center overflow-hidden">
-        <p className="mt-2 text-center text-[#3B2E1E] text-base font-medium leading-relaxed whitespace-pre-line">
+        <p className="mt-2 text-center text-[#3B2E1E] text-base font-bold leading-relaxed whitespace-pre-line">
           {quote.text}
         </p>
         <p className="text-center text-[#3B2E1E] text-xs mt-2 mb-8">
@@ -109,7 +108,7 @@ const HomePage = () => {
             </button>
 
             {/* 카드 */}
-            <div className="w-[87%] bg-[#FFFBEF] rounded-2xl p-4 shadow-sm 
+            <div className="w-[87%] bg-[#FFFBEF] rounded-2xl p-4 shadow-sm border border-[#EEEAE6]
             ${room.state === 'ongoing' || room.myRole === 'leader' ? 'cursor-pointer' : '' }"
               onClick={handleCardClick}>
 
@@ -140,7 +139,9 @@ const HomePage = () => {
                   )}
 
                   {/* 진행률 */}
-                  <p className="mt-7 text-xs text-gray-400">{room.progressRate}%</p>
+                  <p className="mt-7 text-xs text-[#291A00]">
+                    {room.progressRate}%
+                  </p>
                   <div className="w-full h-1.5 bg-gray-200 rounded-full">
                     <div
                       className="h-1.5 bg-[#3B2E1E] rounded-full"
@@ -149,8 +150,8 @@ const HomePage = () => {
                   </div>
 
                   {/* 멤버 수 */}
-                  <p className="text-xs text-gray-400 text-right">
-                    {room.memberProfiles.length}/{room.minMembers}
+                  <p className="text-xs text-[#291A00] text-right">
+                    {room.memberProfiles.length}/{room.atLeastPeople}
                   </p>
                 </div>
               </div>
@@ -161,7 +162,7 @@ const HomePage = () => {
                   {room.memberProfiles.slice(0, 3).map((member, i) => (
                     <img
                       key={i}
-                      src={member.profileImage}
+                      src={member.profileImageUrl}
                       alt="프로필"
                       className="w-7 h-7 rounded-full object-cover bg-gray-200"
                     />

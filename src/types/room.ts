@@ -1,6 +1,6 @@
 // src/types/room.ts
 export interface MemberProfile {
-  profileImage: string;
+  profileImageUrl: string;
   color: string;
 }
 
@@ -18,7 +18,7 @@ export interface JoinedRoom {
   book: RoomBook;
   period: number;
   daysLeft?: number;
-  minMembers: number;
+  atLeastPeople: number;
   progressRate: number;
   maxReadPage: number;
   totalPages: number;
