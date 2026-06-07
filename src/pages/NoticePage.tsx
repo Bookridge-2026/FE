@@ -7,10 +7,9 @@ import type { NotifType, NotificationItem as ApiNotification } from "../api/noti
 
 function colorFromHex(hex: string | null): string {
   if (hex) return hex;
-  return "#b4b2a9"; // neutral fallback
+  return "#b4b2a9";
 }
 
-// ─── 시간 포맷 (createdAt → 한국어 상대 시간) ─────────────────────────────
 function formatTimeLabel(isoString: string): string {
   const diff = Date.now() - new Date(isoString).getTime();
   const mins = Math.floor(diff / 60_000);
@@ -27,7 +26,7 @@ function formatTimeLabel(isoString: string): string {
   });
 }
 
-// ─── 프론트 내부 타입 (백엔드 응답을 변환 후 사용) ────────────────────────
+
 interface Notification {
   id: string;
   type: NotifType;
@@ -55,7 +54,7 @@ function mapApiToNotification(item: ApiNotification): Notification {
   };
 }
 
-// ─── 배지 설정 ─────────────────────────────────────────────────────────────
+
 const BADGE_CLASS: Record<NotifType, string> = {
   comment:          styles.badgeComment,
   reply:            styles.badgeReply,
@@ -83,7 +82,6 @@ const ACTION_LABEL: Record<NotifType, string> = {
   friend_accepted:  "님이 친구 신청을 수락했어요",
 };
 
-// ─── Avatar ────────────────────────────────────────────────────────────────
 interface AvatarProps {
   color: string;
   notifType: NotifType;
@@ -98,7 +96,7 @@ const Avatar: React.FC<AvatarProps> = ({ color, notifType }) => (
   </div>
 );
 
-// ─── NotifItem ─────────────────────────────────────────────────────────────
+
 interface NotifItemProps {
   notif: Notification;
   onRead: (id: string) => void;
@@ -110,14 +108,14 @@ const NotifItem: React.FC<NotifItemProps> = ({ notif, onRead }) => {
 
   const handleClick = useCallback(async () => {
     if (notif.unread) {
-      onRead(notif.id);           // 낙관적 업데이트 (UI 즉시 반영)
-      markAsRead(notif.id).catch(console.error);   // 백그라운드 API 호출
+      onRead(notif.id);        
+      markAsRead(notif.id).catch(console.error); 
     }
 
     if (isFriend) {
-      navigate("/FriendsPage");
+      navigate("/friends");
     } else if (notif.book) {
-      navigate(`/rooms/${notif.book.roomId}/${notif.book.page}`);
+      navigate(`/rooms/${notif.book.roomId}?page=${notif.book.page}`);
     }
   }, [notif, isFriend, onRead, navigate]);
 
@@ -166,13 +164,12 @@ const NotifItem: React.FC<NotifItemProps> = ({ notif, onRead }) => {
   );
 };
 
-// ─── NoticePage ────────────────────────────────────────────────────────────
 const NoticePage: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 최초 데이터 로드
+
   useEffect(() => {
     let cancelled = false;
 
@@ -195,14 +192,12 @@ const NoticePage: React.FC = () => {
     return () => { cancelled = true; };
   }, []);
 
-  // 단건 읽음 (낙관적 업데이트)
   const handleRead = useCallback((id: string) => {
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, unread: false } : n))
     );
   }, []);
 
-  // 전체 읽음
   const handleReadAll = useCallback(async () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })));
     markAllAsRead().catch(console.error);

@@ -2,13 +2,18 @@ import axios from "axios";
 
 // 일반 API 요청용
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000",
+  baseURL: import.meta.env.VITE_API_BASE_URL ?? 
+  "https://api.flowalpha.store",
+  //"http://localhost:3000",
   withCredentials: true,
   headers: { accept: "*/*" },
 });
 
 export const refreshApi = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000",
+  baseURL: import.meta.env.VITE_API_BASE_URL ?? 
+"https://api.flowalpha.store",
+
+  //"http://localhost:3000",
   withCredentials: true,
 });
 

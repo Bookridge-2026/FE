@@ -18,8 +18,12 @@ import {
 } from "../../api/roomDetail";
 
 type Reader = { user: User; page: number };
+
+
 type Tab = "일반" | "OCR";
 type ModalStep = "main" | "comment" | "emoji";
+
+
 
 
 const ReadingProgress = ({
