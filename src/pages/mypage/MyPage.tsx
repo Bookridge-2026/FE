@@ -165,7 +165,7 @@ const MyPage = () => {
       </div>
 
       {/* 메뉴 목록 */}
-      <div className="flex flex-col mt-4">
+      <div className="flex flex-col ">
         {menuItems.map((item, index) => (
           <div key={index}>
             <button

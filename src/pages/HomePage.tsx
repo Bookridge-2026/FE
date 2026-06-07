@@ -80,7 +80,7 @@ const HomePage = () => {
     <div className="flex flex-col flex-1 bg-[#FFFFFF] px-6 py-1 relative ">
 
       {/* 명언 */}
-      <div className="h-28 flex flex-col items-center justify-center overflow-hidden">
+      <div className="h-23 flex flex-col items-center justify-center overflow-hidden">
         <p className=" text-center text-[#3B2E1E] text-sm font-bold leading-relaxed whitespace-pre-line">
           {quote.text}
         </p>
@@ -121,8 +121,8 @@ const HomePage = () => {
                 />
 
                 {/* 책 정보 */}
-                <div className="flex flex-col flex-1 gap-1">
-                  <p className="font-semibold text-sm text-[#3B2E1E]">{room.book.title}</p>
+                <div className="flex flex-col flex-1 gap-1 pb-1">
+                  <p className="font-semibold text-sm text-[#3B2E1E] mt-1">{room.book.title}</p>
                   <p className="text-[11px] text-gray-400">
                     {room.book.author} · {room.book.publisher}
                   </p>
