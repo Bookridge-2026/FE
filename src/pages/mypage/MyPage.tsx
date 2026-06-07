@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { FiEdit2 } from 'react-icons/fi';
 import { useNavigate } from "react-router-dom";
-import { getMyProfile } from '@/api/mypage';
+import axios from 'axios';
+import { getMyProfile, getMyPageInfo } from '@/api/mypage';
+import { updateNickname, updateProfileImage } from '@/api/user';
 import type { UserProfile } from '@/types/user';
+import ProfileEditModal from '@/components/mypage/ProfileEditModal';
 
 const menuItems = [
   { label: '친구 관리', path: '/mypage/friends' },
@@ -11,16 +14,100 @@ const menuItems = [
   { label: '차단', path: '/mypage/blocked' },
 ];
 
+const useProfileEdit = (
+  profile: UserProfile | null,
+  onSuccess: (updated: Partial<UserProfile>) => void
+) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [nickname, setNickname] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const open = () => {
+    setNickname(profile?.nickname ?? '');
+    setImageFile(null);
+    setImagePreview(profile?.profileImageUrl ?? '');
+    setError(null);
+    setIsOpen(true);
+  };
+
+  const close = () => {
+    if (isSubmitting) return;
+    setIsOpen(false);
+  };
+
+  const handleImageChange = (file: File) => {
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const updates: Partial<UserProfile> = {};
+      const nicknameChanged = nickname.trim() !== profile?.nickname;
+      const imageChanged = imageFile !== null;
+
+      if (nicknameChanged) {
+        const res = await updateNickname(nickname.trim());
+        updates.nickname = res.data.data.nickname;
+      }
+
+      if (imageChanged) {
+        const res = await updateProfileImage(imageFile!);
+        updates.profileImageUrl = res.data.data.profileImageUrl;
+      }
+
+      if (nicknameChanged || imageChanged) {
+        onSuccess(updates);
+      }
+
+      setIsOpen(false);
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err) && err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('오류가 발생했습니다. 다시 시도해주세요.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return {
+    isOpen,
+    open,
+    close,
+    nickname,
+    setNickname,
+    imagePreview,
+    handleImageChange,
+    handleSubmit,
+    isSubmitting,
+    error,
+  };
+};
+
 const MyPage = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [userCode, setUserCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await getMyProfile();
-        setProfile(res.data.data);
+        const [profileRes, myPageRes] = await Promise.all([
+          getMyProfile(),
+          getMyPageInfo(),
+        ]);
+        setProfile(profileRes.data.data);
+        setUserCode(myPageRes.data.user.userCode);
       } catch (err: unknown) {
         if (err instanceof Error) {
           setError(err.message);
@@ -32,6 +119,10 @@ const MyPage = () => {
 
     fetchProfile();
   }, []);
+
+  const profileEdit = useProfileEdit(profile, (updated) => {
+    setProfile((prev) => prev ? { ...prev, ...updated } : prev);
+  });
 
   if (loading) return <p>로딩 중...</p>;
   if (error) return <p>에러: {error}</p>;
@@ -58,13 +149,19 @@ const MyPage = () => {
           />
 
           {/* 수정 버튼 */}
-          <button className="absolute bottom-1 right-1 w-8 h-8 bg-[#3B2E1E] rounded-full flex items-center justify-center">
+          <button
+            className="absolute bottom-1 right-1 w-8 h-8 bg-[#3B2E1E] rounded-full flex items-center justify-center"
+            onClick={profileEdit.open}
+          >
             <FiEdit2 size={14} color="white" />
           </button>
         </div>
 
         {/* 이름 */}
         <p className="mt-4 text-lg font-semibold text-[#3B2E1E]">{profile?.nickname}</p>
+        {userCode && (
+          <p className="mt-1 text-xs text-gray-400">#{userCode}</p>
+        )}
       </div>
 
       {/* 메뉴 목록 */}
@@ -93,6 +190,19 @@ const MyPage = () => {
           회원탈퇴
         </button>
       </div>
+
+      {/* 프로필 수정 모달 */}
+      <ProfileEditModal
+        open={profileEdit.isOpen}
+        imagePreview={profileEdit.imagePreview}
+        nickname={profileEdit.nickname}
+        isSubmitting={profileEdit.isSubmitting}
+        error={profileEdit.error}
+        onClose={profileEdit.close}
+        onImageChange={profileEdit.handleImageChange}
+        onNicknameChange={profileEdit.setNickname}
+        onSubmit={profileEdit.handleSubmit}
+      />
 
     </div>
   );
