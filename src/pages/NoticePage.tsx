@@ -4,7 +4,6 @@ import styles from "../styles/Noticepage.module.css";
 import { fetchNotifications, markAsRead, markAllAsRead } from "../api/notificationApi";
 import type { NotifType, NotificationItem as ApiNotification } from "../api/notificationApi";
 
-
 function colorFromHex(hex: string | null): string {
   if (hex) return hex;
   return "#b4b2a9";
@@ -25,7 +24,6 @@ function formatTimeLabel(isoString: string): string {
     day: "numeric",
   });
 }
-
 
 interface Notification {
   id: string;
@@ -54,9 +52,8 @@ function mapApiToNotification(item: ApiNotification): Notification {
   };
 }
 
-
 const BADGE_CLASS: Record<NotifType, string> = {
-  comment:          styles.badgeComment,
+  comment:           styles.badgeComment,
   reply:            styles.badgeReply,
   emoji:            styles.badgeEmoji,
   ocr:              styles.badgeOcr,
@@ -65,7 +62,7 @@ const BADGE_CLASS: Record<NotifType, string> = {
 };
 
 const BADGE_ICON: Record<NotifType, string> = {
-  comment:          "💬",
+  comment:           "💬",
   reply:            "↩️",
   emoji:            "🔥",
   ocr:              "📷",
@@ -74,7 +71,7 @@ const BADGE_ICON: Record<NotifType, string> = {
 };
 
 const ACTION_LABEL: Record<NotifType, string> = {
-  comment:          "님이 코멘트를 남겼어요",
+  comment:           "님이 코멘트를 남겼어요",
   reply:            "님이 대댓글을 남겼어요",
   emoji:            "님이 반응했어요",
   ocr:              "님이 OCR을 남겼어요",
@@ -96,7 +93,6 @@ const Avatar: React.FC<AvatarProps> = ({ color, notifType }) => (
   </div>
 );
 
-
 interface NotifItemProps {
   notif: Notification;
   onRead: (id: string) => void;
@@ -109,13 +105,13 @@ const NotifItem: React.FC<NotifItemProps> = ({ notif, onRead }) => {
   const handleClick = useCallback(async () => {
     if (notif.unread) {
       onRead(notif.id);        
-      markAsRead(notif.id).catch(console.error); 
+      markAsRead(notif.id).catch(() => {}); 
     }
 
     if (isFriend) {
-      navigate("/friends");
+      navigate("/mypage/friends");
     } else if (notif.book) {
-      navigate(`/rooms/${notif.book.roomId}?page=${notif.book.page}`);
+      navigate(`/rooms/${notif.book.roomId}`);
     }
   }, [notif, isFriend, onRead, navigate]);
 
@@ -169,7 +165,6 @@ const NoticePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-
   useEffect(() => {
     let cancelled = false;
 
@@ -183,7 +178,9 @@ const NoticePage: React.FC = () => {
         setNotifications(all);
       })
       .catch(() => {
-        if (!cancelled) setError("알림을 불러오지 못했어요.");
+        if (!cancelled) {
+          setError("알림을 불러오지 못했어요.");
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -200,7 +197,7 @@ const NoticePage: React.FC = () => {
 
   const handleReadAll = useCallback(async () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })));
-    markAllAsRead().catch(console.error);
+    markAllAsRead().catch(() => {});
   }, []);
 
   const newNotifs = notifications.filter((n) => n.unread);
@@ -209,17 +206,20 @@ const NoticePage: React.FC = () => {
   return (
     <div className={styles.noticePage}>
       <header className={styles.noticeHeader}>
-        <h1 className={styles.noticeTitle}>알림</h1>
-        {newNotifs.length > 0 && (
-          <span className={styles.noticeCount}>{newNotifs.length}</span>
-        )}
+        <div className={styles.noticeHeaderLeft}>
+          <h1 className={styles.noticeTitle}>알림</h1>
+          {newNotifs.length > 0 && (
+            <span className={styles.noticeCount}>{newNotifs.length}</span>
+          )}
+        </div>
+
         {newNotifs.length > 0 && (
           <button
             className={styles.readAllBtn}
             onClick={handleReadAll}
             type="button"
           >
-            모두 읽음
+            전체 읽음
           </button>
         )}
       </header>
