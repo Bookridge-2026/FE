@@ -2,7 +2,7 @@ import { api } from '@/api/client';
 import type { JoinedRoom } from '@/types/room';
 
 // 공통 fetch 래퍼
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000";
+//const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000";
 
 // ─── 타입 정의 ─────────────────────────────────────────────────────────────
 
