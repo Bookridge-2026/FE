@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Plus, MoreHorizontal } from "lucide-react";
+import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import { getJoinedRooms } from "@/api/rooms";
 import { useSearchParams } from 'react-router-dom';
 import type { JoinedRoom } from "@/types/room";
