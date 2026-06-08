@@ -149,7 +149,5 @@ export const fetchMyMemberId = async (roomId: string, userId: number): Promise<n
   return members.find((m) => m.userId === userId)?.memberId ?? 0;
 };
 
-// roomDetail.ts에 추가
 export const fetchOcrPages = (roomId: string): Promise<number[]> =>
-  Promise.resolve([]); // TODO: API 완성되면 교체
-  // client.get(`/api/rooms/${roomId}/ocr/pages`).then((r) => r.data.data.pages as number[]);
+  client.get(`/api/rooms/${roomId}/ocr/pages`).then((r) => r.data.data as number[]);

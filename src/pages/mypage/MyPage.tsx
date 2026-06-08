@@ -6,6 +6,7 @@ import { getMyProfile, getMyPageInfo } from '@/api/mypage';
 import { updateNickname, updateProfileImage } from '@/api/user';
 import type { UserProfile } from '@/types/user';
 import ProfileEditModal from '@/components/mypage/ProfileEditModal';
+import { setStoredUserCode } from '@/utils/watermark';
 
 const menuItems = [
   { label: '친구 관리', path: '/mypage/friends' },
@@ -108,6 +109,7 @@ const MyPage = () => {
         ]);
         setProfile(profileRes.data.data);
         setUserCode(myPageRes.data.user.userCode);
+        setStoredUserCode(myPageRes.data.user.userCode);
       } catch (err: unknown) {
         if (err instanceof Error) {
           setError(err.message);
