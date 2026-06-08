@@ -97,8 +97,8 @@ export const fetchReplies = (roomId: string, commentId: number): Promise<Reply[]
   client.get(`/api/rooms/${roomId}/comments/${commentId}/replies`)
     .then((r) => (r.data.data as ApiReply[]).map(toReply));
 
-export const fetchOcrPage = (roomId: string, page: number): Promise<OcrPage> =>
-  client.get(`/api/rooms/${roomId}/ocr/${page}`).then((r) => r.data.data);
+// export const fetchOcrPage = (roomId: string, page: number): Promise<OcrPage> =>
+//   client.get(`/api/rooms/${roomId}/ocr/${page}`).then((r) => r.data.data);
 
 export const fetchProgress = (roomId: string): Promise<RoomProgress> =>
   client.get(`/api/rooms/${roomId}/members/progress`).then((r) => {
@@ -149,5 +149,56 @@ export const fetchMyMemberId = async (roomId: string, userId: number): Promise<n
   return members.find((m) => m.userId === userId)?.memberId ?? 0;
 };
 
+
+// OCR 있는 페이지 번호 목록
 export const fetchOcrPages = (roomId: string): Promise<number[]> =>
   client.get(`/api/ocr/rooms/${roomId}`).then((r) => r.data.data as number[]);
+
+// 특정 페이지 OCR 내용
+export const fetchOcrPage = async (roomId: string, page: number): Promise<OcrPage | null> => {
+  // 1단계: page번호로 ocrPageId 조회
+  const pageRes = await client.get(`/api/ocr/rooms/${roomId}/page/${page}`);
+  const list = pageRes.data.data as { ocrPageId: number; page: number; roomId: number }[];
+  
+  if (!list || list.length === 0) return null;
+  
+  const { ocrPageId } = list[0];
+
+  // 2단계: ocrPageId로 실제 텍스트 조회
+  const contentRes = await client.get(`/api/ocr/rooms/${roomId}/ocrPage/${ocrPageId}`);
+  const content = contentRes.data.data;
+
+  return {
+    page:     content.page,
+    text:     content.text,
+    imageUrl: content.imageUrl,
+  };
+};
+
+export interface OcrEntry {
+  ocrPageId: number;
+  page: number;
+  index: number; // 해당 페이지 내 순서 (1, 2, 3…)
+}
+
+export const fetchOcrEntries = async (roomId: string): Promise<OcrEntry[]> => {
+  const pages = await fetchOcrPages(roomId);
+  const results: OcrEntry[] = [];
+
+  for (const page of pages) {
+    const res = await client.get(`/api/ocr/rooms/${roomId}/page/${page}`);
+    const list = res.data.data as { ocrPageId: number; page: number }[];
+    list.forEach((item, idx) => {
+      results.push({ ocrPageId: item.ocrPageId, page: item.page, index: idx + 1 });
+    });
+  }
+
+  return results;
+};
+
+export const fetchOcrEntriesByPage = (
+  roomId: string,
+  page: number
+): Promise<{ ocrPageId: number; page: number }[]> =>
+  client.get(`/api/ocr/rooms/${roomId}/page/${page}`)
+    .then((r) => r.data.data as { ocrPageId: number; page: number }[]);
