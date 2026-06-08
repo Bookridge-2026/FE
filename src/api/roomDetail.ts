@@ -61,8 +61,8 @@ export const EMOJI_TYPES = [
 const EMOJI_BY_TYPE: Record<number, string> =
   Object.fromEntries(EMOJI_TYPES.map((e) => [e.id, e.char]));
 
-const toUser  = (m: ApiMember): User    => ({ id: m.memberId, name: m.nickname, color: m.color });
-const toReply = (r: ApiReply):  Reply   => ({ id: r.replyId, author: toUser(r.member), text: r.content });
+const toUser  = (m: ApiMember): User  => ({ id: m.memberId, name: m.nickname, color: m.color });
+const toReply = (r: ApiReply): Reply  => ({ id: r.replyId, author: toUser(r.member), text: r.content });
 const toComment = (c: ApiComment): Comment => ({
   id:         c.commentId,
   page:       c.page,
@@ -77,7 +77,6 @@ const toReaction = (r: ApiReaction): PageReaction => ({
   emoji:       EMOJI_BY_TYPE[r.emojiType.emojiTypeId] ?? "❓",
   emojiTypeId: r.emojiType.emojiTypeId,
 });
-
 
 export const fetchRoomDetail = (roomId: string): Promise<RoomDetail> =>
   client.get(`/api/rooms/${roomId}`).then((r) => r.data.data);
@@ -97,9 +96,6 @@ export const fetchReplies = (roomId: string, commentId: number): Promise<Reply[]
   client.get(`/api/rooms/${roomId}/comments/${commentId}/replies`)
     .then((r) => (r.data.data as ApiReply[]).map(toReply));
 
-export const fetchOcrPage = (roomId: string, page: number): Promise<OcrPage> =>
-  client.get(`/api/rooms/${roomId}/ocr/${page}`).then((r) => r.data.data);
-
 export const fetchProgress = (roomId: string): Promise<RoomProgress> =>
   client.get(`/api/rooms/${roomId}/members/progress`).then((r) => {
     const data = r.data.data as ApiMemberProgress[];
@@ -112,13 +108,11 @@ export const fetchProgress = (roomId: string): Promise<RoomProgress> =>
     };
   });
 
-
 export const createComment = (roomId: string, page: number, quote: string, comment: string) =>
   client.post(`/api/rooms/${roomId}/comments`, { page, content: quote, comment });
 
 export const createReply = (roomId: string, commentId: number, content: string) =>
   client.post(`/api/rooms/${roomId}/comments/${commentId}/replies`, { content });
-
 
 export const toggleReaction = (
   roomId: string,
@@ -128,10 +122,8 @@ export const toggleReaction = (
   client.post(`/api/rooms/${roomId}/reactions`, { page, emojiTypeId })
     .then((r) => r.data.data);
 
-
 export const updateComment = (roomId: string, commentId: number, comment: string) =>
   client.patch(`/api/rooms/${roomId}/comments/${commentId}`, { comment });
-
 
 export const deleteComment = (roomId: string, commentId: number) =>
   client.delete(`/api/rooms/${roomId}/comments/${commentId}`);
@@ -142,7 +134,6 @@ export const deleteReply = (roomId: string, commentId: number, replyId: number) 
 export const deleteReaction = (roomId: string, emojiId: number) =>
   client.delete(`/api/rooms/${roomId}/reactions/${emojiId}`);
 
-
 export const fetchMyMemberId = async (roomId: string, userId: number): Promise<number> => {
   const res = await client.get(`/api/rooms/${roomId}/members`);
   const members = res.data.data as { memberId: number; userId: number }[];
@@ -151,3 +142,10 @@ export const fetchMyMemberId = async (roomId: string, userId: number): Promise<n
 
 export const fetchOcrPages = (roomId: string): Promise<number[]> =>
   client.get(`/api/ocr/rooms/${roomId}`).then((r) => r.data.data as number[]);
+
+export const fetchOcrEntriesByPage = (
+  roomId: string,
+  page: number
+): Promise<{ ocrPageId: number; page: number }[]> =>
+  client.get(`/api/ocr/rooms/${roomId}/page/${page}`)
+    .then((r) => r.data.data as { ocrPageId: number; page: number }[]);
