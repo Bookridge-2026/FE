@@ -17,8 +17,8 @@ import {
   fetchReplies,
   fetchProgress,
   fetchRoomDetail,
-   fetchOcrEntriesByPage,
   fetchOcrPages,
+  fetchOcrEntriesByPage,
   fetchMyMemberId,
   createComment  as apiCreateComment,
   toggleReaction as apiToggleReaction,
@@ -36,7 +36,6 @@ type Reader    = { user: User; page: number };
 type Tab       = "일반" | "OCR";
 type ModalStep = "main" | "comment" | "emoji";
 
-// ─── ⋮ 케밥 메뉴 ─────────────────────────────────────────────────────────────
 const KebabMenu = ({
   isMine,
   onEdit,
@@ -97,7 +96,6 @@ const KebabMenu = ({
   );
 };
 
-// ─── 삭제 확인 다이얼로그 ─────────────────────────────────────────────────────
 const ConfirmDialog = ({
   message, onConfirm, onCancel,
 }: {
@@ -107,7 +105,7 @@ const ConfirmDialog = ({
     <div className={styles.confirmBox} onClick={(e) => e.stopPropagation()}>
       <p className={styles.confirmMessage}>{message}</p>
       <div className={styles.confirmBtnRow}>
-        <button className={styles.cancelBtn}  onClick={onCancel}>취소</button>
+        <button className={styles.cancelBtn} onClick={onCancel}>취소</button>
         <button
           className={`${styles.confirmBtn} ${styles.confirmBtnDanger}`}
           onClick={onConfirm}
@@ -119,7 +117,6 @@ const ConfirmDialog = ({
   </div>
 );
 
-// ─── 독서 진행바 ──────────────────────────────────────────────────────────────
 const ReadingProgress = ({ readers, totalPages }: { readers: Reader[]; totalPages: number }) => {
   const [openUserId, setOpenUserId] = useState<number | null>(null);
 
@@ -173,7 +170,6 @@ const ReadingProgress = ({ readers, totalPages }: { readers: Reader[]; totalPage
   );
 };
 
-// ─── 탭바 ─────────────────────────────────────────────────────────────────────
 const TabBar = ({ active, onChange }: { active: Tab; onChange: (t: Tab) => void }) => (
   <div className={styles.tabBar}>
     {(["일반", "OCR"] as Tab[]).map((tab) => (
@@ -188,7 +184,6 @@ const TabBar = ({ active, onChange }: { active: Tab; onChange: (t: Tab) => void 
   </div>
 );
 
-// ─── 페이지 피커 ──────────────────────────────────────────────────────────────
 const PagePicker = ({
   selectedPage, pages, open, onToggle, onSelect,
 }: {
@@ -222,7 +217,6 @@ const PagePicker = ({
   </div>
 );
 
-// ─── 이모지 행 ────────────────────────────────────────────────────────────────
 const PageEmojiRow = ({
   reactions, openPopupId, setOpenPopupId, onDeleteReaction, currentUserId,
 }: {
@@ -302,7 +296,6 @@ const PageEmojiRow = ({
   );
 };
 
-// ─── 대댓글 아이템 ────────────────────────────────────────────────────────────
 const ReplyItem = ({
   reply, onDelete, currentUserId,
 }: {
@@ -333,7 +326,6 @@ const ReplyItem = ({
   );
 };
 
-// ─── 코멘트 카드 ──────────────────────────────────────────────────────────────
 const CommentCard = ({
   comment, roomId, currentUserId, onReply, onUpdate, onDelete,
 }: {
@@ -360,9 +352,7 @@ const CommentCard = ({
 
   const isDeleted = comment.text === "삭제된 코멘트입니다";
   const isMine    = comment.author.id === currentUserId;
-
   const hasReplies = comment.replyCount > 0 || replies.length > 0;
-  
 
   const loadReplies = async () => {
     const list = await fetchReplies(roomId, comment.id);
@@ -528,7 +518,6 @@ const CommentCard = ({
   );
 };
 
-// ─── 모달 공통 오버레이 ───────────────────────────────────────────────────────
 const ModalOverlay = ({ onClose, children }: { onClose: () => void; children: React.ReactNode }) => (
   <div className={styles.overlay} onClick={onClose}>
     <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>{children}</div>
@@ -610,11 +599,7 @@ const EmojiSelectModal = ({
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 메인 페이지
-// ─────────────────────────────────────────────────────────────────────────────
 const RoomDetailPage = () => {
-
   const navigate = useNavigate();
   const { roomId } = useParams<{ roomId: string }>();
 
@@ -622,7 +607,6 @@ const RoomDetailPage = () => {
   const currentJwtId = token ? jwtDecode<{ id: number }>(token).id : 0;
 
   const [currentMemberId, setCurrentMemberId] = useState<number>(0);
-
   const [songRecommendation, setSongRecommendation] =
     useState<SongRecommendationWithCreatedAt | null>(null);
 
@@ -636,15 +620,16 @@ const RoomDetailPage = () => {
   const [loading,      setLoading]      = useState(false);
   const [readers,      setReaders]      = useState<Reader[]>([]);
   const [totalPages,   setTotalPages]   = useState(0);
+
+  const [ocrEntries,    setOcrEntries]    = useState<{ ocrPageId: number; page: number }[]>([]);
+  const [ocrListLoading, setOcrListLoading] = useState(false);
+
   const [pagePickerOpen, setPagePickerOpen] = useState(false);
   const [openPopupId,    setOpenPopupId]    = useState<number | null>(null);
   const [manageActive,   setManageActive]   = useState(false);
   const [modalStep,      setModalStep]      = useState<ModalStep | null>(null);
   const [modalPage,      setModalPage]      = useState<number | null>(null);
 
-  
-
-  // 멤버 ID 조회
   useEffect(() => {
     if (!roomId || !currentJwtId) return;
     fetchMyMemberId(roomId, currentJwtId)
@@ -652,7 +637,6 @@ const RoomDetailPage = () => {
       .catch(console.error);
   }, [roomId, currentJwtId]);
 
-  // 방 기본 정보, 일반 페이지 목록, 진행도
   useEffect(() => {
     if (!roomId) return;
     fetchRoomDetail(roomId)
@@ -666,7 +650,6 @@ const RoomDetailPage = () => {
       .catch(console.error);
   }, [roomId]);
 
-  // 노래 추천
   useEffect(() => {
     if (!roomId) return;
     fetchRandomSongRecommendation(roomId)
@@ -674,7 +657,6 @@ const RoomDetailPage = () => {
       .catch(console.error);
   }, [roomId]);
 
-  // 일반 탭 — 코멘트 & 리액션
   useEffect(() => {
     if (!roomId || selectedPage == null || activeTab !== "일반") return;
     setLoading(true);
@@ -684,7 +666,6 @@ const RoomDetailPage = () => {
       .finally(() => setLoading(false));
   }, [roomId, selectedPage, activeTab]);
 
-  // OCR 탭 — OCR 페이지 번호 목록 (탭 진입 시 한 번)
   useEffect(() => {
     if (!roomId || activeTab !== "OCR") return;
     fetchOcrPages(roomId)
@@ -695,23 +676,15 @@ const RoomDetailPage = () => {
       .catch(console.error);
   }, [roomId, activeTab]);
 
-  // OCR 탭 — 선택된 페이지의 OCR 내용
-  // 상태 추가
-// 상태
-const [ocrEntries, setOcrEntries] = useState<{ ocrPageId: number; page: number }[]>([]);
-const [ocrListLoading, setOcrListLoading] = useState(false);
-
-// useEffect — OCR 탭 + 페이지 선택 시
-useEffect(() => {
-  if (!roomId || selectedPage == null || activeTab !== "OCR") return;
-  setOcrListLoading(true);
-  setOcrEntries([]);
-  fetchOcrEntriesByPage(roomId, selectedPage)
-    .then(setOcrEntries)
-    .catch(console.error)
-    .finally(() => setOcrListLoading(false));
-}, [roomId, selectedPage, activeTab]);
-
+  useEffect(() => {
+    if (!roomId || selectedPage == null || activeTab !== "OCR") return;
+    setOcrListLoading(true);
+    setOcrEntries([]);
+    fetchOcrEntriesByPage(roomId, selectedPage)
+      .then(setOcrEntries)
+      .catch(console.error)
+      .finally(() => setOcrListLoading(false));
+  }, [roomId, selectedPage, activeTab]);
 
   const reloadPage = async (page: number) => {
     if (!roomId) return;
@@ -779,7 +752,6 @@ useEffect(() => {
       className={styles.root}
       onClick={() => { setOpenPopupId(null); setPagePickerOpen(false); }}
     >
-      {/* 헤더 */}
       <div className={styles.header} onClick={(e) => e.stopPropagation()}>
         <button className={styles.backBtn} onClick={() => navigate(-1)}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -827,7 +799,6 @@ useEffect(() => {
 
       <TabBar active={activeTab} onChange={setActiveTab} />
 
-      {/* 일반 탭 필터 행 */}
       {activeTab === "일반" && (
         <div className={styles.filterRow} onClick={(e) => e.stopPropagation()}>
           <PagePicker
@@ -847,63 +818,60 @@ useEffect(() => {
         </div>
       )}
 
-      {/* OCR 탭 렌더링 */}
-{activeTab === "OCR" ? (
-  <div className={styles.commentList}>
-    {/* 페이지 피커 — ocrPages 기준 */}
-    <div onClick={(e) => e.stopPropagation()}>
-      <PagePicker
-        selectedPage={selectedPage ?? 0}
-        pages={ocrPages}
-        open={pagePickerOpen}
-        onToggle={() => setPagePickerOpen((v) => !v)}
-        onSelect={(p) => { setSelectedPage(p); setOcrEntries([]); }}
-      />
-    </div>
+      {activeTab === "OCR" ? (
+        <div className={styles.commentList}>
+          <div onClick={(e) => e.stopPropagation()}>
+            <PagePicker
+              selectedPage={selectedPage ?? 0}
+              pages={ocrPages}
+              open={pagePickerOpen}
+              onToggle={() => setPagePickerOpen((v) => !v)}
+              onSelect={(p) => { setSelectedPage(p); setOcrEntries([]); }}
+            />
+          </div>
 
-    {/* 해당 쪽수 OCR 바로가기 목록 */}
-    {ocrListLoading ? (
-      <p className={styles.emptyText}>불러오는 중…</p>
-    ) : ocrEntries.length === 0 ? (
-      <p className={styles.emptyText}>이 페이지에 OCR 데이터가 없어요</p>
-    ) : (
-      ocrEntries.map((entry, idx) => (
-        <button
-          key={entry.ocrPageId}
-          className={styles.ocrItem}
-          onClick={() => navigate(`/rooms/${roomId}/ocr/${entry.ocrPageId}`)}
-        >
-          <span>{entry.page}쪽 OCR 바로가기 - {idx + 1}</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2"
-              strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-      ))
-    )}
-  </div>
-) : (
-  
-  <div className={styles.commentList}>
-    {loading ? (
-      <p className={styles.emptyText}>불러오는 중…</p>
-    ) : !comments.length ? (
-      <p className={styles.emptyText}>이 페이지에 코멘트가 없어요</p>
-    ) : (
-      comments.map((c) => (
-        <CommentCard
-          key={c.id}
-          comment={c}
-          roomId={roomId!}
-          currentUserId={currentMemberId}
-          onReply={handleReply}
-          onUpdate={handleCommentUpdate}
-          onDelete={handleCommentDelete}
-        />
-      ))
-    )}
-  </div>
-)}
+          {ocrListLoading ? (
+            <p className={styles.emptyText}>불러오는 중…</p>
+          ) : ocrEntries.length === 0 ? (
+            <p className={styles.emptyText}>이 페이지에 OCR 데이터가 없어요</p>
+          ) : (
+            ocrEntries.map((entry, idx) => (
+              <button
+                key={entry.ocrPageId}
+                className={styles.ocrItem}
+                onClick={() => navigate(`/rooms/${roomId}/ocr/${entry.ocrPageId}`)}
+              >
+                <span>{entry.page}쪽 OCR 바로가기 - {idx + 1}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2"
+                    strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            ))
+          )}
+        </div>
+      ) : (
+        <div className={styles.commentList}>
+          {loading ? (
+            <p className={styles.emptyText}>불러오는 중…</p>
+          ) : !comments.length ? (
+            <p className={styles.emptyText}>이 페이지에 코멘트가 없어요</p>
+          ) : (
+            comments.map((c) => (
+              <CommentCard
+                key={c.id}
+                comment={c}
+                roomId={roomId!}
+                currentUserId={currentMemberId}
+                onReply={handleReply}
+                onUpdate={handleCommentUpdate}
+                onDelete={handleCommentDelete}
+              />
+            ))
+          )}
+        </div>
+      )}
+
       {activeTab === "일반" && (
         <button
           onClick={() => setModalStep("main")}
