@@ -150,4 +150,4 @@ export const fetchMyMemberId = async (roomId: string, userId: number): Promise<n
 };
 
 export const fetchOcrPages = (roomId: string): Promise<number[]> =>
-  client.get(`/api/rooms/${roomId}/ocr/pages`).then((r) => r.data.data as number[]);
+  client.get(`/api/ocr/rooms/${roomId}`).then((r) => r.data.data as number[]);
