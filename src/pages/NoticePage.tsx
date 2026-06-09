@@ -30,7 +30,7 @@ interface Notification {
   type: NotifType;
   unread: boolean;
   user: { name: string; color: string };
-  book?: { roomId: string; title: string; page: number };
+  book?: { roomId: string; title: string; page: number | null };
   preview?: string;
   timeLabel: string;
 }
@@ -59,6 +59,7 @@ const BADGE_CLASS: Record<NotifType, string> = {
   ocr:              styles.badgeOcr,
   friend_request:   styles.badgeFriend,
   friend_accepted:  styles.badgeFriend,
+  poke: styles.badgePoke,
 };
 
 const BADGE_ICON: Record<NotifType, string> = {
@@ -68,6 +69,7 @@ const BADGE_ICON: Record<NotifType, string> = {
   ocr:              "📷",
   friend_request:   "👤",
   friend_accepted:  "✅",
+  poke: "👉",
 };
 
 const ACTION_LABEL: Record<NotifType, string> = {
@@ -77,6 +79,7 @@ const ACTION_LABEL: Record<NotifType, string> = {
   ocr:              "님이 OCR을 남겼어요",
   friend_request:   "님이 친구 신청을 보냈어요",
   friend_accepted:  "님이 친구 신청을 수락했어요",
+  poke: "님이 콕 찔렀어요",
 };
 
 interface AvatarProps {
@@ -139,13 +142,14 @@ const NotifItem: React.FC<NotifItemProps> = ({ notif, onRead }) => {
           <span className={styles.notifAction}>{ACTION_LABEL[notif.type]}</span>
           <span className={styles.notifTime}>{notif.timeLabel}</span>
         </div>
-
-        {notif.book && (
-          <div className={styles.notifMeta}>
-            <span className={styles.notifBook}>{notif.book.title}</span>
-            <span className={styles.notifPage}>{notif.book.page}p</span>
-          </div>
-        )}
+          {notif.book && (
+            <div className={styles.notifMeta}>
+              <span className={styles.notifBook}>{notif.book.title}</span>
+              {notif.book.page != null && (
+                <span className={styles.notifPage}>{notif.book.page}p</span>
+              )}
+            </div>
+          )}
 
         {showPreview && <p className={styles.notifPreview}>{notif.preview}</p>}
       </div>

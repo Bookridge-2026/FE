@@ -61,7 +61,7 @@ const periodOptions = [1, 3, 5, 7, 10, 14, 21, 30, 45, 60, 90].map((d) => ({
 }));
 
 const pokeOptions = [
-  { label: "찌르기는 방장만 가능 / 강퇴 버튼 활성화", value: "0" },
+  { label: "찌르기는 방장만 가능 / 강퇴 버튼 활성화", value: "0", disabled: true },
   ...Array.from({ length: 6 }, (_, i) => ({
     label: `${(i + 1) * 5}회`,
     value: String((i + 1) * 5),
