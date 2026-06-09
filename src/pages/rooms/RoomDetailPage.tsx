@@ -783,7 +783,7 @@ const RoomDetailPage = () => {
         <button
           className={`${styles.manageBtn} ${manageActive ? styles.manageBtnActive : ""}`}
           onPointerDown={() => setManageActive(true)}
-          onPointerUp={() => { setManageActive(false); navigate(`/rooms/${roomId}/manage`); }}
+          onPointerUp={() => { setManageActive(false); navigate(`/rooms/${roomId}/manage`, { state: { roomState: roomDetail?.state } }); }}
           onPointerLeave={() => setManageActive(false)}
         >
           관리
