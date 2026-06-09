@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { getRooms, joinRoom, type RoomSummary } from "@/api/rooms";
 import plusIcon from "@/assets/common/plus-icon.svg";
 
@@ -111,6 +112,7 @@ const RoomSearchPage = () => {
 
   const [selectedRoom, setSelectedRoom] = useState<RoomSummary | null>(null);
   const [joining, setJoining] = useState(false);
+  const [joinError, setJoinError] = useState<string | null>(null);
 
   const fetchRooms = async (kw: string, page: number) => {
     setLoading(true);
@@ -169,7 +171,18 @@ const RoomSearchPage = () => {
       // 참여 요청 성공 → pending 상태이므로 방 상세가 아닌 알림 팝업 후 목록 유지
       alert("입장 요청이 전송되었습니다. 방장의 수락을 기다려주세요.");
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : "참여에 실패했습니다.");
+      if (axios.isAxiosError(e)) {
+        const status = e.response?.status;
+        if (status === 403) {
+          setJoinError("해당 방의 방장(또는 관리자)에 의해 차단되어 입장이 제한되었습니다.");
+        } else if (status === 400) {
+          setJoinError("지금은 이 방에 입장할 수 없습니다.");
+        } else {
+          setJoinError("참여에 실패했습니다.");
+        }
+      } else {
+        setJoinError("참여에 실패했습니다.");
+      }
     } finally {
       setJoining(false);
     }
@@ -252,6 +265,24 @@ const RoomSearchPage = () => {
         >
           <img src={plusIcon} alt="방 생성" className="w-[70px] h-[70px]" />
         </button>
+
+        {/* 에러 팝업 */}
+        {joinError && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40">
+            <div className="w-[300px] rounded-2xl bg-white px-7 py-8 shadow-xl flex flex-col items-center gap-6">
+              <p className="text-center text-[15px] font-semibold text-black whitespace-pre-line">
+                {joinError}
+              </p>
+              <button
+                type="button"
+                className="h-11 w-[105px] rounded-2xl bg-black text-[15px] font-medium text-white"
+                onClick={() => setJoinError(null)}
+              >
+                확인
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* 참여 확인 모달 */}
         {selectedRoom && (
