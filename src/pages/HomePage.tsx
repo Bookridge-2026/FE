@@ -80,7 +80,7 @@ const HomePage = () => {
     <div className="flex flex-col flex-1 bg-[#FFFFFF] px-6 py-1 relative ">
 
       {/* 명언 */}
-      <div className="h-33 flex flex-col items-center justify-center overflow-hidden">
+      <div className="h-40 flex flex-col items-center justify-center overflow-hidden">
         <p className=" text-center text-[#3B2E1E] text-[15px] font-bold leading-relaxed whitespace-pre-line">
           {quote.text}
         </p>
@@ -117,7 +117,7 @@ const HomePage = () => {
                 <img
                   src={room.book.thumbnail}
                   alt={room.book.title}
-                  className="w-24 h-37 object-cover rounded-lg bg-gray-200 mt-1"
+                  className="w-27 h-41 object-cover rounded-lg bg-gray-200 mt-1"
                 />
 
                 {/* 책 정보 */}
@@ -129,11 +129,11 @@ const HomePage = () => {
 
                   {/* 뱃지 */}
                   {room.state === "ongoing" ? (
-                    <span className="mt-auto self-start px-2 py-1 border border-[#3B2E1E] rounded-lg text-xs text-[#3B2E1E] font-semibold">
+                    <span className="mt-auto self-start px-2 py-1 border border-[#3B2E1E] rounded-lg text-base text-[#3B2E1E] font-semibold">
                       D - {room.daysLeft}
                     </span>
                   ) : (
-                    <span className="mt-auto self-start px-2 py-1 border border-[#3B2E1E] rounded-lg text-xs text-[#3B2E1E] font-semibold whitespace-nowrap">
+                    <span className="mt-auto self-start px-2 py-1 border border-[#3B2E1E] rounded-lg text-base text-[#3B2E1E] font-semibold whitespace-nowrap">
                       {room.period}일간 진행 예정
                     </span>
                   )}
