@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import crown from "../../assets/rooms/crown.svg";
 import tap from "../../assets/rooms/tap.svg";
@@ -12,6 +12,8 @@ import { useToastContext } from "@/components/common/ToastProvider";
 export default function RoomManagePage() {
   const navigate = useNavigate();
   const { roomId } = useParams();
+  const location = useLocation();
+  const roomState = (location.state as { roomState?: string } | null)?.roomState;
   const { show } = useToastContext();
 
   const [members, setMembers] = useState<RoomMember[]>([]);
@@ -144,26 +146,30 @@ export default function RoomManagePage() {
                   </span>
                 ) : (
                   <>
-                    <button
-                      onClick={() => handleKick(m)}
-                      disabled={!m.canKick || isLoading}
-                      className="rounded-xl px-4 py-2.5 text-sm font-bold transition active:scale-95 disabled:opacity-40"
-                      style={{
-                        backgroundColor: m.canKick ? "#2A211C" : "#E6E1D5",
-                        color: m.canKick ? "#FFFFFF" : "#9C9482",
-                      }}
-                    >
-                      강퇴
-                    </button>
+                    {roomState !== "closed" && (
+                      <button
+                        onClick={() => handleKick(m)}
+                        disabled={!m.canKick || isLoading}
+                        className="rounded-xl px-4 py-2.5 text-sm font-bold transition active:scale-95 disabled:opacity-40"
+                        style={{
+                          backgroundColor: m.canKick ? "#2A211C" : "#E6E1D5",
+                          color: m.canKick ? "#FFFFFF" : "#9C9482",
+                        }}
+                      >
+                        강퇴
+                      </button>
+                    )}
 
-                    <button
-                      onClick={() => handlePoke(m)}
-                      disabled={isLoading}
-                      className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary transition active:scale-95 disabled:opacity-40"
-                      aria-label="콕 찌르기"
-                    >
-                      <img src={tap} alt="콕 찌르기" className="h-5 w-5" />
-                    </button>
+                    {roomState !== "closed" && (
+                      <button
+                        onClick={() => handlePoke(m)}
+                        disabled={isLoading}
+                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary transition active:scale-95 disabled:opacity-40"
+                        aria-label="콕 찌르기"
+                      >
+                        <img src={tap} alt="콕 찌르기" className="h-5 w-5" />
+                      </button>
+                    )}
                   </>
                 )}
               </div>
