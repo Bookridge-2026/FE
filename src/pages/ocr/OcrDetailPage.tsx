@@ -26,6 +26,7 @@ import type {
 
 interface LocationState {
   ocrPage?: OcrPageType;
+  roomState?: string;
 }
 
 interface SelectedRange {
@@ -78,6 +79,7 @@ export default function OcrDetailPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state as LocationState | null;
+  const roomState = state?.roomState;
 
   const textRef = useRef<HTMLDivElement>(null);
 
@@ -99,15 +101,10 @@ export default function OcrDetailPage() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [addMemoModalOpen, setAddMemoModalOpen] = useState(false);
 
-  const [userCode, setUserCode] = useState("");
+  const [userCode, setUserCode] = useState(() => getStoredUserCode() ?? "");
 
   useEffect(() => {
-    const storedCode = getStoredUserCode();
-
-    if (storedCode) {
-      setUserCode(storedCode);
-      return;
-    }
+    if (getStoredUserCode()) return;
 
     const fetchUserCode = async () => {
       try {
@@ -412,7 +409,7 @@ export default function OcrDetailPage() {
               선택 완료
             </button>
           </div>
-        ) : (
+        ) : roomState !== "closed" ? (
           <button
             type="button"
             className="rounded-lg border-[2px] border-field bg-main px-2 py-1 text-[13px] text-primary disabled:opacity-40"
@@ -434,7 +431,7 @@ export default function OcrDetailPage() {
           >
             {canAddMemoToActiveHighlight ? "이어서 반응 추가" : "새 반응 추가"}
           </button>
-        )}
+        ) : null}
       </div>
 
       <div

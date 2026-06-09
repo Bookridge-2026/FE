@@ -6,7 +6,8 @@ export type NotifType =
   | "emoji"
   | "ocr"
   | "friend_request"
-  | "friend_accepted";
+  | "friend_accepted"
+  | "poke";   
 
 export interface NotificationUser {
   userId: string;
@@ -18,7 +19,7 @@ export interface NotificationBook {
   isbn: string;
   title: string;
   roomId: string;
-  page: number;
+  page: number | null; 
 }
 
 export interface NotificationItem {
