@@ -40,10 +40,12 @@ const KebabMenu = ({
   isMine,
   onEdit,
   onDelete,
+  roomState,
 }: {
   isMine: boolean;
   onEdit?: () => void;
   onDelete: () => void;
+  roomState?: string;
 }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -55,6 +57,8 @@ const KebabMenu = ({
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  if (roomState === "closed") return null;
 
   return (
     <div ref={ref} style={{ position: "relative", flexShrink: 0 }}>
@@ -297,11 +301,12 @@ const PageEmojiRow = ({
 };
 
 const ReplyItem = ({
-  reply, onDelete, currentUserId,
+  reply, onDelete, currentUserId, roomState,
 }: {
   reply: Reply;
   onDelete: (replyId: number) => Promise<void>;
   currentUserId: number;
+  roomState?: string;
 }) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const isMine = reply.author.id === currentUserId;
@@ -312,7 +317,7 @@ const ReplyItem = ({
         <span className={styles.replyPrefix}>ㄴ</span>
         <span className={styles.replyDot} style={{ backgroundColor: reply.author.color }} />
         <p className={styles.replyText}>{reply.text}</p>
-        <KebabMenu isMine={isMine} onDelete={() => setConfirmDelete(true)} />
+        <KebabMenu isMine={isMine} onDelete={() => setConfirmDelete(true)} roomState={roomState} />
       </div>
 
       {confirmDelete && (
@@ -327,11 +332,12 @@ const ReplyItem = ({
 };
 
 const CommentCard = ({
-  comment, roomId, currentUserId, onReply, onUpdate, onDelete,
+  comment, roomId, currentUserId, roomState, onReply, onUpdate, onDelete,
 }: {
   comment: Comment;
   roomId: string;
   currentUserId: number;
+  roomState?: string;
   onReply:  (commentId: number, text: string) => Promise<void>;
   onUpdate: (commentId: number, commentText: string) => Promise<void>;
   onDelete: (commentId: number) => Promise<void>;
@@ -442,9 +448,11 @@ const CommentCard = ({
                     isMine={isMine}
                     onEdit={() => { setEditText(comment.text ?? ""); setEditing(true); }}
                     onDelete={() => setConfirmDelete(true)}
+                    roomState={roomState}
                   />
                 )}
 
+{roomState !== "closed" && (
                 <button
                   onClick={() => setReplyOpen((v) => !v)}
                   className={styles.replyToggleBtn}
@@ -452,6 +460,7 @@ const CommentCard = ({
                 >
                   답글
                 </button>
+)}
 
                 {hasReplies && (
                   <button
@@ -475,6 +484,7 @@ const CommentCard = ({
                     reply={r}
                     onDelete={handleReplyDelete}
                     currentUserId={currentUserId}
+                    roomState={roomState}
                   />
                 ))}
               </div>
@@ -659,7 +669,6 @@ const RoomDetailPage = () => {
 
   useEffect(() => {
     if (!roomId || selectedPage == null || activeTab !== "일반") return;
-    setLoading(true);
     Promise.all([fetchComments(roomId, selectedPage), fetchReactions(roomId, selectedPage)])
       .then(([c, r]) => { setComments(c); setReactions(r); })
       .catch(console.error)
@@ -678,12 +687,19 @@ const RoomDetailPage = () => {
 
   useEffect(() => {
     if (!roomId || selectedPage == null || activeTab !== "OCR") return;
-    setOcrListLoading(true);
-    setOcrEntries([]);
-    fetchOcrEntriesByPage(roomId, selectedPage)
-      .then(setOcrEntries)
-      .catch(console.error)
-      .finally(() => setOcrListLoading(false));
+    const load = async () => {
+      setOcrListLoading(true);
+      setOcrEntries([]);
+      try {
+        const entries = await fetchOcrEntriesByPage(roomId, selectedPage);
+        setOcrEntries(entries);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setOcrListLoading(false);
+      }
+    };
+    load();
   }, [roomId, selectedPage, activeTab]);
 
   const reloadPage = async (page: number) => {
@@ -839,7 +855,7 @@ const RoomDetailPage = () => {
               <button
                 key={entry.ocrPageId}
                 className={styles.ocrItem}
-                onClick={() => navigate(`/rooms/${roomId}/ocr/${entry.ocrPageId}`)}
+                onClick={() => navigate(`/rooms/${roomId}/ocr/${entry.ocrPageId}`, { state: { roomState: roomDetail?.state } })}
               >
                 <span>{entry.page}쪽 OCR 바로가기 - {idx + 1}</span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -863,6 +879,7 @@ const RoomDetailPage = () => {
                 comment={c}
                 roomId={roomId!}
                 currentUserId={currentMemberId}
+                roomState={roomDetail?.state}
                 onReply={handleReply}
                 onUpdate={handleCommentUpdate}
                 onDelete={handleCommentDelete}
@@ -872,7 +889,7 @@ const RoomDetailPage = () => {
         </div>
       )}
 
-      {activeTab === "일반" && (
+      {roomDetail?.state !== "closed" && (
         <button
           onClick={() => setModalStep("main")}
           className="fixed left-1/2 bottom-[calc(var(--bottom-bar-height)+20px)] z-40 -translate-x-1/2 translate-x-[129px] rounded-full bg-primary flex items-center justify-center shadow-lg w-12 h-12"
@@ -890,7 +907,7 @@ const RoomDetailPage = () => {
           currentPage={selectedPage ?? 1}
           totalPages={totalPages}
           onClose={handleCloseAll}
-          onSelectOCR={(page) => navigate(`/rooms/${roomId}/ocr/${page}`)}
+          onSelectOCR={(page) => navigate(`/rooms/${roomId}/ocr/${page}`, { state: { roomState: roomDetail?.state } })}
           onSelectComment={handleSelectComment}
           onSelectEmoji={handleSelectEmoji}
         />
