@@ -820,3 +820,132 @@
   color: #4a4a4a;
   cursor: default;
 }
+
+
+/* ── Kebab (⋯) 메뉴 ───────────────────────────────────── */
+.kebabBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: #9e9890;
+  cursor: pointer;
+  border-radius: 4px;
+  flex-shrink: 0;
+  opacity: 0;                  /* 기본엔 숨김 */
+  transition: opacity 0.15s;
+}
+
+/* 카드/아이템에 hover 시 버튼 표시 */
+.card:hover .kebabBtn,
+.replyItem:hover .kebabBtn {
+  opacity: 1;
+}
+
+.kebabDropdown {
+  position: absolute;
+  right: 0;
+  top: 28px;
+  background: #fff;
+  border: 1px solid #e5e0d8;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  min-width: 80px;
+  overflow: hidden;
+}
+
+.kebabItem {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 13px;
+  color: #3d3730;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.kebabItem:hover {
+  background: #f5f1eb;
+}
+
+.kebabItemDelete {
+  color: #e05454;
+}
+
+/* ── 삭제 확인 다이얼로그 ─────────────────────────────── */
+.confirmBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.confirmBox {
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px 20px 16px;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.confirmMessage {
+  font-size: 15px;
+  color: #3d3730;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.confirmBtnRow {
+  display: flex;
+  gap: 8px;
+}
+
+.confirmBtnDanger {
+  background: #e05454 !important;  /* 삭제 버튼 강조 */
+}
+
+/* ── 이모지 팝업 내 삭제 버튼 ────────────────────────── */
+.emojiDeleteBtn {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  color: #9e9890;
+  padding: 2px 4px;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.emojiDeleteBtn:hover {
+  background: #f5f1eb;
+  color: #e05454;
+}
+
+
+
+/* Roomdetailpage.module.css */
+.ocrItem {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: var(--color-main);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  margin-bottom: 12px;
+}
